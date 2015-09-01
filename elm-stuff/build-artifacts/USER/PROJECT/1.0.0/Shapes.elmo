@@ -1,0 +1,89 @@
+Elm.Shapes = Elm.Shapes || {};
+Elm.Shapes.make = function (_elm) {
+   "use strict";
+   _elm.Shapes = _elm.Shapes || {};
+   if (_elm.Shapes.values)
+   return _elm.Shapes.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Shapes",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var roundedSquare = F3(function (size,
+   radius,
+   color) {
+      return function () {
+         var radius$ = $Basics.toFloat(radius);
+         var circleShapes = A2($List.repeat,
+         4,
+         $Graphics$Collage.circle(radius$));
+         var circleForms = A2($List.map,
+         $Graphics$Collage.filled(color),
+         circleShapes);
+         var size$ = $Basics.toFloat(size);
+         var innerSquareSize = size$ - radius$ * 2;
+         var circlePositions = _L.fromArray([{ctor: "_Tuple2"
+                                             ,_0: innerSquareSize / 2
+                                             ,_1: innerSquareSize / 2}
+                                            ,{ctor: "_Tuple2"
+                                             ,_0: (0 - innerSquareSize) / 2
+                                             ,_1: innerSquareSize / 2}
+                                            ,{ctor: "_Tuple2"
+                                             ,_0: innerSquareSize / 2
+                                             ,_1: (0 - innerSquareSize) / 2}
+                                            ,{ctor: "_Tuple2"
+                                             ,_0: (0 - innerSquareSize) / 2
+                                             ,_1: (0 - innerSquareSize) / 2}]);
+         var circles = A3($List.map2,
+         $Graphics$Collage.move,
+         circlePositions,
+         circleForms);
+         var borderPositions = _L.fromArray([{ctor: "_Tuple2"
+                                             ,_0: 0
+                                             ,_1: innerSquareSize / 2}
+                                            ,{ctor: "_Tuple2"
+                                             ,_0: 0
+                                             ,_1: (0 - innerSquareSize) / 2}
+                                            ,{ctor: "_Tuple2"
+                                             ,_0: innerSquareSize / 2
+                                             ,_1: 0}
+                                            ,{ctor: "_Tuple2"
+                                             ,_0: (0 - innerSquareSize) / 2
+                                             ,_1: 0}]);
+         var borderShapes = _L.fromArray([A2($Graphics$Collage.rect,
+                                         innerSquareSize,
+                                         radius$ * 2)
+                                         ,A2($Graphics$Collage.rect,
+                                         innerSquareSize,
+                                         radius$ * 2)
+                                         ,A2($Graphics$Collage.rect,
+                                         radius$ * 2,
+                                         innerSquareSize)
+                                         ,A2($Graphics$Collage.rect,
+                                         radius$ * 2,
+                                         innerSquareSize)]);
+         var borderForms = A2($List.map,
+         $Graphics$Collage.filled(color),
+         borderShapes);
+         var borders = A3($List.map2,
+         $Graphics$Collage.move,
+         borderPositions,
+         borderForms);
+         var innerSquare = $Graphics$Collage.filled(color)($Graphics$Collage.square(innerSquareSize));
+         return $Graphics$Collage.group(A2($List._op["::"],
+         innerSquare,
+         $List.concat(_L.fromArray([circles
+                                   ,borders]))));
+      }();
+   });
+   _elm.Shapes.values = {_op: _op
+                        ,roundedSquare: roundedSquare};
+   return _elm.Shapes.values;
+};

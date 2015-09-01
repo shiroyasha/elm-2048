@@ -1,0 +1,103 @@
+Elm.Random = Elm.Random || {};
+Elm.Random.Function = Elm.Random.Function || {};
+Elm.Random.Function.make = function (_elm) {
+   "use strict";
+   _elm.Random = _elm.Random || {};
+   _elm.Random.Function = _elm.Random.Function || {};
+   if (_elm.Random.Function.values)
+   return _elm.Random.Function.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Random.Function",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Random = Elm.Random.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   _op["<<<"] = F2(function (generatorBC,
+   generatorAB) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generatorAB,
+            seed),
+            f = $._0,
+            seed1 = $._1;
+            var $ = A2($Random.generate,
+            generatorBC,
+            seed1),
+            g = $._0,
+            seed2 = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: function ($) {
+                      return g(f($));
+                   }
+                   ,_1: seed2};
+         }();
+      });
+   });
+   _op[">>>"] = F2(function (generatorAB,
+   generatorBC) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generatorAB,
+            seed),
+            f = $._0,
+            seed1 = $._1;
+            var $ = A2($Random.generate,
+            generatorBC,
+            seed1),
+            g = $._0,
+            seed2 = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: function ($) {
+                      return g(f($));
+                   }
+                   ,_1: seed2};
+         }();
+      });
+   });
+   var func = function (generatorB) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generatorB,
+            seed),
+            valueB = $._0,
+            seed1 = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: function (a) {
+                      return valueB;
+                   }
+                   ,_1: seed1};
+         }();
+      });
+   };
+   var func2 = function (generatorC) {
+      return func(func(generatorC));
+   };
+   var func3 = function (generatorD) {
+      return func(func2(generatorD));
+   };
+   var func4 = function (generatorE) {
+      return func(func3(generatorE));
+   };
+   var func5 = function (generatorF) {
+      return func(func4(generatorF));
+   };
+   var func6 = function (generatorG) {
+      return func(func5(generatorG));
+   };
+   _elm.Random.Function.values = {_op: _op
+                                 ,func: func
+                                 ,func2: func2
+                                 ,func3: func3
+                                 ,func4: func4
+                                 ,func5: func5
+                                 ,func6: func6};
+   return _elm.Random.Function.values;
+};

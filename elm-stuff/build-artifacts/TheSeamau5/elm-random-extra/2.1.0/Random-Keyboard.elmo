@@ -1,0 +1,118 @@
+Elm.Random = Elm.Random || {};
+Elm.Random.Keyboard = Elm.Random.Keyboard || {};
+Elm.Random.Keyboard.make = function (_elm) {
+   "use strict";
+   _elm.Random = _elm.Random || {};
+   _elm.Random.Keyboard = _elm.Random.Keyboard || {};
+   if (_elm.Random.Keyboard.values)
+   return _elm.Random.Keyboard.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Random.Keyboard",
+   $Basics = Elm.Basics.make(_elm),
+   $Keyboard = Elm.Keyboard.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Random = Elm.Random.make(_elm),
+   $Random$Extra = Elm.Random.Extra.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var fKey = A2($Random$Extra.map,
+   function ($int) {
+      return $int + 112;
+   },
+   A2($Random.$int,0,11));
+   var numpadKey = A2($Random$Extra.map,
+   function ($int) {
+      return $int + 96;
+   },
+   A2($Random.$int,0,9));
+   var arrowKey = A2($Random$Extra.map,
+   function ($int) {
+      return $int + 37;
+   },
+   A2($Random.$int,0,3));
+   var letterKey = A2($Random$Extra.map,
+   function ($int) {
+      return $int + 65;
+   },
+   A2($Random.$int,0,25));
+   var numberKey = A2($Random$Extra.map,
+   function ($int) {
+      return $int + 48;
+   },
+   A2($Random.$int,0,9));
+   var keyCode = function () {
+      var elem = F2(function (index,
+      list) {
+         return _U.cmp(index,
+         0) < 0 ? $Maybe.Nothing : function () {
+            var _v0 = A2($List.drop,
+            index,
+            list);
+            switch (_v0.ctor)
+            {case "::":
+               return $Maybe.Just(_v0._0);
+               case "[]":
+               return $Maybe.Nothing;}
+            _U.badCase($moduleName,
+            "between lines 48 and 52");
+         }();
+      });
+      var validCodes = A2($Basics._op["++"],
+      _L.fromArray([8,9,13]),
+      A2($Basics._op["++"],
+      _L.range(16,20),
+      A2($Basics._op["++"],
+      _L.fromArray([27]),
+      A2($Basics._op["++"],
+      _L.range(33,40),
+      A2($Basics._op["++"],
+      _L.fromArray([45,46]),
+      A2($Basics._op["++"],
+      _L.range(48,57),
+      A2($Basics._op["++"],
+      _L.range(65,93),
+      A2($Basics._op["++"],
+      _L.range(96,107),
+      A2($Basics._op["++"],
+      _L.range(109,123),
+      A2($Basics._op["++"],
+      _L.fromArray([144,145]),
+      A2($Basics._op["++"],
+      _L.range(186,192),
+      _L.range(219,222))))))))))));
+      var intToCode = function ($int) {
+         return function () {
+            var _v3 = A2(elem,
+            $int,
+            validCodes);
+            switch (_v3.ctor)
+            {case "Just": return _v3._0;
+               case "Nothing": return 0;}
+            _U.badCase($moduleName,
+            "between lines 53 and 57");
+         }();
+      };
+      return A2($Random$Extra.map,
+      intToCode,
+      A2($Random.$int,0,97));
+   }();
+   var arrows = A2($Random$Extra.selectWithDefault,
+   {_: {},x: 0,y: 0},
+   _L.fromArray([{_: {},x: 0,y: 0}
+                ,{_: {},x: 0,y: 1}
+                ,{_: {},x: 1,y: 0}
+                ,{_: {},x: 1,y: 1}]));
+   _elm.Random.Keyboard.values = {_op: _op
+                                 ,arrows: arrows
+                                 ,keyCode: keyCode
+                                 ,numberKey: numberKey
+                                 ,letterKey: letterKey
+                                 ,arrowKey: arrowKey
+                                 ,numpadKey: numpadKey
+                                 ,fKey: fKey};
+   return _elm.Random.Keyboard.values;
+};

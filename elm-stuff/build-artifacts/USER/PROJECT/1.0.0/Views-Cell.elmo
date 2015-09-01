@@ -1,0 +1,104 @@
+Elm.Views = Elm.Views || {};
+Elm.Views.Cell = Elm.Views.Cell || {};
+Elm.Views.Cell.make = function (_elm) {
+   "use strict";
+   _elm.Views = _elm.Views || {};
+   _elm.Views.Cell = _elm.Views.Cell || {};
+   if (_elm.Views.Cell.values)
+   return _elm.Views.Cell.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Views.Cell",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Shapes = Elm.Shapes.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var textColor = function (number) {
+      return function () {
+         switch (number)
+         {case 0: return $Color.white;
+            case 2: return A3($Color.rgb,
+              119,
+              110,
+              101);
+            case 4: return A3($Color.rgb,
+              119,
+              110,
+              101);
+            case 8: return $Color.black;
+            case 16: return $Color.black;
+            case 32: return $Color.black;
+            case 64: return $Color.black;
+            case 128: return $Color.black;
+            case 256: return $Color.black;
+            case 512: return $Color.black;
+            case 1024: return $Color.black;
+            case 2048: return $Color.white;}
+         _U.badCase($moduleName,
+         "between lines 28 and 40");
+      }();
+   };
+   var label = F2(function (size,
+   number) {
+      return $Graphics$Collage.text($Text.monospace($Text.bold($Text.height(size)($Text.color(textColor(number))($Text.fromString(_U.cmp(number,
+      0) > 0 ? $Basics.toString(number) : ""))))));
+   });
+   var backgroungColor = function (number) {
+      return function () {
+         switch (number)
+         {case 0: return $Color.white;
+            case 2: return A3($Color.rgb,
+              238,
+              228,
+              218);
+            case 4: return A3($Color.rgb,
+              119,
+              110,
+              101);
+            case 8: return $Color.black;
+            case 16: return $Color.black;
+            case 32: return $Color.black;
+            case 64: return $Color.black;
+            case 128: return $Color.black;
+            case 256: return $Color.black;
+            case 512: return $Color.black;
+            case 1024: return $Color.black;
+            case 2048: return $Color.white;}
+         _U.badCase($moduleName,
+         "between lines 11 and 23");
+      }();
+   };
+   var backgroung = F3(function (size,
+   radius,
+   number) {
+      return A3($Shapes.roundedSquare,
+      size,
+      radius,
+      backgroungColor(number));
+   });
+   var cell = F3(function (size,
+   radius,
+   number) {
+      return $Graphics$Collage.group(_L.fromArray([A3(backgroung,
+                                                  size,
+                                                  radius,
+                                                  number)
+                                                  ,A2(label,
+                                                  $Basics.toFloat(size) / 3,
+                                                  number)]));
+   });
+   _elm.Views.Cell.values = {_op: _op
+                            ,backgroungColor: backgroungColor
+                            ,textColor: textColor
+                            ,label: label
+                            ,backgroung: backgroung
+                            ,cell: cell};
+   return _elm.Views.Cell.values;
+};

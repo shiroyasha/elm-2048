@@ -1,0 +1,812 @@
+Elm.Random = Elm.Random || {};
+Elm.Random.Extra = Elm.Random.Extra || {};
+Elm.Random.Extra.make = function (_elm) {
+   "use strict";
+   _elm.Random = _elm.Random || {};
+   _elm.Random.Extra = _elm.Random.Extra || {};
+   if (_elm.Random.Extra.values)
+   return _elm.Random.Extra.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Random.Extra",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Random = Elm.Random.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Utils = Elm.Utils.make(_elm);
+   var mapConstraint = F2(function (constraint,
+   generator) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generator,
+            seed),
+            value = $._0,
+            seed1 = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: {ctor: "_Tuple2"
+                        ,_0: value
+                        ,_1: constraint(value)}
+                   ,_1: seed1};
+         }();
+      });
+   });
+   var quickGenerate = function (generator) {
+      return $Basics.fst(A2($Random.generate,
+      generator,
+      $Random.initialSeed(1)));
+   };
+   var cappedGenerateUntil = F4(function (maxGenerations,
+   predicate,
+   generator,
+   seed) {
+      return _U.cmp(maxGenerations,
+      0) < 1 ? _L.fromArray([]) : function () {
+         var $ = A2($Random.generate,
+         generator,
+         seed),
+         value = $._0,
+         nextSeed = $._1;
+         return predicate(value) ? A2($List._op["::"],
+         value,
+         A4(cappedGenerateUntil,
+         maxGenerations - 1,
+         predicate,
+         generator,
+         nextSeed)) : _L.fromArray([]);
+      }();
+   });
+   var generateUntil = F3(function (predicate,
+   generator,
+   seed) {
+      return function () {
+         var $ = A2($Random.generate,
+         generator,
+         seed),
+         value = $._0,
+         nextSeed = $._1;
+         return predicate(value) ? A2($List._op["::"],
+         value,
+         A3(generateUntil,
+         predicate,
+         generator,
+         nextSeed)) : _L.fromArray([]);
+      }();
+   });
+   var generateIterativelyUntil = F4(function (maxLength,
+   predicate,
+   constructor,
+   seed) {
+      return function () {
+         var iterate = function (index) {
+            return _U.cmp(index,
+            maxLength) > -1 ? _L.fromArray([]) : A2($Basics._op["++"],
+            A3(generateUntil,
+            predicate,
+            constructor(index),
+            seed),
+            iterate(index + 1));
+         };
+         return iterate(0);
+      }();
+   });
+   var generateIterativelySuchThat = F2(function (maxLength,
+   predicate) {
+      return A2(generateIterativelyUntil,
+      maxLength,
+      function (a) {
+         return $Basics.not(predicate(a));
+      });
+   });
+   var generateN = F3(function (n,
+   generator,
+   seed) {
+      return _U.cmp(n,
+      0) < 1 ? _L.fromArray([]) : function () {
+         var $ = A2($Random.generate,
+         generator,
+         seed),
+         value = $._0,
+         nextSeed = $._1;
+         return A2($List._op["::"],
+         value,
+         A3(generateN,
+         n - 1,
+         generator,
+         nextSeed));
+      }();
+   });
+   var map6 = F7(function (f,
+   generatorA,
+   generatorB,
+   generatorC,
+   generatorD,
+   generatorE,
+   generatorF) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generatorA,
+            seed),
+            valueA = $._0,
+            seed1 = $._1;
+            var $ = A2($Random.generate,
+            generatorB,
+            seed1),
+            valueB = $._0,
+            seed2 = $._1;
+            var $ = A2($Random.generate,
+            generatorC,
+            seed2),
+            valueC = $._0,
+            seed3 = $._1;
+            var $ = A2($Random.generate,
+            generatorD,
+            seed3),
+            valueD = $._0,
+            seed4 = $._1;
+            var $ = A2($Random.generate,
+            generatorE,
+            seed4),
+            valueE = $._0,
+            seed5 = $._1;
+            var $ = A2($Random.generate,
+            generatorF,
+            seed5),
+            valueF = $._0,
+            seed6 = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: A6(f,
+                   valueA,
+                   valueB,
+                   valueC,
+                   valueD,
+                   valueE,
+                   valueF)
+                   ,_1: seed6};
+         }();
+      });
+   });
+   var map5 = F6(function (f,
+   generatorA,
+   generatorB,
+   generatorC,
+   generatorD,
+   generatorE) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generatorA,
+            seed),
+            valueA = $._0,
+            seed1 = $._1;
+            var $ = A2($Random.generate,
+            generatorB,
+            seed1),
+            valueB = $._0,
+            seed2 = $._1;
+            var $ = A2($Random.generate,
+            generatorC,
+            seed2),
+            valueC = $._0,
+            seed3 = $._1;
+            var $ = A2($Random.generate,
+            generatorD,
+            seed3),
+            valueD = $._0,
+            seed4 = $._1;
+            var $ = A2($Random.generate,
+            generatorE,
+            seed4),
+            valueE = $._0,
+            seed5 = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: A5(f,
+                   valueA,
+                   valueB,
+                   valueC,
+                   valueD,
+                   valueE)
+                   ,_1: seed5};
+         }();
+      });
+   });
+   var map4 = F5(function (f,
+   generatorA,
+   generatorB,
+   generatorC,
+   generatorD) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generatorA,
+            seed),
+            valueA = $._0,
+            seed1 = $._1;
+            var $ = A2($Random.generate,
+            generatorB,
+            seed1),
+            valueB = $._0,
+            seed2 = $._1;
+            var $ = A2($Random.generate,
+            generatorC,
+            seed2),
+            valueC = $._0,
+            seed3 = $._1;
+            var $ = A2($Random.generate,
+            generatorD,
+            seed3),
+            valueD = $._0,
+            seed4 = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: A4(f,
+                   valueA,
+                   valueB,
+                   valueC,
+                   valueD)
+                   ,_1: seed4};
+         }();
+      });
+   });
+   var map3 = F4(function (f,
+   generatorA,
+   generatorB,
+   generatorC) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generatorA,
+            seed),
+            valueA = $._0,
+            seed1 = $._1;
+            var $ = A2($Random.generate,
+            generatorB,
+            seed1),
+            valueB = $._0,
+            seed2 = $._1;
+            var $ = A2($Random.generate,
+            generatorC,
+            seed2),
+            valueC = $._0,
+            seed3 = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: A3(f,valueA,valueB,valueC)
+                   ,_1: seed3};
+         }();
+      });
+   });
+   var map2 = F3(function (f,
+   generatorA,
+   generatorB) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generatorA,
+            seed),
+            valueA = $._0,
+            seed1 = $._1;
+            var $ = A2($Random.generate,
+            generatorB,
+            seed1),
+            valueB = $._0,
+            seed2 = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: A2(f,valueA,valueB)
+                   ,_1: seed2};
+         }();
+      });
+   });
+   var map = F2(function (f,
+   generator) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generator,
+            seed),
+            value = $._0,
+            nextSeed = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: f(value)
+                   ,_1: nextSeed};
+         }();
+      });
+   });
+   var flatMap6 = F7(function (constructor,
+   generatorA,
+   generatorB,
+   generatorC,
+   generatorD,
+   generatorE,
+   generatorF) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generatorA,
+            seed),
+            valueA = $._0,
+            seed1 = $._1;
+            var $ = A2($Random.generate,
+            generatorB,
+            seed1),
+            valueB = $._0,
+            seed2 = $._1;
+            var $ = A2($Random.generate,
+            generatorC,
+            seed2),
+            valueC = $._0,
+            seed3 = $._1;
+            var $ = A2($Random.generate,
+            generatorD,
+            seed3),
+            valueD = $._0,
+            seed4 = $._1;
+            var $ = A2($Random.generate,
+            generatorE,
+            seed4),
+            valueE = $._0,
+            seed5 = $._1;
+            var $ = A2($Random.generate,
+            generatorF,
+            seed5),
+            valueF = $._0,
+            seed6 = $._1;
+            var generatorG = A6(constructor,
+            valueA,
+            valueB,
+            valueC,
+            valueD,
+            valueE,
+            valueF);
+            return A2($Random.generate,
+            generatorG,
+            seed6);
+         }();
+      });
+   });
+   var flatMap5 = F6(function (constructor,
+   generatorA,
+   generatorB,
+   generatorC,
+   generatorD,
+   generatorE) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generatorA,
+            seed),
+            valueA = $._0,
+            seed1 = $._1;
+            var $ = A2($Random.generate,
+            generatorB,
+            seed1),
+            valueB = $._0,
+            seed2 = $._1;
+            var $ = A2($Random.generate,
+            generatorC,
+            seed2),
+            valueC = $._0,
+            seed3 = $._1;
+            var $ = A2($Random.generate,
+            generatorD,
+            seed3),
+            valueD = $._0,
+            seed4 = $._1;
+            var $ = A2($Random.generate,
+            generatorE,
+            seed4),
+            valueE = $._0,
+            seed5 = $._1;
+            var generatorF = A5(constructor,
+            valueA,
+            valueB,
+            valueC,
+            valueD,
+            valueE);
+            return A2($Random.generate,
+            generatorF,
+            seed5);
+         }();
+      });
+   });
+   var flatMap4 = F5(function (constructor,
+   generatorA,
+   generatorB,
+   generatorC,
+   generatorD) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generatorA,
+            seed),
+            valueA = $._0,
+            seed1 = $._1;
+            var $ = A2($Random.generate,
+            generatorB,
+            seed1),
+            valueB = $._0,
+            seed2 = $._1;
+            var $ = A2($Random.generate,
+            generatorC,
+            seed2),
+            valueC = $._0,
+            seed3 = $._1;
+            var $ = A2($Random.generate,
+            generatorD,
+            seed3),
+            valueD = $._0,
+            seed4 = $._1;
+            var generatorE = A4(constructor,
+            valueA,
+            valueB,
+            valueC,
+            valueD);
+            return A2($Random.generate,
+            generatorE,
+            seed4);
+         }();
+      });
+   });
+   var flatMap3 = F4(function (constructor,
+   generatorA,
+   generatorB,
+   generatorC) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generatorA,
+            seed),
+            valueA = $._0,
+            seed1 = $._1;
+            var $ = A2($Random.generate,
+            generatorB,
+            seed1),
+            valueB = $._0,
+            seed2 = $._1;
+            var $ = A2($Random.generate,
+            generatorC,
+            seed2),
+            valueC = $._0,
+            seed3 = $._1;
+            var generatorD = A3(constructor,
+            valueA,
+            valueB,
+            valueC);
+            return A2($Random.generate,
+            generatorD,
+            seed3);
+         }();
+      });
+   });
+   var flatMap2 = F3(function (constructor,
+   generatorA,
+   generatorB) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generatorA,
+            seed),
+            valueA = $._0,
+            seed1 = $._1;
+            var $ = A2($Random.generate,
+            generatorB,
+            seed1),
+            valueB = $._0,
+            seed2 = $._1;
+            var generatorC = A2(constructor,
+            valueA,
+            valueB);
+            return A2($Random.generate,
+            generatorC,
+            seed2);
+         }();
+      });
+   });
+   var flatMap = F2(function (constructor,
+   generator) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            generator,
+            seed),
+            valueA = $._0,
+            seed1 = $._1;
+            var generatorB = constructor(valueA);
+            return A2($Random.generate,
+            generatorB,
+            seed1);
+         }();
+      });
+   });
+   var andThen = F2(function (generator,
+   constructor) {
+      return A2(flatMap,
+      constructor,
+      generator);
+   });
+   var zip6 = map6(F6(function (v0,
+   v1,
+   v2,
+   v3,
+   v4,
+   v5) {
+      return {ctor: "_Tuple6"
+             ,_0: v0
+             ,_1: v1
+             ,_2: v2
+             ,_3: v3
+             ,_4: v4
+             ,_5: v5};
+   }));
+   var zip5 = map5(F5(function (v0,
+   v1,
+   v2,
+   v3,
+   v4) {
+      return {ctor: "_Tuple5"
+             ,_0: v0
+             ,_1: v1
+             ,_2: v2
+             ,_3: v3
+             ,_4: v4};
+   }));
+   var zip4 = map4(F4(function (v0,
+   v1,
+   v2,
+   v3) {
+      return {ctor: "_Tuple4"
+             ,_0: v0
+             ,_1: v1
+             ,_2: v2
+             ,_3: v3};
+   }));
+   var zip3 = map3(F3(function (v0,
+   v1,
+   v2) {
+      return {ctor: "_Tuple3"
+             ,_0: v0
+             ,_1: v1
+             ,_2: v2};
+   }));
+   var zip = map2(F2(function (v0,
+   v1) {
+      return {ctor: "_Tuple2"
+             ,_0: v0
+             ,_1: v1};
+   }));
+   var reduce = F3(function (reducer,
+   initial,
+   generator) {
+      return function () {
+         var gen = function (seed) {
+            return function () {
+               var $ = A2($Random.generate,
+               generator,
+               seed),
+               value = $._0,
+               nextSeed = $._1;
+               var nextValue = A2(reducer,
+               value,
+               initial);
+               return {ctor: "_Tuple2"
+                      ,_0: nextValue
+                      ,_1: nextSeed};
+            }();
+         };
+         return $Random.customGenerator(gen);
+      }();
+   });
+   var fold = reduce;
+   var andMap = F2(function (funcGenerator,
+   generator) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            funcGenerator,
+            seed),
+            f = $._0,
+            seed1 = $._1;
+            var $ = A2($Random.generate,
+            generator,
+            seed1),
+            a = $._0,
+            seed2 = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: f(a)
+                   ,_1: seed2};
+         }();
+      });
+   });
+   var constant = function (value) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var _ = A2($Random.generate,
+            A2($Random.$int,0,1),
+            seed);
+            var seed1 = function () {
+               switch (_.ctor)
+               {case "_Tuple2": return _._1;}
+               _U.badCase($moduleName,
+               "on line 144, column 26 to 49");
+            }();
+            return {ctor: "_Tuple2"
+                   ,_0: value
+                   ,_1: seed1};
+         }();
+      });
+   };
+   var select = function (list) {
+      return $Random.customGenerator(function (seed) {
+         return function () {
+            var $ = A2($Random.generate,
+            A2($Random.$int,
+            0,
+            $List.length(list) - 1),
+            seed),
+            index = $._0,
+            nextSeed = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: A2($Utils.get,index,list)
+                   ,_1: nextSeed};
+         }();
+      });
+   };
+   var selectWithDefault = F2(function (defaultValue,
+   list) {
+      return A2(map,
+      $Maybe.withDefault(defaultValue),
+      select(list));
+   });
+   var flattenList = function (generators) {
+      return function () {
+         switch (generators.ctor)
+         {case "::":
+            return $Random.customGenerator(function (seed) {
+                 return function () {
+                    var $ = A2($Random.generate,
+                    generators._0,
+                    seed),
+                    first = $._0,
+                    seed1 = $._1;
+                    var $ = A2($Random.generate,
+                    flattenList(generators._1),
+                    seed1),
+                    rest = $._0,
+                    seed2 = $._1;
+                    return {ctor: "_Tuple2"
+                           ,_0: A2($List._op["::"],
+                           first,
+                           rest)
+                           ,_1: seed2};
+                 }();
+              });
+            case "[]":
+            return constant(_L.fromArray([]));}
+         _U.badCase($moduleName,
+         "between lines 108 and 116");
+      }();
+   };
+   var keepIf = F2(function (predicate,
+   generator) {
+      return function () {
+         var gen = function (seed) {
+            return function () {
+               var $ = A2($Random.generate,
+               generator,
+               seed),
+               value = $._0,
+               seed1 = $._1;
+               return predicate(value) ? {ctor: "_Tuple2"
+                                         ,_0: value
+                                         ,_1: seed1} : gen(seed1);
+            }();
+         };
+         return $Random.customGenerator(gen);
+      }();
+   });
+   var dropIf = function (predicate) {
+      return keepIf(function (a) {
+         return $Basics.not(predicate(a));
+      });
+   };
+   var generateSuchThat = F3(function (predicate,
+   generator,
+   seed) {
+      return A2($Random.generate,
+      A2(keepIf,predicate,generator),
+      seed);
+   });
+   var frequency = F2(function (pairs,
+   defaultGenerator) {
+      return function () {
+         var frequencies = A2($List.map,
+         function ($) {
+            return $Basics.abs($Basics.fst($));
+         },
+         pairs);
+         var total = $List.sum(frequencies) * $Basics.toFloat($List.length(frequencies));
+         return _U.eq(total,
+         0) ? defaultGenerator : $Random.customGenerator(function (seed) {
+            return function () {
+               var $ = A2($Random.generate,
+               A2($Random.$float,0,total),
+               seed),
+               randIndex = $._0,
+               seed1 = $._1;
+               var index = $Basics.floor(randIndex);
+               var maybePair = A2($Utils.get,
+               index,
+               pairs);
+               var generator = function () {
+                  switch (maybePair.ctor)
+                  {case "Just":
+                     switch (maybePair._0.ctor)
+                       {case "_Tuple2":
+                          return maybePair._0._1;}
+                       break;
+                     case "Nothing":
+                     return defaultGenerator;}
+                  _U.badCase($moduleName,
+                  "between lines 70 and 74");
+               }();
+               return A2($Random.generate,
+               generator,
+               seed);
+            }();
+         });
+      }();
+   });
+   var merge = F2(function (generator1,
+   generator2) {
+      return A2(frequency,
+      _L.fromArray([{ctor: "_Tuple2"
+                    ,_0: 1
+                    ,_1: generator1}
+                   ,{ctor: "_Tuple2"
+                    ,_0: 1
+                    ,_1: generator2}]),
+      generator1);
+   });
+   _elm.Random.Extra.values = {_op: _op
+                              ,frequency: frequency
+                              ,keepIf: keepIf
+                              ,dropIf: dropIf
+                              ,flattenList: flattenList
+                              ,select: select
+                              ,selectWithDefault: selectWithDefault
+                              ,constant: constant
+                              ,andMap: andMap
+                              ,reduce: reduce
+                              ,fold: fold
+                              ,zip: zip
+                              ,zip3: zip3
+                              ,zip4: zip4
+                              ,zip5: zip5
+                              ,zip6: zip6
+                              ,andThen: andThen
+                              ,flatMap: flatMap
+                              ,flatMap2: flatMap2
+                              ,flatMap3: flatMap3
+                              ,flatMap4: flatMap4
+                              ,flatMap5: flatMap5
+                              ,flatMap6: flatMap6
+                              ,map: map
+                              ,map2: map2
+                              ,map3: map3
+                              ,map4: map4
+                              ,map5: map5
+                              ,map6: map6
+                              ,merge: merge
+                              ,generateN: generateN
+                              ,generateSuchThat: generateSuchThat
+                              ,generateUntil: generateUntil
+                              ,generateIterativelySuchThat: generateIterativelySuchThat
+                              ,generateIterativelyUntil: generateIterativelyUntil
+                              ,cappedGenerateUntil: cappedGenerateUntil
+                              ,quickGenerate: quickGenerate
+                              ,mapConstraint: mapConstraint};
+   return _elm.Random.Extra.values;
+};

@@ -1,0 +1,84 @@
+Elm.Views = Elm.Views || {};
+Elm.Views.Grid = Elm.Views.Grid || {};
+Elm.Views.Grid.make = function (_elm) {
+   "use strict";
+   _elm.Views = _elm.Views || {};
+   _elm.Views.Grid = _elm.Views.Grid || {};
+   if (_elm.Views.Grid.values)
+   return _elm.Views.Grid.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Views.Grid",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Config = Elm.Config.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Matrix = Elm.Matrix.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Shapes = Elm.Shapes.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Views$Cell = Elm.Views.Cell.make(_elm);
+   var cellPosition = F3(function (config,
+   location,
+   _v0) {
+      return function () {
+         return function () {
+            var sizeWithPadding = $Basics.toFloat(config.cell.size + 2 * config.cell.padding);
+            var x = ($Basics.toFloat($Matrix.row(location)) + 1 / 2) * sizeWithPadding;
+            var y = ($Basics.toFloat($Matrix.col(location)) + 1 / 2) * sizeWithPadding;
+            var gridSize = $Basics.toFloat((config.cell.size + 2 * config.cell.padding) * config.grid.rows);
+            return {ctor: "_Tuple2"
+                   ,_0: x - gridSize / 2
+                   ,_1: y - gridSize / 2};
+         }();
+      }();
+   });
+   var cellPositions = F2(function (config,
+   model) {
+      return $Matrix.flatten(A2($Matrix.mapWithLocation,
+      cellPosition(config),
+      model));
+   });
+   var cells = F2(function (config,
+   model) {
+      return A2($List.map2,
+      $Graphics$Collage.move,
+      A2(cellPositions,
+      config,
+      model))($Matrix.flatten($Matrix.map(A2($Views$Cell.cell,
+      config.cell.size,
+      config.cell.radius))(model)));
+   });
+   var render = F2(function (config,
+   model) {
+      return function () {
+         var backgroungColor = A3($Color.rgb,
+         187,
+         173,
+         160);
+         var backgroundSize = (config.cell.size + 2 * config.cell.padding) * config.grid.rows + config.grid.padding;
+         var backgroungRadius = config.grid.radius;
+         var backgroung = A3($Shapes.roundedSquare,
+         backgroundSize,
+         backgroungRadius,
+         backgroungColor);
+         return A3($Graphics$Collage.collage,
+         backgroundSize,
+         backgroundSize,
+         A2($List._op["::"],
+         backgroung,
+         A2(cells,config,model)));
+      }();
+   });
+   _elm.Views.Grid.values = {_op: _op
+                            ,cellPosition: cellPosition
+                            ,cellPositions: cellPositions
+                            ,cells: cells
+                            ,render: render};
+   return _elm.Views.Grid.values;
+};

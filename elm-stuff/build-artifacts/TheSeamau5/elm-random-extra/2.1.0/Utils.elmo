@@ -1,0 +1,36 @@
+Elm.Utils = Elm.Utils || {};
+Elm.Utils.make = function (_elm) {
+   "use strict";
+   _elm.Utils = _elm.Utils || {};
+   if (_elm.Utils.values)
+   return _elm.Utils.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Utils",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var get = F2(function (index,
+   list) {
+      return _U.cmp(index,
+      0) < 0 ? $Maybe.Nothing : function () {
+         var _v0 = A2($List.drop,
+         index,
+         list);
+         switch (_v0.ctor)
+         {case "::":
+            return $Maybe.Just(_v0._0);
+            case "[]":
+            return $Maybe.Nothing;}
+         _U.badCase($moduleName,
+         "between lines 10 and 12");
+      }();
+   });
+   _elm.Utils.values = {_op: _op
+                       ,get: get};
+   return _elm.Utils.values;
+};

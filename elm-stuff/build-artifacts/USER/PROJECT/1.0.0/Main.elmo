@@ -1,0 +1,36 @@
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values)
+   return _elm.Main.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Main",
+   $Basics = Elm.Basics.make(_elm),
+   $Config = Elm.Config.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Matrix = Elm.Matrix.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Views$Grid = Elm.Views.Grid.make(_elm);
+   var defaultGrid = function (rows) {
+      return A2($Matrix.square,
+      rows,
+      $Basics.always(2));
+   };
+   var main = function () {
+      var config = $Config.defaultConfig;
+      var model = defaultGrid(config.grid.rows);
+      return A2($Views$Grid.render,
+      config,
+      model);
+   }();
+   _elm.Main.values = {_op: _op
+                      ,defaultGrid: defaultGrid
+                      ,main: main};
+   return _elm.Main.values;
+};
