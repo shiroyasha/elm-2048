@@ -11,26 +11,62 @@ Elm.Main.make = function (_elm) {
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
    $Config = Elm.Config.make(_elm),
+   $Keyboard = Elm.Keyboard.make(_elm),
    $List = Elm.List.make(_elm),
    $Matrix = Elm.Matrix.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Views$Grid = Elm.Views.Grid.make(_elm);
+   var view = function (model) {
+      return A2($Views$Grid.render,
+      $Config.defaultConfig,
+      model);
+   };
+   var update = F2(function (input,
+   state) {
+      return function () {
+         var number = function () {
+            var _v0 = A2($Matrix.get,
+            A2($Matrix.loc,0,0),
+            state);
+            switch (_v0.ctor)
+            {case "Just": return _v0._0 + 1;
+               case "Nothing": return 0;}
+            _U.badCase($moduleName,
+            "between lines 19 and 22");
+         }();
+         var size = $Matrix.rowCount(state);
+         return A2($Matrix.square,
+         size,
+         $Basics.always(number));
+      }();
+   });
    var defaultGrid = function (rows) {
       return A2($Matrix.square,
       rows,
       $Basics.always(2));
    };
-   var main = function () {
-      var config = $Config.defaultConfig;
-      var model = defaultGrid(config.grid.rows);
-      return A2($Views$Grid.render,
-      config,
-      model);
-   }();
+   var Input = function (a) {
+      return {_: {},space: a};
+   };
+   var input = A2($Signal.map,
+   Input,
+   $Keyboard.space);
+   var gameState = A3($Signal.foldp,
+   update,
+   defaultGrid(4),
+   input);
+   var main = A2($Signal.map,
+   view,
+   gameState);
    _elm.Main.values = {_op: _op
+                      ,Input: Input
                       ,defaultGrid: defaultGrid
+                      ,update: update
+                      ,gameState: gameState
+                      ,input: input
+                      ,view: view
                       ,main: main};
    return _elm.Main.values;
 };

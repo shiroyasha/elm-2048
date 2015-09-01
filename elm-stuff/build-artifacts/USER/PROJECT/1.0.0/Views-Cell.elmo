@@ -41,8 +41,7 @@ Elm.Views.Cell.make = function (_elm) {
             case 512: return $Color.black;
             case 1024: return $Color.black;
             case 2048: return $Color.white;}
-         _U.badCase($moduleName,
-         "between lines 28 and 40");
+         return $Color.gray;
       }();
    };
    var label = F2(function (size,
@@ -71,8 +70,7 @@ Elm.Views.Cell.make = function (_elm) {
             case 512: return $Color.black;
             case 1024: return $Color.black;
             case 2048: return $Color.white;}
-         _U.badCase($moduleName,
-         "between lines 11 and 23");
+         return $Color.gray;
       }();
    };
    var backgroung = F3(function (size,

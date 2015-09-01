@@ -2,13 +2,36 @@ import Matrix exposing (Matrix)
 
 import Config
 import Views.Grid
+import Random
+import Keyboard
+import Time exposing (..)
+
+type alias Input = { space : Bool }
 
 defaultGrid : Int -> Matrix Int
 defaultGrid rows = Matrix.square rows (always 2)
 
-main =
+
+update : Input -> Matrix Int ->  Matrix Int
+update input state =
   let
-      config = Config.defaultConfig
-      model = defaultGrid config.grid.rows
+      size = Matrix.rowCount state
+      number = case Matrix.get (Matrix.loc 0 0) state of
+                 Just n -> n + 1
+                 Nothing -> 0
   in
-     Views.Grid.render config model
+    Matrix.square size (always number)
+
+
+gameState : Signal (Matrix Int)
+gameState = Signal.foldp update (defaultGrid 4) input
+
+
+input : Signal Input
+input = Signal.map Input Keyboard.space
+
+
+view model = Views.Grid.render Config.defaultConfig model
+
+
+main = Signal.map view gameState

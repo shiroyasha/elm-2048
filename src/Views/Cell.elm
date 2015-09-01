@@ -21,6 +21,7 @@ backgroungColor number =
     512 -> black
     1024 -> black
     2048 -> white
+    _ -> gray
 
 
 textColor : Int -> Color
@@ -38,6 +39,7 @@ textColor number =
     512 -> black
     1024 -> black
     2048 -> white
+    _ -> gray
 
 
 label : Float -> Int -> Form
