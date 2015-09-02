@@ -1,0 +1,505 @@
+Elm.Matrix = Elm.Matrix || {};
+Elm.Matrix.make = function (_elm) {
+   "use strict";
+   _elm.Matrix = _elm.Matrix || {};
+   if (_elm.Matrix.values)
+   return _elm.Matrix.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Matrix",
+   $Array = Elm.Array.make(_elm),
+   $Array$Experimental = Elm.Array.Experimental.make(_elm),
+   $Array$Extra = Elm.Array.Extra.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $List$Experimental = Elm.List.Experimental.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Maybe$Extra = Elm.Maybe.Extra.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var combineCells = F2(function (_v0,
+   _v1) {
+      return function () {
+         switch (_v1.ctor)
+         {case "_Tuple3":
+            return function () {
+                 switch (_v0.ctor)
+                 {case "_Tuple3":
+                    return {ctor: "_Tuple3"
+                           ,_0: _v0._0
+                           ,_1: _v0._1
+                           ,_2: {ctor: "_Tuple2"
+                                ,_0: _v0._2
+                                ,_1: _v1._2}};}
+                 _U.badCase($moduleName,
+                 "on line 690, column 35 to 46");
+              }();}
+         _U.badCase($moduleName,
+         "on line 690, column 35 to 46");
+      }();
+   });
+   var compareCells = F3(function (cmp,
+   _v10,
+   _v11) {
+      return function () {
+         switch (_v11.ctor)
+         {case "_Tuple3":
+            return function () {
+                 switch (_v10.ctor)
+                 {case "_Tuple3": return A2(cmp,
+                      _v10._2,
+                      _v11._2);}
+                 _U.badCase($moduleName,
+                 "on line 684, column 38 to 49");
+              }();}
+         _U.badCase($moduleName,
+         "on line 684, column 38 to 49");
+      }();
+   });
+   var filterRows = function (p) {
+      return $Array.filter(p);
+   };
+   var slice = F5(function (wa,
+   we,
+   ha,
+   he,
+   a) {
+      return $Array.map(A2($Array.slice,
+      wa,
+      we))(A3($Array.slice,ha,he,a));
+   });
+   var dropColsEnd = function (n) {
+      return $Array.map($Array$Extra.sliceFrom(0 - n));
+   };
+   var dropRowsEnd = function (n) {
+      return $Array$Extra.sliceUntil(0 - n);
+   };
+   var dropCols = function (n) {
+      return $Array.map($Array$Extra.sliceFrom(n));
+   };
+   var dropRows = $Array$Extra.sliceFrom;
+   var takeColsEnd = function (n) {
+      return $Array.map($Array$Extra.sliceFrom(0 - n));
+   };
+   var takeRowsEnd = function (n) {
+      return $Array$Extra.sliceFrom(0 - n);
+   };
+   var takeCols = function (n) {
+      return $Array.map($Array$Extra.sliceUntil(n));
+   };
+   var takeRows = $Array$Extra.sliceUntil;
+   var rows = $Basics.identity;
+   var getCol = function (n) {
+      return function ($) {
+         return $Maybe$Extra.combineArray($Array.map($Array$Experimental.get(n))($));
+      };
+   };
+   var firstCol = getCol(0);
+   var lastCol = getCol(-1);
+   var getRow = $Array$Experimental.get;
+   var firstRow = getRow(0);
+   var lastRow = getRow(-1);
+   var height = function (a) {
+      return $Array.length(a);
+   };
+   var width = function (a) {
+      return function () {
+         var row = A2($Array$Experimental.get,
+         0,
+         a);
+         return function () {
+            switch (row.ctor)
+            {case "Just":
+               return $Array.length(row._0);
+               case "Nothing": return 0;}
+            _U.badCase($moduleName,
+            "between lines 461 and 463");
+         }();
+      }();
+   };
+   var size = function (a) {
+      return {ctor: "_Tuple2"
+             ,_0: width(a)
+             ,_1: height(a)};
+   };
+   var isSquare = function (a) {
+      return _U.eq(width(a),
+      height(a));
+   };
+   var indexedMap = function (f) {
+      return $Array.indexedMap(function (y) {
+         return $Array.indexedMap(function (x) {
+            return A2(f,x,y);
+         });
+      });
+   };
+   var map = function (f) {
+      return $Array.map($Array.map(f));
+   };
+   var flattenArray = A2($Array.foldl,
+   $Array.append,
+   $Array.empty);
+   var toList = function ($) {
+      return $List.map($Array.toList)($Array.toList($));
+   };
+   var flatten = function ($) {
+      return $List.concat(toList($));
+   };
+   var toIndexedList = function ($) {
+      return flatten(indexedMap(F3(function (v0,
+      v1,
+      v2) {
+         return {ctor: "_Tuple3"
+                ,_0: v0
+                ,_1: v1
+                ,_2: v2};
+      }))($));
+   };
+   var compare = F3(function (cmp,
+   a1,
+   a2) {
+      return function () {
+         var il2 = toIndexedList(a2);
+         var il1 = toIndexedList(a1);
+         return A4($List$Experimental.filterMap2,
+         combineCells,
+         compareCells(cmp),
+         il1,
+         il2);
+      }();
+   });
+   var compareI = F3(function (cmp,
+   a1,
+   a2) {
+      return function () {
+         var getIndexes = function (_v22) {
+            return function () {
+               switch (_v22.ctor)
+               {case "_Tuple3":
+                  return {ctor: "_Tuple2"
+                         ,_0: _v22._0
+                         ,_1: _v22._1};}
+               _U.badCase($moduleName,
+               "on line 421, column 27 to 30");
+            }();
+         };
+         return $List.map(getIndexes)(A3(compare,
+         cmp,
+         a1,
+         a2));
+      }();
+   });
+   var comm = compareI(F2(function (x,
+   y) {
+      return _U.eq(x,y);
+   }));
+   var diff = compareI(F2(function (x,
+   y) {
+      return !_U.eq(x,y);
+   }));
+   var set = F4(function (x,
+   y,
+   e,
+   a) {
+      return function () {
+         var row = A2($Array$Experimental.get,
+         y,
+         a);
+         return function () {
+            switch (row.ctor)
+            {case "Just":
+               return A3($Array.set,
+                 y,
+                 A3($Array.set,x,e,row._0),
+                 a);
+               case "Nothing": return a;}
+            _U.badCase($moduleName,
+            "between lines 219 and 221");
+         }();
+      }();
+   });
+   var setMany = F3(function (is,
+   os,
+   a) {
+      return function () {
+         var step = F2(function (_v29,
+         acc) {
+            return function () {
+               switch (_v29.ctor)
+               {case "_Tuple2":
+                  switch (_v29._0.ctor)
+                    {case "_Tuple2": return A4(set,
+                         _v29._0._0,
+                         _v29._0._1,
+                         _v29._1,
+                         acc);}
+                    break;}
+               _U.badCase($moduleName,
+               "on line 264, column 26 to 39");
+            }();
+         });
+         return A3($List.foldl,
+         step,
+         a,
+         A3($List.map2,
+         F2(function (v0,v1) {
+            return {ctor: "_Tuple2"
+                   ,_0: v0
+                   ,_1: v1};
+         }),
+         is,
+         os));
+      }();
+   });
+   var setManyWith = F4(function (indexF,
+   convertF,
+   os,
+   a) {
+      return A3(setMany,
+      A2($List.map,indexF,os),
+      A2($List.map,convertF,os),
+      a);
+   });
+   var get = F3(function (x,y,a) {
+      return A2($Maybe.andThen,
+      A2($Array$Experimental.get,y,a),
+      $Array$Experimental.get(x));
+   });
+   var update = F4(function (x,
+   y,
+   f,
+   a) {
+      return function () {
+         var value = A3(get,x,y,a);
+         return function () {
+            switch (value.ctor)
+            {case "Just": return A4(set,
+                 x,
+                 y,
+                 f(value._0),
+                 a);
+               case "Nothing": return a;}
+            _U.badCase($moduleName,
+            "between lines 235 and 237");
+         }();
+      }();
+   });
+   var updateMany = F3(function (is,
+   f,
+   a) {
+      return function () {
+         var step = function (_v37) {
+            return function () {
+               switch (_v37.ctor)
+               {case "_Tuple2":
+                  return A3(update,
+                    _v37._0,
+                    _v37._1,
+                    f);}
+               _U.badCase($moduleName,
+               "on line 303, column 18 to 30");
+            }();
+         };
+         return A3($List.foldl,
+         step,
+         a,
+         is);
+      }();
+   });
+   var updateManyWith = F4(function (f,
+   is,
+   os,
+   a) {
+      return function () {
+         var step = F2(function (_v41,
+         acc) {
+            return function () {
+               switch (_v41.ctor)
+               {case "_Tuple2":
+                  switch (_v41._0.ctor)
+                    {case "_Tuple2":
+                       return A4(update,
+                         _v41._0._0,
+                         _v41._0._1,
+                         function (e) {
+                            return A2(f,e,_v41._1);
+                         },
+                         acc);}
+                    break;}
+               _U.badCase($moduleName,
+               "on line 316, column 26 to 54");
+            }();
+         });
+         return A3($List.foldl,
+         step,
+         a,
+         A3($List.map2,
+         F2(function (v0,v1) {
+            return {ctor: "_Tuple2"
+                   ,_0: v0
+                   ,_1: v1};
+         }),
+         is,
+         os));
+      }();
+   });
+   var getMany = F2(function (is,
+   a) {
+      return $List.filterMap($Basics.identity)(A3($List.foldl,
+      F2(function (_v47,acc) {
+         return function () {
+            switch (_v47.ctor)
+            {case "_Tuple2":
+               return A2($List._op["::"],
+                 A3(get,_v47._0,_v47._1,a),
+                 acc);}
+            _U.badCase($moduleName,
+            "on line 247, column 45 to 59");
+         }();
+      }),
+      _L.fromArray([]),
+      is));
+   });
+   var fromList = function ($) {
+      return $Array.map($Array.fromList)($Array.fromList($));
+   };
+   var colVector = $Array.map($Array.repeat(1));
+   var transpose = function (a) {
+      return function () {
+         var restRows = A2(dropRows,
+         1,
+         a);
+         var firstRow = A2(getRow,0,a);
+         return function () {
+            switch (firstRow.ctor)
+            {case "Just":
+               return function () {
+                    var step = F2(function (row,
+                    acc) {
+                       return A3($Array$Extra.map2,
+                       $Array.append,
+                       acc,
+                       colVector(row));
+                    });
+                    var vector = colVector(firstRow._0);
+                    return A3($Array.foldl,
+                    step,
+                    vector,
+                    restRows);
+                 }();
+               case "Nothing": return a;}
+            _U.badCase($moduleName,
+            "between lines 656 and 663");
+         }();
+      }();
+   };
+   var cols = transpose;
+   var filterCols = function (p) {
+      return function ($) {
+         return transpose($Array.filter(p)(transpose($)));
+      };
+   };
+   var rowVector = $Array.repeat(1);
+   var matrix = F3(function (w,
+   h,
+   f) {
+      return A2($Array.initialize,
+      h,
+      function (y) {
+         return A2($Array.initialize,
+         w,
+         function (x) {
+            return A2(f,x,y);
+         });
+      });
+   });
+   var square = F2(function (s,f) {
+      return A3(matrix,s,s,f);
+   });
+   var numbered = F2(function (w,
+   h) {
+      return A3(matrix,
+      w,
+      h,
+      F2(function (x,y) {
+         return x + y * w;
+      }));
+   });
+   var numbered1 = F2(function (w,
+   h) {
+      return A3(matrix,
+      w,
+      h,
+      F2(function (x,y) {
+         return x + y * w + 1;
+      }));
+   });
+   var repeat = F2(function (w,h) {
+      return function ($) {
+         return $Array.repeat(h)($Array.repeat(w)($));
+      };
+   });
+   var empty = $Array.empty;
+   var isEmpty = F2(function (x,
+   y) {
+      return _U.eq(x,y);
+   })(empty);
+   _elm.Matrix.values = {_op: _op
+                        ,empty: empty
+                        ,repeat: repeat
+                        ,matrix: matrix
+                        ,square: square
+                        ,rowVector: rowVector
+                        ,colVector: colVector
+                        ,numbered: numbered
+                        ,numbered1: numbered1
+                        ,fromList: fromList
+                        ,get: get
+                        ,set: set
+                        ,update: update
+                        ,getMany: getMany
+                        ,setMany: setMany
+                        ,setManyWith: setManyWith
+                        ,updateMany: updateMany
+                        ,updateManyWith: updateManyWith
+                        ,toList: toList
+                        ,toIndexedList: toIndexedList
+                        ,flatten: flatten
+                        ,flattenArray: flattenArray
+                        ,map: map
+                        ,indexedMap: indexedMap
+                        ,compare: compare
+                        ,compareI: compareI
+                        ,comm: comm
+                        ,diff: diff
+                        ,isEmpty: isEmpty
+                        ,isSquare: isSquare
+                        ,width: width
+                        ,height: height
+                        ,size: size
+                        ,getRow: getRow
+                        ,getCol: getCol
+                        ,firstRow: firstRow
+                        ,lastRow: lastRow
+                        ,firstCol: firstCol
+                        ,lastCol: lastCol
+                        ,rows: rows
+                        ,cols: cols
+                        ,takeRows: takeRows
+                        ,takeCols: takeCols
+                        ,takeRowsEnd: takeRowsEnd
+                        ,takeColsEnd: takeColsEnd
+                        ,dropRows: dropRows
+                        ,dropCols: dropCols
+                        ,dropRowsEnd: dropRowsEnd
+                        ,dropColsEnd: dropColsEnd
+                        ,slice: slice
+                        ,transpose: transpose
+                        ,filterRows: filterRows
+                        ,filterCols: filterCols
+                        ,compareCells: compareCells
+                        ,combineCells: combineCells};
+   return _elm.Matrix.values;
+};

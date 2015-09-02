@@ -23,24 +23,23 @@ Elm.Views.Grid.make = function (_elm) {
    $Shapes = Elm.Shapes.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Views$Cell = Elm.Views.Cell.make(_elm);
-   var cellPosition = F3(function (config,
-   location,
-   _v0) {
+   var cellPosition = F4(function (config,
+   x,
+   y,
+   number) {
       return function () {
-         return function () {
-            var sizeWithPadding = $Basics.toFloat(config.cell.size + 2 * config.cell.padding);
-            var x = ($Basics.toFloat($Matrix.row(location)) + 1 / 2) * sizeWithPadding;
-            var y = ($Basics.toFloat($Matrix.col(location)) + 1 / 2) * sizeWithPadding;
-            var gridSize = $Basics.toFloat((config.cell.size + 2 * config.cell.padding) * config.grid.rows);
-            return {ctor: "_Tuple2"
-                   ,_0: x - gridSize / 2
-                   ,_1: y - gridSize / 2};
-         }();
+         var sizeWithPadding = $Basics.toFloat(config.cell.size + 2 * config.cell.padding);
+         var gridSize = $Basics.toFloat((config.cell.size + 2 * config.cell.padding) * config.grid.rows);
+         var x$ = ($Basics.toFloat(x) + 1 / 2) * sizeWithPadding - gridSize / 2;
+         var y$ = ($Basics.toFloat(y) + 1 / 2) * sizeWithPadding - gridSize / 2;
+         return {ctor: "_Tuple2"
+                ,_0: x$
+                ,_1: y$};
       }();
    });
    var cellPositions = F2(function (config,
    model) {
-      return $Matrix.flatten(A2($Matrix.mapWithLocation,
+      return $Matrix.flatten(A2($Matrix.indexedMap,
       cellPosition(config),
       model));
    });

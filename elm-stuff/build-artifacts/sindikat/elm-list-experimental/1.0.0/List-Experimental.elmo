@@ -1,0 +1,86 @@
+Elm.List = Elm.List || {};
+Elm.List.Experimental = Elm.List.Experimental || {};
+Elm.List.Experimental.make = function (_elm) {
+   "use strict";
+   _elm.List = _elm.List || {};
+   _elm.List.Experimental = _elm.List.Experimental || {};
+   if (_elm.List.Experimental.values)
+   return _elm.List.Experimental.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "List.Experimental",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $List$Extra = Elm.List.Extra.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var filterM = function (p) {
+      return function () {
+         var andThen = $Basics.flip($List.concatMap);
+         var go = F2(function (x,r) {
+            return A2(andThen,
+            p(x),
+            function (flg) {
+               return A2(andThen,
+               r,
+               function (ys) {
+                  return _L.fromArray([flg ? A2($List._op["::"],
+                  x,
+                  ys) : ys]);
+               });
+            });
+         });
+         return A2($List.foldr,
+         go,
+         _L.fromArray([_L.fromArray([])]));
+      }();
+   };
+   var filter2 = F3(function (p,
+   xs,
+   ys) {
+      return A2($List.filter,
+      $Basics.uncurry(p),
+      A3($List.map2,
+      F2(function (v0,v1) {
+         return {ctor: "_Tuple2"
+                ,_0: v0
+                ,_1: v1};
+      }),
+      xs,
+      ys));
+   });
+   var filterMap2 = F4(function (f,
+   p,
+   xs,
+   ys) {
+      return $List.map($Basics.uncurry(f))(A3(filter2,
+      p,
+      xs,
+      ys));
+   });
+   var lookup = function (key) {
+      return function ($) {
+         return $Maybe.map($Basics.snd)($List$Extra.find(function (item) {
+            return _U.eq($Basics.fst(item),
+            key);
+         })($));
+      };
+   };
+   var or = $List.any($Basics.identity);
+   var disjunction = or;
+   var and = $List.all($Basics.identity);
+   var conjunction = and;
+   _elm.List.Experimental.values = {_op: _op
+                                   ,and: and
+                                   ,or: or
+                                   ,conjunction: conjunction
+                                   ,disjunction: disjunction
+                                   ,lookup: lookup
+                                   ,filter2: filter2
+                                   ,filterMap2: filterMap2
+                                   ,filterM: filterM};
+   return _elm.List.Experimental.values;
+};

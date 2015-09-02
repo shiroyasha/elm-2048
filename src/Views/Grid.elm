@@ -11,21 +11,21 @@ import Graphics.Collage exposing (..)
 import Config exposing (Config)
 
 
-cellPosition : Config -> Matrix.Location -> Int -> (Float, Float)
-cellPosition config location _ =
+cellPosition : Config -> Int -> Int -> Int -> (Float, Float)
+cellPosition config x y number =
   let
      gridSize = (config.cell.size + 2 * config.cell.padding) * config.grid.rows |> toFloat
 
      sizeWithPadding = toFloat (config.cell.size + 2 * config.cell.padding)
 
-     x = ((toFloat <| Matrix.row location) + 1/2) * sizeWithPadding
-     y = ((toFloat <| Matrix.col location) + 1/2) * sizeWithPadding
+     x' = ((toFloat x) + 1/2) * sizeWithPadding - gridSize/2
+     y' = ((toFloat y) + 1/2) * sizeWithPadding - gridSize/2
   in
-     (x - gridSize/2, y - gridSize/2)
+     (x', y')
 
 
 cellPositions : Config -> Matrix Int -> List (Float, Float)
-cellPositions config model = Matrix.mapWithLocation (cellPosition config) model |> Matrix.flatten
+cellPositions config model = Matrix.indexedMap (cellPosition config) model |> Matrix.flatten
 
 
 cells : Config -> Matrix Int -> List Form

@@ -1,0 +1,97 @@
+Elm.Array = Elm.Array || {};
+Elm.Array.Experimental = Elm.Array.Experimental || {};
+Elm.Array.Experimental.make = function (_elm) {
+   "use strict";
+   _elm.Array = _elm.Array || {};
+   _elm.Array.Experimental = _elm.Array.Experimental || {};
+   if (_elm.Array.Experimental.values)
+   return _elm.Array.Experimental.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Array.Experimental",
+   $Array = Elm.Array.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var drop = F2(function (n,a) {
+      return A3($Array.slice,
+      n,
+      $Array.length(a),
+      a);
+   });
+   var take = F2(function (n,a) {
+      return _U.cmp(n,
+      0) > -1 ? A3($Array.slice,
+      0,
+      n,
+      a) : A3($Array.slice,
+      0,
+      $Array.length(a) + n,
+      a);
+   });
+   var updateOld = F3(function (n,
+   f,
+   a) {
+      return function () {
+         var element = A2($Array.get,
+         n,
+         a);
+         return function () {
+            switch (element.ctor)
+            {case "Just":
+               return A3($Array.set,
+                 n,
+                 f(element._0),
+                 a);
+               case "Nothing": return a;}
+            _U.badCase($moduleName,
+            "between lines 67 and 69");
+         }();
+      }();
+   });
+   var update = F3(function (n,
+   f,
+   a) {
+      return function () {
+         var len = $Array.length(a);
+         return _U.cmp(n,
+         0) < 0 && _U.cmp($Basics.abs(n),
+         len) < 1 ? A3(updateOld,
+         len + n,
+         f,
+         a) : A3(updateOld,n,f,a);
+      }();
+   });
+   var set = F3(function (n,x,a) {
+      return function () {
+         var len = $Array.length(a);
+         return _U.cmp(n,
+         0) < 0 && _U.cmp($Basics.abs(n),
+         len) < 1 ? A3($Array.set,
+         len + n,
+         x,
+         a) : A3($Array.set,n,x,a);
+      }();
+   });
+   var get = F2(function (n,a) {
+      return function () {
+         var len = $Array.length(a);
+         return _U.cmp(n,
+         0) < 0 && _U.cmp($Basics.abs(n),
+         len) < 1 ? A2($Array.get,
+         len + n,
+         a) : A2($Array.get,n,a);
+      }();
+   });
+   _elm.Array.Experimental.values = {_op: _op
+                                    ,get: get
+                                    ,set: set
+                                    ,update: update
+                                    ,take: take
+                                    ,drop: drop};
+   return _elm.Array.Experimental.values;
+};

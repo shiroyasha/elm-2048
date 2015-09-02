@@ -5,33 +5,38 @@ import Views.Grid
 import Random
 import Keyboard
 import Time exposing (..)
-
-type alias Input = { space : Bool }
-
-defaultGrid : Int -> Matrix Int
-defaultGrid rows = Matrix.square rows (always 2)
+import Debug
 
 
-update : Input -> Matrix Int ->  Matrix Int
+defaultGrid : Int -> Int -> Matrix Int
+defaultGrid rows cols =
+  Matrix.repeat rows cols 0
+  |> Matrix.set 3 1 2
+
+
+squashLeft : List Int -> List Int
+squashLeft list = List.concat [List.drop 1 list, List.take 1 list]
+
+
+squashRight : List Int -> List Int
+squashRight list = List.concat [List.drop 3 list, List.take 3 list]
+
+
+update : { x : Int, y : Int } -> Matrix Int ->  Matrix Int
 update input state =
-  let
-      size = Matrix.rowCount state
-      number = case Matrix.get (Matrix.loc 0 0) state of
-                 Just n -> n + 1
-                 Nothing -> 0
-  in
-    Matrix.square size (always number)
+  case (input.x, input.y) of
+    ( 1,  0) -> state |> Matrix.toList |> List.map squashRight |> Matrix.fromList
+    (-1,  0) -> state |> Matrix.toList |> List.map squashLeft |> Matrix.fromList
+    ( 0,  1) -> state |> Matrix.transpose |> Matrix.toList |> List.map squashRight |> Matrix.fromList |> Matrix.transpose
+    ( 0, -1) -> state |> Matrix.transpose |> Matrix.toList |> List.map squashLeft |> Matrix.fromList |> Matrix.transpose
+    _ -> state
 
 
 gameState : Signal (Matrix Int)
-gameState = Signal.foldp update (defaultGrid 4) input
+gameState = Signal.foldp update (defaultGrid 4 4) Keyboard.arrows
 
 
-input : Signal Input
-input = Signal.map Input Keyboard.space
-
-
-view model = Views.Grid.render Config.defaultConfig model
+view model = Views.Grid.render Config.defaultConfig (Debug.watch "Game State" model)
 
 
 main = Signal.map view gameState

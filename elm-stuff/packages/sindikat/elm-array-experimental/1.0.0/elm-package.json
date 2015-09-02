@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0",
+    "summary": "Testing ground for experimental Array functions",
+    "repository": "https://github.com/sindikat/elm-array-experimental.git",
+    "license": "BSD3",
+    "source-directories": [
+        "src"
+    ],
+    "exposed-modules": [
+        "Array.Experimental"
+    ],
+    "dependencies": {
+        "circuithub/elm-array-extra": "1.0.2 <= v < 2.0.0",
+        "elm-lang/core": "2.1.0 <= v < 3.0.0"
+    },
+    "elm-version": "0.15.1 <= v < 0.16.0"
+}

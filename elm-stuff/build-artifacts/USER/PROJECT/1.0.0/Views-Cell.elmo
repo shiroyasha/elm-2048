@@ -41,7 +41,7 @@ Elm.Views.Cell.make = function (_elm) {
             case 512: return $Color.black;
             case 1024: return $Color.black;
             case 2048: return $Color.white;}
-         return $Color.gray;
+         return $Color.white;
       }();
    };
    var label = F2(function (size,
@@ -52,7 +52,10 @@ Elm.Views.Cell.make = function (_elm) {
    var backgroungColor = function (number) {
       return function () {
          switch (number)
-         {case 0: return $Color.white;
+         {case 0: return A3($Color.rgb,
+              238,
+              228,
+              218);
             case 2: return A3($Color.rgb,
               238,
               228,

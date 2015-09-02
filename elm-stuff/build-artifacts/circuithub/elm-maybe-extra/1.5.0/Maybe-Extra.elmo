@@ -1,0 +1,204 @@
+Elm.Maybe = Elm.Maybe || {};
+Elm.Maybe.Extra = Elm.Maybe.Extra || {};
+Elm.Maybe.Extra.make = function (_elm) {
+   "use strict";
+   _elm.Maybe = _elm.Maybe || {};
+   _elm.Maybe.Extra = _elm.Maybe.Extra || {};
+   if (_elm.Maybe.Extra.values)
+   return _elm.Maybe.Extra.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Maybe.Extra",
+   $Array = Elm.Array.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var traverseArray = function (f) {
+      return function () {
+         var step = F2(function (e,
+         acc) {
+            return function () {
+               var _v0 = f(e);
+               switch (_v0.ctor)
+               {case "Just":
+                  return A2($Maybe.map,
+                    $Array.push(_v0._0),
+                    acc);
+                  case "Nothing":
+                  return $Maybe.Nothing;}
+               _U.badCase($moduleName,
+               "between lines 202 and 205");
+            }();
+         });
+         return A2($Array.foldl,
+         step,
+         $Maybe.Just($Array.empty));
+      }();
+   };
+   var combineArray = traverseArray($Basics.identity);
+   var traverse = function (f) {
+      return function () {
+         var step = F2(function (e,
+         acc) {
+            return function () {
+               var _v2 = f(e);
+               switch (_v2.ctor)
+               {case "Just":
+                  return A2($Maybe.map,
+                    F2(function (x,y) {
+                       return A2($List._op["::"],
+                       x,
+                       y);
+                    })(_v2._0),
+                    acc);
+                  case "Nothing":
+                  return $Maybe.Nothing;}
+               _U.badCase($moduleName,
+               "between lines 180 and 183");
+            }();
+         });
+         return A2($List.foldr,
+         step,
+         $Maybe.Just(_L.fromArray([])));
+      }();
+   };
+   var combine = traverse($Basics.identity);
+   var maybeToArray = function (m) {
+      return function () {
+         switch (m.ctor)
+         {case "Just":
+            return A2($Array.repeat,1,m._0);
+            case "Nothing":
+            return $Array.empty;}
+         _U.badCase($moduleName,
+         "between lines 167 and 169");
+      }();
+   };
+   var maybeToList = function (m) {
+      return function () {
+         switch (m.ctor)
+         {case "Just":
+            return _L.fromArray([m._0]);
+            case "Nothing":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 154 and 156");
+      }();
+   };
+   var or = F2(function (ma,mb) {
+      return function () {
+         switch (ma.ctor)
+         {case "Just": return ma;
+            case "Nothing": return mb;}
+         _U.badCase($moduleName,
+         "between lines 142 and 144");
+      }();
+   });
+   var andMap = F2(function (f,x) {
+      return A2($Maybe.andThen,
+      x,
+      function (x$) {
+         return A2($Maybe.andThen,
+         f,
+         function (f$) {
+            return $Maybe.Just(f$(x$));
+         });
+      });
+   });
+   var map5 = F6(function (f,
+   a,
+   b,
+   c,
+   d,
+   e) {
+      return A2(andMap,
+      A2(andMap,
+      A2(andMap,
+      A2(andMap,A2($Maybe.map,f,a),b),
+      c),
+      d),
+      e);
+   });
+   var map4 = F5(function (f,
+   a,
+   b,
+   c,
+   d) {
+      return A2(andMap,
+      A2(andMap,
+      A2(andMap,A2($Maybe.map,f,a),b),
+      c),
+      d);
+   });
+   var map3 = F4(function (f,
+   a,
+   b,
+   c) {
+      return A2(andMap,
+      A2(andMap,A2($Maybe.map,f,a),b),
+      c);
+   });
+   var map2 = F3(function (f,a,b) {
+      return A2(andMap,
+      A2($Maybe.map,f,a),
+      b);
+   });
+   var next = map2($Basics.flip($Basics.always));
+   var prev = map2($Basics.always);
+   var isJust = function (m) {
+      return function () {
+         switch (m.ctor)
+         {case "Just": return true;
+            case "Nothing": return false;}
+         _U.badCase($moduleName,
+         "between lines 66 and 68");
+      }();
+   };
+   var isNothing = function (m) {
+      return function () {
+         switch (m.ctor)
+         {case "Just": return false;
+            case "Nothing": return true;}
+         _U.badCase($moduleName,
+         "between lines 54 and 56");
+      }();
+   };
+   var join = function (mx) {
+      return function () {
+         switch (mx.ctor)
+         {case "Just": return mx._0;
+            case "Nothing":
+            return $Maybe.Nothing;}
+         _U.badCase($moduleName,
+         "between lines 42 and 44");
+      }();
+   };
+   _op["?"] = F2(function (mx,x) {
+      return A2($Maybe.withDefault,
+      x,
+      mx);
+   });
+   _elm.Maybe.Extra.values = {_op: _op
+                             ,join: join
+                             ,isNothing: isNothing
+                             ,isJust: isJust
+                             ,map2: map2
+                             ,map3: map3
+                             ,map4: map4
+                             ,map5: map5
+                             ,andMap: andMap
+                             ,next: next
+                             ,prev: prev
+                             ,or: or
+                             ,maybeToList: maybeToList
+                             ,maybeToArray: maybeToArray
+                             ,traverse: traverse
+                             ,combine: combine
+                             ,traverseArray: traverseArray
+                             ,combineArray: combineArray};
+   return _elm.Maybe.Extra.values;
+};

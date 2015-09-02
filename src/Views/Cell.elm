@@ -9,7 +9,7 @@ import Shapes
 backgroungColor : Int -> Color
 backgroungColor number =
   case number of
-    0 -> white
+    0 -> rgb 238 228 218
     2 -> rgb 238 228 218
     4 -> rgb 119 110 101
     8 -> black
@@ -39,7 +39,7 @@ textColor number =
     512 -> black
     1024 -> black
     2048 -> white
-    _ -> gray
+    _ -> white
 
 
 label : Float -> Int -> Form
