@@ -9,36 +9,26 @@ import Shapes
 backgroungColor : Int -> Color
 backgroungColor number =
   case number of
-    0 -> rgb 238 228 218
+    0 -> rgb 204 192 179
     2 -> rgb 238 228 218
-    4 -> rgb 119 110 101
-    8 -> black
-    16 -> black
-    32 -> black
-    64 -> black
-    128 -> black
-    256 -> black
-    512 -> black
-    1024 -> black
-    2048 -> white
+    4 -> rgb 236 224 200
+    8 -> rgb 241 176 120
+    16 -> rgb 235 140 82
+    32 -> rgb 243 123 96
+    64 -> rgb 233 89 55
+    128 -> rgb 242 216 106
+    256 -> rgb 231 191 41
+    512 -> rgb 231 191 41
+    1024 -> rgb 228 183 19
+    2048 -> rgb 238 195 3
     _ -> gray
 
 
 textColor : Int -> Color
 textColor number =
   case number of
-    0 -> white
-    2 -> rgb 119 110 101
-    4 -> rgb 119 110 101
-    8 -> black
-    16 -> black
-    32 -> black
-    64 -> black
-    128 -> black
-    256 -> black
-    512 -> black
-    1024 -> black
-    2048 -> white
+    2 -> rgb 120 110 101
+    4 -> rgb 120 110 101
     _ -> white
 
 

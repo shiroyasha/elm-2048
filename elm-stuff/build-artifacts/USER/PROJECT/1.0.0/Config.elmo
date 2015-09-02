@@ -21,7 +21,7 @@ Elm.Config.make = function (_elm) {
    });
    var defaultCellConfig = {_: {}
                            ,padding: 5
-                           ,radius: 3
+                           ,radius: 5
                            ,size: 100};
    var CellConfig = F3(function (a,
    b,
@@ -34,7 +34,7 @@ Elm.Config.make = function (_elm) {
    var defaultGridConfig = {_: {}
                            ,cols: 4
                            ,padding: 10
-                           ,radius: 3
+                           ,radius: 5
                            ,rows: 4};
    var defaultConfig = {_: {}
                        ,cell: defaultCellConfig

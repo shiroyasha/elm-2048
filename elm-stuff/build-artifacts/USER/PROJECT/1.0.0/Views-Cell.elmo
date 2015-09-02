@@ -23,24 +23,14 @@ Elm.Views.Cell.make = function (_elm) {
    var textColor = function (number) {
       return function () {
          switch (number)
-         {case 0: return $Color.white;
-            case 2: return A3($Color.rgb,
-              119,
+         {case 2: return A3($Color.rgb,
+              120,
               110,
               101);
             case 4: return A3($Color.rgb,
-              119,
+              120,
               110,
-              101);
-            case 8: return $Color.black;
-            case 16: return $Color.black;
-            case 32: return $Color.black;
-            case 64: return $Color.black;
-            case 128: return $Color.black;
-            case 256: return $Color.black;
-            case 512: return $Color.black;
-            case 1024: return $Color.black;
-            case 2048: return $Color.white;}
+              101);}
          return $Color.white;
       }();
    };
@@ -53,26 +43,53 @@ Elm.Views.Cell.make = function (_elm) {
       return function () {
          switch (number)
          {case 0: return A3($Color.rgb,
-              238,
-              228,
-              218);
+              204,
+              192,
+              179);
             case 2: return A3($Color.rgb,
               238,
               228,
               218);
             case 4: return A3($Color.rgb,
-              119,
-              110,
-              101);
-            case 8: return $Color.black;
-            case 16: return $Color.black;
-            case 32: return $Color.black;
-            case 64: return $Color.black;
-            case 128: return $Color.black;
-            case 256: return $Color.black;
-            case 512: return $Color.black;
-            case 1024: return $Color.black;
-            case 2048: return $Color.white;}
+              236,
+              224,
+              200);
+            case 8: return A3($Color.rgb,
+              241,
+              176,
+              120);
+            case 16: return A3($Color.rgb,
+              235,
+              140,
+              82);
+            case 32: return A3($Color.rgb,
+              243,
+              123,
+              96);
+            case 64: return A3($Color.rgb,
+              233,
+              89,
+              55);
+            case 128: return A3($Color.rgb,
+              242,
+              216,
+              106);
+            case 256: return A3($Color.rgb,
+              231,
+              191,
+              41);
+            case 512: return A3($Color.rgb,
+              231,
+              191,
+              41);
+            case 1024: return A3($Color.rgb,
+              228,
+              183,
+              19);
+            case 2048: return A3($Color.rgb,
+              238,
+              195,
+              3);}
          return $Color.gray;
       }();
    };

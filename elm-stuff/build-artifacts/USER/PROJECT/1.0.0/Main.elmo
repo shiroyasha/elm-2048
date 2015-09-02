@@ -26,20 +26,35 @@ Elm.Main.make = function (_elm) {
       "Game State",
       model));
    };
-   var squashRight = function (list) {
-      return $List.concat(_L.fromArray([A2($List.drop,
-                                       3,
-                                       list)
-                                       ,A2($List.take,3,list)]));
+   var squashRowLeft = function (list) {
+      return function () {
+         var partitions = A2($List.partition,
+         function (x) {
+            return _U.eq(x,0);
+         },
+         list);
+         var zeroes = $Basics.fst(partitions);
+         var numbers = $Basics.snd(partitions);
+         return $List.concat(_L.fromArray([numbers
+                                          ,zeroes]));
+      }();
    };
-   var squashLeft = function (list) {
-      return $List.concat(_L.fromArray([A2($List.drop,
-                                       1,
-                                       list)
-                                       ,A2($List.take,1,list)]));
+   var squashRowRight = function ($) {
+      return $List.reverse(squashRowLeft($List.reverse($)));
    };
-   var update = F2(function (input,
-   state) {
+   var squashRight = function ($) {
+      return $Matrix.fromList($List.map(squashRowRight)($Matrix.toList($)));
+   };
+   var squashUp = function ($) {
+      return $Matrix.transpose(squashRight($Matrix.transpose($)));
+   };
+   var squashLeft = function ($) {
+      return $Matrix.fromList($List.map(squashRowLeft)($Matrix.toList($)));
+   };
+   var squashDown = function ($) {
+      return $Matrix.transpose(squashLeft($Matrix.transpose($)));
+   };
+   var update = function (input) {
       return function () {
          var _v0 = {ctor: "_Tuple2"
                    ,_0: input.x
@@ -47,32 +62,34 @@ Elm.Main.make = function (_elm) {
          switch (_v0.ctor)
          {case "_Tuple2": switch (_v0._0)
               {case -1: switch (_v0._1)
-                   {case 0:
-                      return $Matrix.fromList($List.map(squashLeft)($Matrix.toList(state)));}
+                   {case 0: return squashLeft;}
                    break;
                  case 0: switch (_v0._1)
-                   {case -1:
-                      return $Matrix.transpose($Matrix.fromList($List.map(squashLeft)($Matrix.toList($Matrix.transpose(state)))));
-                      case 1:
-                      return $Matrix.transpose($Matrix.fromList($List.map(squashRight)($Matrix.toList($Matrix.transpose(state)))));}
+                   {case -1: return squashDown;
+                      case 1: return squashUp;}
                    break;
                  case 1: switch (_v0._1)
-                   {case 0:
-                      return $Matrix.fromList($List.map(squashRight)($Matrix.toList(state)));}
+                   {case 0: return squashRight;}
                    break;}
               break;}
-         return state;
+         return $Basics.identity;
       }();
-   });
+   };
    var defaultGrid = F2(function (rows,
    cols) {
       return A3($Matrix.set,
+      1,
+      1,
+      8)(A3($Matrix.set,
+      3,
+      2,
+      4)(A3($Matrix.set,
       3,
       1,
       2)(A3($Matrix.repeat,
       rows,
       cols,
-      0));
+      0))));
    });
    var gameState = A3($Signal.foldp,
    update,
@@ -83,8 +100,12 @@ Elm.Main.make = function (_elm) {
    gameState);
    _elm.Main.values = {_op: _op
                       ,defaultGrid: defaultGrid
+                      ,squashRowLeft: squashRowLeft
+                      ,squashRowRight: squashRowRight
                       ,squashLeft: squashLeft
                       ,squashRight: squashRight
+                      ,squashDown: squashDown
+                      ,squashUp: squashUp
                       ,update: update
                       ,gameState: gameState
                       ,view: view

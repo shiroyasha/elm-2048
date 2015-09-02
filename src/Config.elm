@@ -7,7 +7,7 @@ type alias GridConfig = { padding: Int
 
 defaultGridConfig : GridConfig
 defaultGridConfig = { padding = 10
-                    , radius = 3
+                    , radius = 5
                     , rows = 4
                     , cols = 4 }
 
@@ -18,7 +18,7 @@ type alias CellConfig = { padding: Int
 
 defaultCellConfig : CellConfig
 defaultCellConfig = { padding = 5
-                    , radius = 3
+                    , radius = 5
                     , size = 100 }
 
 

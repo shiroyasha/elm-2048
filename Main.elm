@@ -12,24 +12,49 @@ defaultGrid : Int -> Int -> Matrix Int
 defaultGrid rows cols =
   Matrix.repeat rows cols 0
   |> Matrix.set 3 1 2
+  |> Matrix.set 3 2 4
+  |> Matrix.set 1 1 8
 
 
-squashLeft : List Int -> List Int
-squashLeft list = List.concat [List.drop 1 list, List.take 1 list]
+-- squoshing rows
+
+squashRowLeft : List Int -> List Int
+squashRowLeft list =
+  let
+      partitions = List.partition (\x -> x == 0) list
+
+      zeroes  = fst partitions
+      numbers = snd partitions
+  in
+      List.concat [numbers, zeroes]
+
+squashRowRight : List Int -> List Int
+squashRowRight = List.reverse >> squashRowLeft >> List.reverse
 
 
-squashRight : List Int -> List Int
-squashRight list = List.concat [List.drop 3 list, List.take 3 list]
+-- squoshing the whole grid
+
+squashLeft : Matrix Int -> Matrix Int
+squashLeft = Matrix.toList >> List.map squashRowLeft >> Matrix.fromList
+
+squashRight : Matrix Int -> Matrix Int
+squashRight = Matrix.toList >> List.map squashRowRight >> Matrix.fromList
+
+squashDown : Matrix Int -> Matrix Int
+squashDown = Matrix.transpose >> squashLeft >> Matrix.transpose
+
+squashUp : Matrix Int -> Matrix Int
+squashUp = Matrix.transpose >> squashRight >> Matrix.transpose
 
 
 update : { x : Int, y : Int } -> Matrix Int ->  Matrix Int
-update input state =
+update input =
   case (input.x, input.y) of
-    ( 1,  0) -> state |> Matrix.toList |> List.map squashRight |> Matrix.fromList
-    (-1,  0) -> state |> Matrix.toList |> List.map squashLeft |> Matrix.fromList
-    ( 0,  1) -> state |> Matrix.transpose |> Matrix.toList |> List.map squashRight |> Matrix.fromList |> Matrix.transpose
-    ( 0, -1) -> state |> Matrix.transpose |> Matrix.toList |> List.map squashLeft |> Matrix.fromList |> Matrix.transpose
-    _ -> state
+    ( 1,  0) -> squashRight
+    (-1,  0) -> squashLeft
+    ( 0, -1) -> squashDown
+    ( 0,  1) -> squashUp
+    _ -> identity
 
 
 gameState : Signal (Matrix Int)
