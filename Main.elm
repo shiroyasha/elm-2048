@@ -60,14 +60,18 @@ squashUp : Matrix Int -> Matrix Int
 squashUp = Matrix.transpose >> squashRight >> Matrix.transpose
 
 
-update : { x : Int, y : Int } -> Matrix Int ->  Matrix Int
-update input =
+moveCells : { x: Int, y : Int } -> Matrix Int -> Matrix Int
+moveCells input =
   case (input.x, input.y) of
     ( 1,  0) -> squashRight
     (-1,  0) -> squashLeft
     ( 0, -1) -> squashDown
     ( 0,  1) -> squashUp
     _ -> identity
+
+
+update : { x : Int, y : Int } -> Matrix Int ->  Matrix Int
+update input model = model |> moveCells input |> Matrix.set 0 0 2
 
 
 gameState : Signal (Matrix Int)

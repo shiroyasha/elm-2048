@@ -4757,7 +4757,7 @@ Elm.Main.make = function (_elm) {
    var squashDown = function ($) {
       return $Matrix.transpose(squashLeft($Matrix.transpose($)));
    };
-   var update = function (input) {
+   var moveCells = function (input) {
       return function () {
          var _v0 = {ctor: "_Tuple2"
                    ,_0: input.x
@@ -4778,6 +4778,13 @@ Elm.Main.make = function (_elm) {
          return $Basics.identity;
       }();
    };
+   var update = F2(function (input,
+   model) {
+      return A3($Matrix.set,
+      0,
+      0,
+      2)(moveCells(input)(model));
+   });
    var defaultGrid = F2(function (rows,
    cols) {
       return A3($Matrix.set,
@@ -4813,6 +4820,7 @@ Elm.Main.make = function (_elm) {
                       ,squashRight: squashRight
                       ,squashDown: squashDown
                       ,squashUp: squashUp
+                      ,moveCells: moveCells
                       ,update: update
                       ,gameState: gameState
                       ,view: view
