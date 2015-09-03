@@ -13,7 +13,20 @@ defaultGrid rows cols =
   Matrix.repeat rows cols 0
   |> Matrix.set 3 1 2
   |> Matrix.set 3 2 4
-  |> Matrix.set 1 1 8
+  |> Matrix.set 1 1 2
+  |> Matrix.set 1 2 8
+
+
+sumTheSame list =
+  let
+     firstTwoTheSame list = List.take 1 list == (list |> List.take 2 |> List.drop 1)
+  in
+     if | List.length list == 0 -> list
+        | List.length list == 1 -> list
+        | List.length list >= 2 && firstTwoTheSame list ->
+            sumTheSame ((list |> List.take 2 |> List.sum) :: (List.drop 2 list))
+        | otherwise ->
+            (list |> List.take 1 |> List.sum) :: (sumTheSame (List.drop 1 list))
 
 
 -- squoshing rows
@@ -21,12 +34,12 @@ defaultGrid rows cols =
 squashRowLeft : List Int -> List Int
 squashRowLeft list =
   let
-      partitions = List.partition (\x -> x == 0) list
+      numbers = List.filter (\x -> x /= 0) list |> sumTheSame
 
-      zeroes  = fst partitions
-      numbers = snd partitions
+      numberOfZeroes = (List.length list) - (List.length numbers)
   in
-      List.concat [numbers, zeroes]
+      List.concat [numbers, List.repeat numberOfZeroes 0]
+
 
 squashRowRight : List Int -> List Int
 squashRowRight = List.reverse >> squashRowLeft >> List.reverse

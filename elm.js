@@ -4706,17 +4706,40 @@ Elm.Main.make = function (_elm) {
       "Game State",
       model));
    };
+   var sumTheSame = function (list) {
+      return function () {
+         var firstTwoTheSame = function (list) {
+            return _U.eq(A2($List.take,
+            1,
+            list),
+            $List.drop(1)($List.take(2)(list)));
+         };
+         return _U.eq($List.length(list),
+         0) ? list : _U.eq($List.length(list),
+         1) ? list : _U.cmp($List.length(list),
+         2) > -1 && firstTwoTheSame(list) ? sumTheSame(A2($List._op["::"],
+         $List.sum($List.take(2)(list)),
+         A2($List.drop,
+         2,
+         list))) : A2($List._op["::"],
+         $List.sum($List.take(1)(list)),
+         sumTheSame(A2($List.drop,
+         1,
+         list)));
+      }();
+   };
    var squashRowLeft = function (list) {
       return function () {
-         var partitions = A2($List.partition,
+         var numbers = sumTheSame(A2($List.filter,
          function (x) {
-            return _U.eq(x,0);
+            return !_U.eq(x,0);
          },
-         list);
-         var zeroes = $Basics.fst(partitions);
-         var numbers = $Basics.snd(partitions);
+         list));
+         var numberOfZeroes = $List.length(list) - $List.length(numbers);
          return $List.concat(_L.fromArray([numbers
-                                          ,zeroes]));
+                                          ,A2($List.repeat,
+                                          numberOfZeroes,
+                                          0)]));
       }();
    };
    var squashRowRight = function ($) {
@@ -4759,8 +4782,11 @@ Elm.Main.make = function (_elm) {
    cols) {
       return A3($Matrix.set,
       1,
-      1,
+      2,
       8)(A3($Matrix.set,
+      1,
+      1,
+      2)(A3($Matrix.set,
       3,
       2,
       4)(A3($Matrix.set,
@@ -4769,7 +4795,7 @@ Elm.Main.make = function (_elm) {
       2)(A3($Matrix.repeat,
       rows,
       cols,
-      0))));
+      0)))));
    });
    var gameState = A3($Signal.foldp,
    update,
@@ -4780,6 +4806,7 @@ Elm.Main.make = function (_elm) {
    gameState);
    _elm.Main.values = {_op: _op
                       ,defaultGrid: defaultGrid
+                      ,sumTheSame: sumTheSame
                       ,squashRowLeft: squashRowLeft
                       ,squashRowRight: squashRowRight
                       ,squashLeft: squashLeft
