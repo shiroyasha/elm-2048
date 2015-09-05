@@ -2,19 +2,26 @@ import Matrix exposing (Matrix)
 
 import Config
 import Views.Grid
-import Random
+import Random exposing (Seed)
 import Keyboard
 import Time exposing (..)
 import Debug
 
+-- port startTime : Float
+startTime = 5
+
+startTimeSeed : Seed
+startTimeSeed = Random.initialSeed <| round startTime
+
 
 defaultGrid : Int -> Int -> Matrix Int
-defaultGrid rows cols =
-  Matrix.repeat rows cols 0
-  |> Matrix.set 3 1 2
-  |> Matrix.set 3 2 4
-  |> Matrix.set 1 1 2
-  |> Matrix.set 1 2 8
+defaultGrid rows cols = Matrix.repeat rows cols 0 |> Matrix.set 1 1 2
+
+
+type alias GameState =
+  { grid : Matrix Int
+  , seed : Random.Seed
+  }
 
 
 sumTheSame list =
@@ -60,9 +67,13 @@ squashUp : Matrix Int -> Matrix Int
 squashUp = Matrix.transpose >> squashRight >> Matrix.transpose
 
 
-moveCells : { x: Int, y : Int } -> Matrix Int -> Matrix Int
-moveCells input =
-  case (input.x, input.y) of
+type alias Direction = {x: Int, y: Int}
+type alias Input = Direction
+
+
+moveCells : Direction -> Matrix Int -> Matrix Int
+moveCells {x, y} =
+  case (x, y) of
     ( 1,  0) -> squashRight
     (-1,  0) -> squashLeft
     ( 0, -1) -> squashDown
@@ -70,15 +81,39 @@ moveCells input =
     _ -> identity
 
 
-update : { x : Int, y : Int } -> Matrix Int ->  Matrix Int
-update input model = model |> moveCells input |> Matrix.set 0 0 2
+movement : Direction -> Bool
+movement {x, y} = List.member (x, y) [(1, 0), (-1, 0), (0, -1), (0, 1)]
 
 
-gameState : Signal (Matrix Int)
-gameState = Signal.foldp update (defaultGrid 4 4) Keyboard.arrows
+randomEmptyPosition: Int -> Matrix Int -> Maybe (Int, Int, Int)
+randomEmptyPosition randomNumber grid =
+  let
+    emptyPositions = grid |> Matrix.toIndexedList |> List.filter (\(_, _, number) -> number == 0)
+  in
+    emptyPositions |> List.drop (randomNumber % (List.length emptyPositions)) |> List.head
 
 
-view model = Views.Grid.render Config.defaultConfig (Debug.watch "Game State" model)
+update : Input -> GameState -> GameState
+update input {grid, seed} =
+  let
+      grid' = grid |> moveCells input
+
+      (position, seed') = Debug.watch "Randomness" <| Random.generate (Random.int 1 16) seed
+
+      grid'' = case randomEmptyPosition position grid' of
+        Just (x, y, number) -> Matrix.set x y 2 grid'
+        Nothing -> grid'
+  in
+     if movement input
+        then { grid = grid'', seed = seed' }
+        else { grid = grid, seed = seed }
+
+
+gameState : Signal GameState
+gameState = Signal.foldp update { grid = defaultGrid 4 4, seed = startTimeSeed } Keyboard.arrows
+
+
+view {grid, seed} = Views.Grid.render Config.defaultConfig (Debug.watch "Number Grid" grid)
 
 
 main = Signal.map view gameState
