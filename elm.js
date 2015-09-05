@@ -1237,66 +1237,6 @@ Elm.Color.make = function (_elm) {
                        ,darkGray: darkGray};
    return _elm.Color.values;
 };
-Elm.Config = Elm.Config || {};
-Elm.Config.make = function (_elm) {
-   "use strict";
-   _elm.Config = _elm.Config || {};
-   if (_elm.Config.values)
-   return _elm.Config.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Config",
-   $Basics = Elm.Basics.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var Config = F2(function (a,b) {
-      return {_: {}
-             ,cell: a
-             ,grid: b};
-   });
-   var defaultCellConfig = {_: {}
-                           ,padding: 5
-                           ,radius: 5
-                           ,size: 100};
-   var CellConfig = F3(function (a,
-   b,
-   c) {
-      return {_: {}
-             ,padding: a
-             ,radius: c
-             ,size: b};
-   });
-   var defaultGridConfig = {_: {}
-                           ,cols: 4
-                           ,padding: 10
-                           ,radius: 5
-                           ,rows: 4};
-   var defaultConfig = {_: {}
-                       ,cell: defaultCellConfig
-                       ,grid: defaultGridConfig};
-   var GridConfig = F4(function (a,
-   b,
-   c,
-   d) {
-      return {_: {}
-             ,cols: d
-             ,padding: a
-             ,radius: b
-             ,rows: c};
-   });
-   _elm.Config.values = {_op: _op
-                        ,GridConfig: GridConfig
-                        ,defaultGridConfig: defaultGridConfig
-                        ,CellConfig: CellConfig
-                        ,defaultCellConfig: defaultCellConfig
-                        ,Config: Config
-                        ,defaultConfig: defaultConfig};
-   return _elm.Config.values;
-};
 Elm.Debug = Elm.Debug || {};
 Elm.Debug.make = function (_elm) {
    "use strict";
@@ -2312,6 +2252,705 @@ Elm.Dict.make = function (_elm) {
                       ,fromList: fromList};
    return _elm.Dict.values;
 };
+Elm.ElmTest = Elm.ElmTest || {};
+Elm.ElmTest.Assertion = Elm.ElmTest.Assertion || {};
+Elm.ElmTest.Assertion.make = function (_elm) {
+   "use strict";
+   _elm.ElmTest = _elm.ElmTest || {};
+   _elm.ElmTest.Assertion = _elm.ElmTest.Assertion || {};
+   if (_elm.ElmTest.Assertion.values)
+   return _elm.ElmTest.Assertion.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "ElmTest.Assertion",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var AssertNotEqual = F3(function (a,
+   b,
+   c) {
+      return {ctor: "AssertNotEqual"
+             ,_0: a
+             ,_1: b
+             ,_2: c};
+   });
+   var assertNotEqual = F2(function (a,
+   b) {
+      return A3(AssertNotEqual,
+      function (_v0) {
+         return function () {
+            return !_U.eq(a,b);
+         }();
+      },
+      $Basics.toString(a),
+      $Basics.toString(b));
+   });
+   var AssertEqual = F3(function (a,
+   b,
+   c) {
+      return {ctor: "AssertEqual"
+             ,_0: a
+             ,_1: b
+             ,_2: c};
+   });
+   var assertEqual = F2(function (a,
+   b) {
+      return A3(AssertEqual,
+      function (_v2) {
+         return function () {
+            return _U.eq(a,b);
+         }();
+      },
+      $Basics.toString(a),
+      $Basics.toString(b));
+   });
+   var assertionList = F2(function (xs,
+   ys) {
+      return A3($List.map2,
+      assertEqual,
+      xs,
+      ys);
+   });
+   var AssertFalse = function (a) {
+      return {ctor: "AssertFalse"
+             ,_0: a};
+   };
+   var AssertTrue = function (a) {
+      return {ctor: "AssertTrue"
+             ,_0: a};
+   };
+   var assertT = AssertTrue;
+   var assert = function (b) {
+      return AssertTrue(function (_v4) {
+         return function () {
+            return b;
+         }();
+      });
+   };
+   _elm.ElmTest.Assertion.values = {_op: _op
+                                   ,AssertTrue: AssertTrue
+                                   ,AssertFalse: AssertFalse
+                                   ,AssertEqual: AssertEqual
+                                   ,AssertNotEqual: AssertNotEqual
+                                   ,assertT: assertT
+                                   ,assert: assert
+                                   ,assertEqual: assertEqual
+                                   ,assertionList: assertionList
+                                   ,assertNotEqual: assertNotEqual};
+   return _elm.ElmTest.Assertion.values;
+};
+Elm.ElmTest = Elm.ElmTest || {};
+Elm.ElmTest.Run = Elm.ElmTest.Run || {};
+Elm.ElmTest.Run.make = function (_elm) {
+   "use strict";
+   _elm.ElmTest = _elm.ElmTest || {};
+   _elm.ElmTest.Run = _elm.ElmTest.Run || {};
+   if (_elm.ElmTest.Run.values)
+   return _elm.ElmTest.Run.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "ElmTest.Run",
+   $Basics = Elm.Basics.make(_elm),
+   $ElmTest$Assertion = Elm.ElmTest.Assertion.make(_elm),
+   $ElmTest$Test = Elm.ElmTest.Test.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var failedSuites = function (result) {
+      return function () {
+         switch (result.ctor)
+         {case "Report":
+            return function () {
+                 var failed = _U.cmp($List.length(result._1.failures),
+                 0) > 0 ? 1 : 0;
+                 return failed + $List.sum($List.map(failedSuites)(result._1.results));
+              }();}
+         return 0;
+      }();
+   };
+   var passedSuites = function (result) {
+      return function () {
+         switch (result.ctor)
+         {case "Report":
+            return function () {
+                 var passed = _U.eq($List.length(result._1.failures),
+                 0) ? 1 : 0;
+                 return passed + $List.sum($List.map(passedSuites)(result._1.results));
+              }();}
+         return 0;
+      }();
+   };
+   var failedTests = function (result) {
+      return function () {
+         switch (result.ctor)
+         {case "Fail": return 1;
+            case "Pass": return 0;
+            case "Report":
+            return $List.sum($List.map(failedTests)(result._1.results));}
+         _U.badCase($moduleName,
+         "between lines 59 and 62");
+      }();
+   };
+   var passedTests = function (result) {
+      return function () {
+         switch (result.ctor)
+         {case "Fail": return 0;
+            case "Pass": return 1;
+            case "Report":
+            return $List.sum($List.map(passedTests)(result._1.results));}
+         _U.badCase($moduleName,
+         "between lines 53 and 56");
+      }();
+   };
+   var pass = function (m) {
+      return function () {
+         switch (m.ctor)
+         {case "Fail": return false;
+            case "Pass": return true;
+            case "Report":
+            return _U.cmp($List.length(function (_) {
+                 return _.failures;
+              }(m._1)),
+              0) > 0 ? false : true;}
+         _U.badCase($moduleName,
+         "between lines 43 and 46");
+      }();
+   };
+   var fail = function ($) {
+      return $Basics.not(pass($));
+   };
+   var Report = F2(function (a,b) {
+      return {ctor: "Report"
+             ,_0: a
+             ,_1: b};
+   });
+   var Fail = F2(function (a,b) {
+      return {ctor: "Fail"
+             ,_0: a
+             ,_1: b};
+   });
+   var Pass = function (a) {
+      return {ctor: "Pass",_0: a};
+   };
+   var run = function (test) {
+      return function () {
+         switch (test.ctor)
+         {case "Suite":
+            return function () {
+                 var results = A2($List.map,
+                 run,
+                 test._1);
+                 var $ = A2($List.partition,
+                 pass,
+                 results),
+                 passes = $._0,
+                 fails = $._1;
+                 return A2(Report,
+                 test._0,
+                 {_: {}
+                 ,failures: fails
+                 ,passes: passes
+                 ,results: results});
+              }();
+            case "TestCase":
+            return function () {
+                 var runAssertion = F2(function (t,
+                 m) {
+                    return t({ctor: "_Tuple0"}) ? Pass(test._0) : A2(Fail,
+                    test._0,
+                    m);
+                 });
+                 return function () {
+                    switch (test._1.ctor)
+                    {case "AssertEqual":
+                       return runAssertion(test._1._0)(A2($Basics._op["++"],
+                         "Expected: ",
+                         A2($Basics._op["++"],
+                         test._1._1,
+                         A2($Basics._op["++"],
+                         "; got: ",
+                         test._1._2))));
+                       case "AssertFalse":
+                       return runAssertion(test._1._0)("not False");
+                       case "AssertNotEqual":
+                       return runAssertion(test._1._0)(A2($Basics._op["++"],
+                         test._1._1,
+                         A2($Basics._op["++"],
+                         " equals ",
+                         test._1._2)));
+                       case "AssertTrue":
+                       return runAssertion(test._1._0)("not True");}
+                    _U.badCase($moduleName,
+                    "between lines 29 and 34");
+                 }();
+              }();}
+         _U.badCase($moduleName,
+         "between lines 25 and 39");
+      }();
+   };
+   _elm.ElmTest.Run.values = {_op: _op
+                             ,Pass: Pass
+                             ,Fail: Fail
+                             ,Report: Report
+                             ,run: run
+                             ,pass: pass
+                             ,fail: fail
+                             ,passedTests: passedTests
+                             ,failedTests: failedTests
+                             ,passedSuites: passedSuites
+                             ,failedSuites: failedSuites};
+   return _elm.ElmTest.Run.values;
+};
+Elm.ElmTest = Elm.ElmTest || {};
+Elm.ElmTest.Runner = Elm.ElmTest.Runner || {};
+Elm.ElmTest.Runner.Element = Elm.ElmTest.Runner.Element || {};
+Elm.ElmTest.Runner.Element.make = function (_elm) {
+   "use strict";
+   _elm.ElmTest = _elm.ElmTest || {};
+   _elm.ElmTest.Runner = _elm.ElmTest.Runner || {};
+   _elm.ElmTest.Runner.Element = _elm.ElmTest.Runner.Element || {};
+   if (_elm.ElmTest.Runner.Element.values)
+   return _elm.ElmTest.Runner.Element.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "ElmTest.Runner.Element",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $ElmTest$Run = Elm.ElmTest.Run.make(_elm),
+   $ElmTest$Runner$String = Elm.ElmTest.Runner.String.make(_elm),
+   $ElmTest$Test = Elm.ElmTest.Test.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var maxOrZero = function (l) {
+      return A3($List.foldl,
+      $Basics.max,
+      0,
+      l);
+   };
+   var indent = function (s) {
+      return function () {
+         var trimmed = $String.trimLeft(s);
+         return $String.length(s) - $String.length(trimmed);
+      }();
+   };
+   var plainText = function (s) {
+      return $Graphics$Element.leftAligned($Text.fromString(s));
+   };
+   var pretty = function (_v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var w$ = 5;
+                 var w = indent(_v0._0) * 10;
+                 return function () {
+                    switch (_v0._1.ctor)
+                    {case "Fail":
+                       return $Graphics$Element.color($Color.red)(A2($Graphics$Element.flow,
+                         $Graphics$Element.right,
+                         _L.fromArray([A2($Graphics$Element.spacer,
+                                      w,
+                                      1)
+                                      ,plainText(_v0._0)
+                                      ,A2($Graphics$Element.spacer,
+                                      w$,
+                                      1)])));
+                       case "Pass":
+                       return $Graphics$Element.color($Color.green)(A2($Graphics$Element.flow,
+                         $Graphics$Element.right,
+                         _L.fromArray([A2($Graphics$Element.spacer,
+                                      w,
+                                      1)
+                                      ,plainText(_v0._0)
+                                      ,A2($Graphics$Element.spacer,
+                                      w$,
+                                      1)])));
+                       case "Report":
+                       return function () {
+                            var c = _U.cmp($ElmTest$Run.failedTests(_v0._1),
+                            0) > 0 ? $Color.red : $Color.green;
+                            return $Graphics$Element.color(c)(A2($Graphics$Element.flow,
+                            $Graphics$Element.right,
+                            _L.fromArray([A2($Graphics$Element.spacer,
+                                         w,
+                                         1)
+                                         ,$Graphics$Element.leftAligned($Text.bold($Text.fromString(_v0._0)))
+                                         ,A2($Graphics$Element.spacer,
+                                         w$,
+                                         1)])));
+                         }();}
+                    _U.badCase($moduleName,
+                    "between lines 29 and 33");
+                 }();
+              }();}
+         _U.badCase($moduleName,
+         "between lines 27 and 33");
+      }();
+   };
+   var runDisplay = function (tests) {
+      return function () {
+         var _ = $ElmTest$Runner$String.run(tests);
+         var allPassed = function () {
+            switch (_.ctor)
+            {case "::": switch (_._0.ctor)
+                 {case "_Tuple2":
+                    return _._0._1;}
+                 break;}
+            _U.badCase($moduleName,
+            "on line 45, column 45 to 61");
+         }();
+         var results = function () {
+            switch (_.ctor)
+            {case "::": switch (_._0.ctor)
+                 {case "_Tuple2": return _._1;}
+                 break;}
+            _U.badCase($moduleName,
+            "on line 45, column 45 to 61");
+         }();
+         var summary = function () {
+            switch (_.ctor)
+            {case "::": switch (_._0.ctor)
+                 {case "_Tuple2":
+                    return _._0._0;}
+                 break;}
+            _U.badCase($moduleName,
+            "on line 45, column 45 to 61");
+         }();
+         var results$ = A2($List.map,
+         pretty,
+         results);
+         var maxWidth = maxOrZero($List.map($Graphics$Element.widthOf)(results$));
+         var maxHeight = maxOrZero($List.map($Graphics$Element.heightOf)(results$));
+         var elements = _U.eq(results,
+         _L.fromArray([{ctor: "_Tuple2"
+                       ,_0: ""
+                       ,_1: allPassed}])) ? _L.fromArray([]) : A2($List.map,
+         function ($) {
+            return $Graphics$Element.color($Color.black)(A3($Graphics$Element.container,
+            maxWidth + 2,
+            maxHeight + 2,
+            $Graphics$Element.midLeft)($Graphics$Element.width(maxWidth)($)));
+         },
+         results$);
+         return $Graphics$Element.flow($Graphics$Element.down)(A2($List._op["::"],
+         plainText(summary),
+         A2($List._op["::"],
+         A2($Graphics$Element.spacer,
+         1,
+         10),
+         elements)));
+      }();
+   };
+   _elm.ElmTest.Runner.Element.values = {_op: _op
+                                        ,runDisplay: runDisplay};
+   return _elm.ElmTest.Runner.Element.values;
+};
+Elm.ElmTest = Elm.ElmTest || {};
+Elm.ElmTest.Runner = Elm.ElmTest.Runner || {};
+Elm.ElmTest.Runner.String = Elm.ElmTest.Runner.String || {};
+Elm.ElmTest.Runner.String.make = function (_elm) {
+   "use strict";
+   _elm.ElmTest = _elm.ElmTest || {};
+   _elm.ElmTest.Runner = _elm.ElmTest.Runner || {};
+   _elm.ElmTest.Runner.String = _elm.ElmTest.Runner.String || {};
+   if (_elm.ElmTest.Runner.String.values)
+   return _elm.ElmTest.Runner.String.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "ElmTest.Runner.String",
+   $Basics = Elm.Basics.make(_elm),
+   $ElmTest$Run = Elm.ElmTest.Run.make(_elm),
+   $ElmTest$Test = Elm.ElmTest.Test.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
+   var replicate = F2(function (n,
+   c) {
+      return function () {
+         var go = function (n) {
+            return _U.cmp(n,
+            0) < 1 ? _L.fromArray([]) : A2($List._op["::"],
+            c,
+            go(n - 1));
+         };
+         return $String.fromList(go(n));
+      }();
+   });
+   var vcat = function ($) {
+      return $String.concat($List.intersperse("\n")($));
+   };
+   var indent = function (n) {
+      return function () {
+         var indents = A2(replicate,
+         n,
+         _U.chr(" "));
+         return function ($) {
+            return vcat($List.map($String.append(indents))($String.lines($)));
+         };
+      }();
+   };
+   var pretty = F2(function (n,
+   result) {
+      return function () {
+         var passed = $ElmTest$Run.pass(result);
+         return function () {
+            switch (result.ctor)
+            {case "Fail":
+               return _L.fromArray([{ctor: "_Tuple2"
+                                    ,_0: indent(n)(A2($Basics._op["++"],
+                                    result._0,
+                                    A2($Basics._op["++"],
+                                    ": FAILED. ",
+                                    result._1)))
+                                    ,_1: result}]);
+               case "Pass":
+               return _L.fromArray([{ctor: "_Tuple2"
+                                    ,_0: indent(n)(A2($Basics._op["++"],
+                                    result._0,
+                                    ": passed."))
+                                    ,_1: result}]);
+               case "Report":
+               return function () {
+                    var allPassed = _U.eq($ElmTest$Run.failedTests(result),
+                    0);
+                    var subResults = allPassed ? _L.fromArray([]) : A2($List.concatMap,
+                    pretty(n + 2),
+                    result._1.results);
+                    var msg = A2($Basics._op["++"],
+                    "Test Suite: ",
+                    A2($Basics._op["++"],
+                    result._0,
+                    A2($Basics._op["++"],
+                    ": ",
+                    passed ? "all tests passed" : "FAILED")));
+                    return A2($List._op["::"],
+                    {ctor: "_Tuple2"
+                    ,_0: A2(indent,n,msg)
+                    ,_1: result},
+                    subResults);
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 34 and 43");
+         }();
+      }();
+   });
+   var run = function (t) {
+      return function () {
+         var tests = function () {
+            switch (t.ctor)
+            {case "Suite": return t._1;
+               case "TestCase":
+               return _L.fromArray([A2($ElmTest$Test.TestCase,
+                 t._0,
+                 t._1)]);}
+            _U.badCase($moduleName,
+            "between lines 48 and 51");
+         }();
+         var result = $ElmTest$Run.run(t);
+         var passedTests$ = $ElmTest$Run.passedTests(result);
+         var passedSuites$ = $ElmTest$Run.passedSuites(result);
+         var failedTests$ = $ElmTest$Run.failedTests(result);
+         var allPassed = _U.eq(failedTests$,
+         0) ? $ElmTest$Run.Pass("") : A2($ElmTest$Run.Fail,
+         "",
+         "");
+         var failedSuites$ = $ElmTest$Run.failedSuites(result);
+         var summary = vcat($List.map(indent(2))(_L.fromArray([A2($Basics._op["++"],
+                                                              $Basics.toString($ElmTest$Test.numberOfSuites(t)),
+                                                              A2($Basics._op["++"],
+                                                              " suites run, containing ",
+                                                              A2($Basics._op["++"],
+                                                              $Basics.toString($ElmTest$Test.numberOfTests(t)),
+                                                              " tests")))
+                                                              ,_U.eq(failedTests$,
+                                                              0) ? "All tests passed" : A2($Basics._op["++"],
+                                                              $Basics.toString(passedSuites$),
+                                                              A2($Basics._op["++"],
+                                                              " suites and ",
+                                                              A2($Basics._op["++"],
+                                                              $Basics.toString(passedTests$),
+                                                              " tests passed")))
+                                                              ,_U.eq(failedTests$,
+                                                              0) ? "" : A2($Basics._op["++"],
+                                                              $Basics.toString(failedSuites$),
+                                                              A2($Basics._op["++"],
+                                                              " suites and ",
+                                                              A2($Basics._op["++"],
+                                                              $Basics.toString(failedTests$),
+                                                              " tests failed")))])));
+         var results$ = function () {
+            switch (allPassed.ctor)
+            {case "Pass":
+               return _L.fromArray([{ctor: "_Tuple2"
+                                    ,_0: ""
+                                    ,_1: allPassed}]);}
+            return A2(pretty,0,result);
+         }();
+         return A2($List._op["::"],
+         {ctor: "_Tuple2"
+         ,_0: summary
+         ,_1: allPassed},
+         results$);
+      }();
+   };
+   var runDisplay = function (t) {
+      return function () {
+         var _ = run(t);
+         var results = function () {
+            switch (_.ctor)
+            {case "::": switch (_._0.ctor)
+                 {case "_Tuple2": return _._1;}
+                 break;}
+            _U.badCase($moduleName,
+            "on line 74, column 37 to 42");
+         }();
+         var summary = function () {
+            switch (_.ctor)
+            {case "::": switch (_._0.ctor)
+                 {case "_Tuple2":
+                    return _._0._0;}
+                 break;}
+            _U.badCase($moduleName,
+            "on line 74, column 37 to 42");
+         }();
+         return vcat(A2($List._op["::"],
+         A2($Basics._op["++"],
+         summary,
+         "\n"),
+         A2($List.map,
+         $Basics.fst,
+         results)));
+      }();
+   };
+   _elm.ElmTest.Runner.String.values = {_op: _op
+                                       ,runDisplay: runDisplay
+                                       ,run: run};
+   return _elm.ElmTest.Runner.String.values;
+};
+Elm.ElmTest = Elm.ElmTest || {};
+Elm.ElmTest.Test = Elm.ElmTest.Test || {};
+Elm.ElmTest.Test.make = function (_elm) {
+   "use strict";
+   _elm.ElmTest = _elm.ElmTest || {};
+   _elm.ElmTest.Test = _elm.ElmTest.Test || {};
+   if (_elm.ElmTest.Test.values)
+   return _elm.ElmTest.Test.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "ElmTest.Test",
+   $Basics = Elm.Basics.make(_elm),
+   $ElmTest$Assertion = Elm.ElmTest.Assertion.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var numberOfSuites = function (test) {
+      return function () {
+         switch (test.ctor)
+         {case "Suite":
+            return 1 + $List.sum($List.map(numberOfSuites)(test._1));
+            case "TestCase": return 0;}
+         _U.badCase($moduleName,
+         "between lines 26 and 28");
+      }();
+   };
+   var numberOfTests = function (test) {
+      return function () {
+         switch (test.ctor)
+         {case "Suite":
+            return $List.sum($List.map(numberOfTests)(test._1));
+            case "TestCase": return 1;}
+         _U.badCase($moduleName,
+         "between lines 21 and 23");
+      }();
+   };
+   var nameOf = function (test) {
+      return function () {
+         switch (test.ctor)
+         {case "Suite": return test._0;
+            case "TestCase":
+            return test._0;}
+         _U.badCase($moduleName,
+         "between lines 16 and 18");
+      }();
+   };
+   var Suite = F2(function (a,b) {
+      return {ctor: "Suite"
+             ,_0: a
+             ,_1: b};
+   });
+   var suite = Suite;
+   var TestCase = F2(function (a,
+   b) {
+      return {ctor: "TestCase"
+             ,_0: a
+             ,_1: b};
+   });
+   var test = F2(function (name,
+   a) {
+      return A2(TestCase,name,a);
+   });
+   var defaultTest = function (a) {
+      return function () {
+         var name = function () {
+            switch (a.ctor)
+            {case "AssertEqual":
+               return A2($Basics._op["++"],
+                 a._1,
+                 A2($Basics._op["++"],
+                 " == ",
+                 a._2));
+               case "AssertNotEqual":
+               return A2($Basics._op["++"],
+                 a._1,
+                 A2($Basics._op["++"],
+                 " /= ",
+                 a._2));
+               case "AssertTrue":
+               return "True";}
+            _U.badCase($moduleName,
+            "between lines 41 and 46");
+         }();
+         return A2(test,name,a);
+      }();
+   };
+   var equals = F2(function (a,b) {
+      return defaultTest(A2($ElmTest$Assertion.assertEqual,
+      a,
+      b));
+   });
+   _elm.ElmTest.Test.values = {_op: _op
+                              ,TestCase: TestCase
+                              ,Suite: Suite
+                              ,nameOf: nameOf
+                              ,numberOfTests: numberOfTests
+                              ,numberOfSuites: numberOfSuites
+                              ,equals: equals
+                              ,test: test
+                              ,defaultTest: defaultTest
+                              ,suite: suite};
+   return _elm.ElmTest.Test.values;
+};
 Elm.Graphics = Elm.Graphics || {};
 Elm.Graphics.Collage = Elm.Graphics.Collage || {};
 Elm.Graphics.Collage.make = function (_elm) {
@@ -3199,170 +3838,6 @@ Elm.Graphics.Element.make = function (_elm) {
                                   ,Element: Element
                                   ,Position: Position};
    return _elm.Graphics.Element.values;
-};
-Elm.Keyboard = Elm.Keyboard || {};
-Elm.Keyboard.make = function (_elm) {
-   "use strict";
-   _elm.Keyboard = _elm.Keyboard || {};
-   if (_elm.Keyboard.values)
-   return _elm.Keyboard.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Keyboard",
-   $Basics = Elm.Basics.make(_elm),
-   $Native$Keyboard = Elm.Native.Keyboard.make(_elm),
-   $Set = Elm.Set.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var presses = A2($Signal.map,
-   function (_) {
-      return _.keyCode;
-   },
-   $Native$Keyboard.presses);
-   var toXY = F2(function (_v0,
-   keyCodes) {
-      return function () {
-         return function () {
-            var is = function (keyCode) {
-               return A2($Set.member,
-               keyCode,
-               keyCodes) ? 1 : 0;
-            };
-            return {_: {}
-                   ,x: is(_v0.right) - is(_v0.left)
-                   ,y: is(_v0.up) - is(_v0.down)};
-         }();
-      }();
-   });
-   var Directions = F4(function (a,
-   b,
-   c,
-   d) {
-      return {_: {}
-             ,down: b
-             ,left: c
-             ,right: d
-             ,up: a};
-   });
-   var dropMap = F2(function (f,
-   signal) {
-      return $Signal.dropRepeats(A2($Signal.map,
-      f,
-      signal));
-   });
-   var EventInfo = F3(function (a,
-   b,
-   c) {
-      return {_: {}
-             ,alt: a
-             ,keyCode: c
-             ,meta: b};
-   });
-   var Blur = {ctor: "Blur"};
-   var Down = function (a) {
-      return {ctor: "Down",_0: a};
-   };
-   var Up = function (a) {
-      return {ctor: "Up",_0: a};
-   };
-   var rawEvents = $Signal.mergeMany(_L.fromArray([A2($Signal.map,
-                                                  Up,
-                                                  $Native$Keyboard.ups)
-                                                  ,A2($Signal.map,
-                                                  Down,
-                                                  $Native$Keyboard.downs)
-                                                  ,A2($Signal.map,
-                                                  $Basics.always(Blur),
-                                                  $Native$Keyboard.blurs)]));
-   var empty = {_: {}
-               ,alt: false
-               ,keyCodes: $Set.empty
-               ,meta: false};
-   var update = F2(function (event,
-   model) {
-      return function () {
-         switch (event.ctor)
-         {case "Blur": return empty;
-            case "Down": return {_: {}
-                                ,alt: event._0.alt
-                                ,keyCodes: A2($Set.insert,
-                                event._0.keyCode,
-                                model.keyCodes)
-                                ,meta: event._0.meta};
-            case "Up": return {_: {}
-                              ,alt: event._0.alt
-                              ,keyCodes: A2($Set.remove,
-                              event._0.keyCode,
-                              model.keyCodes)
-                              ,meta: event._0.meta};}
-         _U.badCase($moduleName,
-         "between lines 68 and 82");
-      }();
-   });
-   var model = A3($Signal.foldp,
-   update,
-   empty,
-   rawEvents);
-   var alt = A2(dropMap,
-   function (_) {
-      return _.alt;
-   },
-   model);
-   var meta = A2(dropMap,
-   function (_) {
-      return _.meta;
-   },
-   model);
-   var keysDown = A2(dropMap,
-   function (_) {
-      return _.keyCodes;
-   },
-   model);
-   var arrows = A2(dropMap,
-   toXY({_: {}
-        ,down: 40
-        ,left: 37
-        ,right: 39
-        ,up: 38}),
-   keysDown);
-   var wasd = A2(dropMap,
-   toXY({_: {}
-        ,down: 83
-        ,left: 65
-        ,right: 68
-        ,up: 87}),
-   keysDown);
-   var isDown = function (keyCode) {
-      return A2(dropMap,
-      $Set.member(keyCode),
-      keysDown);
-   };
-   var ctrl = isDown(17);
-   var shift = isDown(16);
-   var space = isDown(32);
-   var enter = isDown(13);
-   var Model = F3(function (a,
-   b,
-   c) {
-      return {_: {}
-             ,alt: a
-             ,keyCodes: c
-             ,meta: b};
-   });
-   _elm.Keyboard.values = {_op: _op
-                          ,arrows: arrows
-                          ,wasd: wasd
-                          ,enter: enter
-                          ,space: space
-                          ,ctrl: ctrl
-                          ,shift: shift
-                          ,alt: alt
-                          ,meta: meta
-                          ,isDown: isDown
-                          ,keysDown: keysDown
-                          ,presses: presses};
-   return _elm.Keyboard.values;
 };
 Elm.List = Elm.List || {};
 Elm.List.make = function (_elm) {
@@ -4690,209 +5165,139 @@ Elm.Main.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
-   $Config = Elm.Config.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
-   $Keyboard = Elm.Keyboard.make(_elm),
+   $ElmTest$Assertion = Elm.ElmTest.Assertion.make(_elm),
+   $ElmTest$Runner$Element = Elm.ElmTest.Runner.Element.make(_elm),
+   $ElmTest$Test = Elm.ElmTest.Test.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $List = Elm.List.make(_elm),
    $Matrix = Elm.Matrix.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models$Grid = Elm.Models.Grid.make(_elm),
-   $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Views$Grid = Elm.Views.Grid.make(_elm);
-   var view = function (_v0) {
-      return function () {
-         return A2($Views$Grid.render,
-         $Config.defaultConfig,
-         A2($Debug.watch,
-         "Number Grid",
-         _v0.grid));
-      }();
-   };
-   var randomEmptyPosition = F2(function (randomNumber,
-   grid) {
-      return function () {
-         var emptyPositions = $List.filter(function (_v2) {
-            return function () {
-               switch (_v2.ctor)
-               {case "_Tuple3":
-                  return _U.eq(_v2._2,0);}
-               _U.badCase($moduleName,
-               "on line 89, column 86 to 97");
-            }();
-         })($Matrix.toIndexedList(grid));
-         return $List.head($List.drop(A2($Basics._op["%"],
-         randomNumber,
-         $List.length(emptyPositions)))(emptyPositions));
-      }();
-   });
-   var movement = function (_v7) {
-      return function () {
-         return A2($List.member,
-         {ctor: "_Tuple2"
-         ,_0: _v7.x
-         ,_1: _v7.y},
-         _L.fromArray([{ctor: "_Tuple2"
-                       ,_0: 1
-                       ,_1: 0}
-                      ,{ctor: "_Tuple2",_0: -1,_1: 0}
-                      ,{ctor: "_Tuple2",_0: 0,_1: -1}
-                      ,{ctor: "_Tuple2"
-                       ,_0: 0
-                       ,_1: 1}]));
-      }();
-   };
-   var Direction = F2(function (a,
-   b) {
-      return {_: {},x: a,y: b};
-   });
-   var sumTheSame = function (list) {
-      return function () {
-         var firstTwoTheSame = function (list) {
-            return _U.eq(A2($List.take,
-            1,
-            list),
-            $List.drop(1)($List.take(2)(list)));
-         };
-         return _U.eq($List.length(list),
-         0) ? list : _U.eq($List.length(list),
-         1) ? list : _U.cmp($List.length(list),
-         2) > -1 && firstTwoTheSame(list) ? sumTheSame(A2($List._op["::"],
-         $List.sum($List.take(2)(list)),
-         A2($List.drop,
-         2,
-         list))) : A2($List._op["::"],
-         $List.sum($List.take(1)(list)),
-         sumTheSame(A2($List.drop,
-         1,
-         list)));
-      }();
-   };
-   var squashRowLeft = function (list) {
-      return function () {
-         var numbers = sumTheSame(A2($List.filter,
-         function (x) {
-            return !_U.eq(x,0);
-         },
-         list));
-         var numberOfZeroes = $List.length(list) - $List.length(numbers);
-         return $List.concat(_L.fromArray([numbers
-                                          ,A2($List.repeat,
-                                          numberOfZeroes,
-                                          0)]));
-      }();
-   };
-   var squashRowRight = function ($) {
-      return $List.reverse(squashRowLeft($List.reverse($)));
-   };
-   var squashRight = function ($) {
-      return $Matrix.fromList($List.map(squashRowRight)($Matrix.toList($)));
-   };
-   var squashUp = function ($) {
-      return $Matrix.transpose(squashRight($Matrix.transpose($)));
-   };
-   var squashLeft = function ($) {
-      return $Matrix.fromList($List.map(squashRowLeft)($Matrix.toList($)));
-   };
-   var squashDown = function ($) {
-      return $Matrix.transpose(squashLeft($Matrix.transpose($)));
-   };
-   var moveCells = function (_v9) {
-      return function () {
-         return function () {
-            var _v11 = {ctor: "_Tuple2"
-                       ,_0: _v9.x
-                       ,_1: _v9.y};
-            switch (_v11.ctor)
-            {case "_Tuple2":
-               switch (_v11._0)
-                 {case -1: switch (_v11._1)
-                      {case 0: return squashLeft;}
-                      break;
-                    case 0: switch (_v11._1)
-                      {case -1: return squashDown;
-                         case 1: return squashUp;}
-                      break;
-                    case 1: switch (_v11._1)
-                      {case 0: return squashRight;}
-                      break;}
-                 break;}
-            return $Basics.identity;
-         }();
-      }();
-   };
-   var update = F2(function (input,
-   _v14) {
-      return function () {
-         return function () {
-            var $ = $Debug.watch("Randomness")(A2($Random.generate,
-            A2($Random.$int,1,16),
-            _v14.seed)),
-            position = $._0,
-            seed$ = $._1;
-            var grid$ = moveCells(input)(_v14.grid);
-            var grid$$ = function () {
-               var _v16 = A2(randomEmptyPosition,
-               position,
-               grid$);
-               switch (_v16.ctor)
-               {case "Just":
-                  switch (_v16._0.ctor)
-                    {case "_Tuple3":
-                       return A4($Matrix.set,
-                         _v16._0._0,
-                         _v16._0._1,
-                         2,
-                         grid$);}
-                    break;
-                  case "Nothing": return grid$;}
-               _U.badCase($moduleName,
-               "between lines 101 and 104");
-            }();
-            return movement(input) ? {_: {}
-                                     ,grid: grid$$
-                                     ,seed: seed$} : {_: {}
-                                                     ,grid: _v14.grid
-                                                     ,seed: _v14.seed};
-         }();
-      }();
-   });
-   var GameState = F2(function (a,
-   b) {
-      return {_: {}
-             ,grid: a
-             ,seed: b};
-   });
-   var startTime = 5;
-   var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
-   var gameState = A3($Signal.foldp,
-   update,
-   {_: {}
-   ,grid: A2($Models$Grid.grid,4,4)
-   ,seed: startTimeSeed},
-   $Keyboard.arrows);
-   var main = A2($Signal.map,
-   view,
-   gameState);
+   $Signal = Elm.Signal.make(_elm);
+   var squashTests = A2($ElmTest$Test.suite,
+   "squashTests",
+   _L.fromArray([$ElmTest$Test.test("doesn\'t change the length of the list")(A2($ElmTest$Assertion.assertEqual,
+                $List.length($Models$Grid.squashRowLeft(_L.fromArray([2
+                                                                     ,2
+                                                                     ,0]))),
+                3))
+                ,$ElmTest$Test.test("sums the numbers if they are equal")(A2($ElmTest$Assertion.assertEqual,
+                $Models$Grid.squashRowLeft(_L.fromArray([2
+                                                        ,2
+                                                        ,0])),
+                _L.fromArray([4,0,0])))
+                ,$ElmTest$Test.test("doesn\'t sums the numbers if they are not equal")(A2($ElmTest$Assertion.assertEqual,
+                $Models$Grid.squashRowLeft(_L.fromArray([16
+                                                        ,2
+                                                        ,0])),
+                _L.fromArray([16,2,0])))
+                ,$ElmTest$Test.test("sums the numbers even if they are not on the start of the list")(A2($ElmTest$Assertion.assertEqual,
+                $Models$Grid.squashRowLeft(_L.fromArray([16
+                                                        ,2
+                                                        ,2])),
+                _L.fromArray([16,4,0])))]));
+   var updateTests = function () {
+      var downSquash = $Matrix.fromList(_L.fromArray([_L.fromArray([0
+                                                                   ,0
+                                                                   ,0])
+                                                     ,_L.fromArray([0,0,0])
+                                                     ,_L.fromArray([0,2,0])]));
+      var upSquash = $Matrix.fromList(_L.fromArray([_L.fromArray([0
+                                                                 ,2
+                                                                 ,0])
+                                                   ,_L.fromArray([0,0,0])
+                                                   ,_L.fromArray([0,0,0])]));
+      var rightSquash = $Matrix.fromList(_L.fromArray([_L.fromArray([0
+                                                                    ,0
+                                                                    ,0])
+                                                      ,_L.fromArray([0,0,2])
+                                                      ,_L.fromArray([0,0,0])]));
+      var leftSquash = $Matrix.fromList(_L.fromArray([_L.fromArray([0
+                                                                   ,0
+                                                                   ,0])
+                                                     ,_L.fromArray([2,0,0])
+                                                     ,_L.fromArray([0,0,0])]));
+      var expectedStructure = $Matrix.fromList(_L.fromArray([_L.fromArray([0
+                                                                          ,0
+                                                                          ,0])
+                                                            ,_L.fromArray([0
+                                                                          ,2
+                                                                          ,0])
+                                                            ,_L.fromArray([0
+                                                                          ,0
+                                                                          ,0])]));
+      var testGrid = A2($Models$Grid.grid,
+      3,
+      3);
+      return A2($ElmTest$Test.suite,
+      "update",
+      _L.fromArray([$ElmTest$Test.test("original grid has the expected structure")(A2($ElmTest$Assertion.assertEqual,
+                   testGrid,
+                   expectedStructure))
+                   ,$ElmTest$Test.test("can squash numbers left")(A2($ElmTest$Assertion.assertEqual,
+                   A2($Models$Grid.update,
+                   $Models$Grid.SquashLeft,
+                   testGrid),
+                   leftSquash))
+                   ,$ElmTest$Test.test("can squash numbers right")(A2($ElmTest$Assertion.assertEqual,
+                   A2($Models$Grid.update,
+                   $Models$Grid.SquashRight,
+                   testGrid),
+                   rightSquash))
+                   ,$ElmTest$Test.test("can squash numbers up")(A2($ElmTest$Assertion.assertEqual,
+                   A2($Models$Grid.update,
+                   $Models$Grid.SquashUp,
+                   testGrid),
+                   upSquash))
+                   ,$ElmTest$Test.test("can squash numbers down")(A2($ElmTest$Assertion.assertEqual,
+                   A2($Models$Grid.update,
+                   $Models$Grid.SquashDown,
+                   testGrid),
+                   downSquash))]));
+   }();
+   var initializationTests = function () {
+      var expectedStructure = $Matrix.fromList(_L.fromArray([_L.fromArray([0
+                                                                          ,0
+                                                                          ,0
+                                                                          ,0])
+                                                            ,_L.fromArray([0
+                                                                          ,2
+                                                                          ,0
+                                                                          ,0])
+                                                            ,_L.fromArray([0
+                                                                          ,0
+                                                                          ,0
+                                                                          ,0])]));
+      var testGrid = A2($Models$Grid.grid,
+      4,
+      3);
+      return A2($ElmTest$Test.suite,
+      "grid",
+      _L.fromArray([$ElmTest$Test.test("has the provided width")(A2($ElmTest$Assertion.assertEqual,
+                   $Matrix.width(testGrid),
+                   4))
+                   ,$ElmTest$Test.test("has the provided height")(A2($ElmTest$Assertion.assertEqual,
+                   $Matrix.height(testGrid),
+                   3))
+                   ,$ElmTest$Test.test("has one element set to 2")(A2($ElmTest$Assertion.assertEqual,
+                   A3($Matrix.get,1,1,testGrid),
+                   $Maybe.Just(2)))
+                   ,$ElmTest$Test.test("has the expected structure")(A2($ElmTest$Assertion.assertEqual,
+                   testGrid,
+                   expectedStructure))]));
+   }();
+   var tests = A2($ElmTest$Test.suite,
+   "Models.Grid",
+   _L.fromArray([initializationTests
+                ,updateTests
+                ,squashTests]));
+   var main = $ElmTest$Runner$Element.runDisplay(tests);
    _elm.Main.values = {_op: _op
-                      ,startTime: startTime
-                      ,startTimeSeed: startTimeSeed
-                      ,GameState: GameState
-                      ,sumTheSame: sumTheSame
-                      ,squashRowLeft: squashRowLeft
-                      ,squashRowRight: squashRowRight
-                      ,squashLeft: squashLeft
-                      ,squashRight: squashRight
-                      ,squashDown: squashDown
-                      ,squashUp: squashUp
-                      ,Direction: Direction
-                      ,moveCells: moveCells
-                      ,movement: movement
-                      ,randomEmptyPosition: randomEmptyPosition
-                      ,update: update
-                      ,gameState: gameState
-                      ,view: view
+                      ,initializationTests: initializationTests
+                      ,updateTests: updateTests
+                      ,squashTests: squashTests
+                      ,tests: tests
                       ,main: main};
    return _elm.Main.values;
 };
@@ -5697,6 +6102,45 @@ Elm.Models.Grid.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var sumTheSame = function (list) {
+      return function () {
+         var firstTwoTheSame = function (list) {
+            return _U.eq(A2($List.take,
+            1,
+            list),
+            $List.drop(1)($List.take(2)(list)));
+         };
+         return _U.eq($List.length(list),
+         0) ? list : _U.eq($List.length(list),
+         1) ? list : _U.cmp($List.length(list),
+         2) > -1 && firstTwoTheSame(list) ? sumTheSame(A2($List._op["::"],
+         $List.sum($List.take(2)(list)),
+         A2($List.drop,
+         2,
+         list))) : A2($List._op["::"],
+         $List.sum($List.take(1)(list)),
+         sumTheSame(A2($List.drop,
+         1,
+         list)));
+      }();
+   };
+   var squashRowLeft = function (list) {
+      return function () {
+         var numbers = sumTheSame(A2($List.filter,
+         function (x) {
+            return !_U.eq(x,0);
+         },
+         list));
+         var numberOfZeroes = $List.length(list) - $List.length(numbers);
+         return $List.concat(_L.fromArray([numbers
+                                          ,A2($List.repeat,
+                                          numberOfZeroes,
+                                          0)]));
+      }();
+   };
+   var squashRowRight = function ($) {
+      return $List.reverse(squashRowLeft($List.reverse($)));
+   };
    var grid = F2(function (width,
    height) {
       return A3($Matrix.set,
@@ -5707,8 +6151,47 @@ Elm.Models.Grid.make = function (_elm) {
       height,
       0));
    });
+   var NoAction = {ctor: "NoAction"};
+   var SquashRight = {ctor: "SquashRight"};
+   var SquashLeft = {ctor: "SquashLeft"};
+   var update = function (action) {
+      return function () {
+         switch (action.ctor)
+         {case "NoAction":
+            return $Basics.identity;
+            case "SquashDown":
+            return function ($) {
+                 return $Matrix.transpose(update(SquashRight)($Matrix.transpose($)));
+              };
+            case "SquashLeft":
+            return function ($) {
+                 return $Matrix.fromList($List.map(squashRowLeft)($Matrix.toList($)));
+              };
+            case "SquashRight":
+            return function ($) {
+                 return $Matrix.fromList($List.map(squashRowRight)($Matrix.toList($)));
+              };
+            case "SquashUp":
+            return function ($) {
+                 return $Matrix.transpose(update(SquashLeft)($Matrix.transpose($)));
+              };}
+         _U.badCase($moduleName,
+         "between lines 16 and 21");
+      }();
+   };
+   var SquashDown = {ctor: "SquashDown"};
+   var SquashUp = {ctor: "SquashUp"};
    _elm.Models.Grid.values = {_op: _op
-                             ,grid: grid};
+                             ,SquashUp: SquashUp
+                             ,SquashDown: SquashDown
+                             ,SquashLeft: SquashLeft
+                             ,SquashRight: SquashRight
+                             ,NoAction: NoAction
+                             ,grid: grid
+                             ,update: update
+                             ,sumTheSame: sumTheSame
+                             ,squashRowLeft: squashRowLeft
+                             ,squashRowRight: squashRowRight};
    return _elm.Models.Grid.values;
 };
 Elm.Native.Array = {};
@@ -8337,56 +8820,6 @@ Elm.Native.Graphics.Element.make = function(localRuntime) {
 
 };
 
-Elm.Native.Keyboard = {};
-Elm.Native.Keyboard.make = function(localRuntime) {
-
-	localRuntime.Native = localRuntime.Native || {};
-	localRuntime.Native.Keyboard = localRuntime.Native.Keyboard || {};
-	if (localRuntime.Native.Keyboard.values)
-	{
-		return localRuntime.Native.Keyboard.values;
-	}
-
-	var NS = Elm.Native.Signal.make(localRuntime);
-
-
-	function keyEvent(event)
-	{
-		return {
-			_: {},
-			alt: event.altKey,
-			meta: event.metaKey,
-			keyCode: event.keyCode
-		};
-	}
-
-
-	function keyStream(node, eventName, handler)
-	{
-		var stream = NS.input(eventName, '\0');
-
-		localRuntime.addListener([stream.id], node, eventName, function(e) {
-			localRuntime.notify(stream.id, handler(e));
-		});
-
-		return stream;
-	}
-
-	var downs = keyStream(document, 'keydown', keyEvent);
-	var ups = keyStream(document, 'keyup', keyEvent);
-	var presses = keyStream(document, 'keypress', keyEvent);
-	var blurs = keyStream(window, 'blur', function() { return null; });
-
-
-	return localRuntime.Native.Keyboard.values = {
-		downs: downs,
-		ups: ups,
-		blurs: blurs,
-		presses: presses
-	};
-
-};
-
 Elm.Native.List = {};
 Elm.Native.List.make = function(localRuntime) {
 	localRuntime.Native = localRuntime.Native || {};
@@ -10906,117 +11339,6 @@ Elm.Native.Text.make = function(localRuntime) {
 	};
 };
 
-Elm.Native.Time = {};
-Elm.Native.Time.make = function(localRuntime)
-{
-
-	localRuntime.Native = localRuntime.Native || {};
-	localRuntime.Native.Time = localRuntime.Native.Time || {};
-	if (localRuntime.Native.Time.values)
-	{
-		return localRuntime.Native.Time.values;
-	}
-
-	var NS = Elm.Native.Signal.make(localRuntime);
-	var Maybe = Elm.Maybe.make(localRuntime);
-
-
-	// FRAMES PER SECOND
-
-	function fpsWhen(desiredFPS, isOn)
-	{
-		var msPerFrame = 1000 / desiredFPS;
-		var ticker = NS.input('fps-' + desiredFPS, null);
-
-		function notifyTicker()
-		{
-			localRuntime.notify(ticker.id, null);
-		}
-
-		function firstArg(x, y)
-		{
-			return x;
-		}
-
-		// input fires either when isOn changes, or when ticker fires.
-		// Its value is a tuple with the current timestamp, and the state of isOn
-		var input = NS.timestamp(A3(NS.map2, F2(firstArg), NS.dropRepeats(isOn), ticker));
-
-		var initialState = {
-			isOn: false,
-			time: localRuntime.timer.programStart,
-			delta: 0
-		};
-
-		var timeoutId;
-
-		function update(input,state)
-		{
-			var currentTime = input._0;
-			var isOn = input._1;
-			var wasOn = state.isOn;
-			var previousTime = state.time;
-
-			if (isOn)
-			{
-				timeoutId = localRuntime.setTimeout(notifyTicker, msPerFrame);
-			}
-			else if (wasOn)
-			{
-				clearTimeout(timeoutId);
-			}
-
-			return {
-				isOn: isOn,
-				time: currentTime,
-				delta: (isOn && !wasOn) ? 0 : currentTime - previousTime
-			};
-		}
-
-		return A2(
-			NS.map,
-			function(state) { return state.delta; },
-			A3(NS.foldp, F2(update), update(input.value,initialState), input)
-		);
-	}
-
-
-	// EVERY
-
-	function every(t)
-	{
-		var ticker = NS.input('every-' + t, null);
-		function tellTime()
-		{
-			localRuntime.notify(ticker.id, null);
-		}
-		var clock = A2( NS.map, fst, NS.timestamp(ticker) );
-		setInterval(tellTime, t);
-		return clock;
-	}
-
-
-	function fst(pair)
-	{
-		return pair._0;
-	}
-
-
-	function read(s)
-	{
-		var t = Date.parse(s);
-		return isNaN(t) ? Maybe.Nothing : Maybe.Just(t);
-	}
-
-	return localRuntime.Native.Time.values = {
-		fpsWhen: F2(fpsWhen),
-		every: every,
-		toDate: function(t) { return new window.Date(t); },
-		read: read
-	};
-
-};
-
 Elm.Native.Transform2D = {};
 Elm.Native.Transform2D.make = function(localRuntime) {
 
@@ -11493,291 +11815,6 @@ Elm.Native.Utils.make = function(localRuntime) {
 	};
 };
 
-Elm.Random = Elm.Random || {};
-Elm.Random.make = function (_elm) {
-   "use strict";
-   _elm.Random = _elm.Random || {};
-   if (_elm.Random.values)
-   return _elm.Random.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Random",
-   $Basics = Elm.Basics.make(_elm),
-   $List = Elm.List.make(_elm);
-   var magicNum8 = 2147483562;
-   var range = function (_v0) {
-      return function () {
-         return {ctor: "_Tuple2"
-                ,_0: 0
-                ,_1: magicNum8};
-      }();
-   };
-   var magicNum7 = 2137383399;
-   var magicNum6 = 2147483563;
-   var magicNum5 = 3791;
-   var magicNum4 = 40692;
-   var magicNum3 = 52774;
-   var magicNum2 = 12211;
-   var magicNum1 = 53668;
-   var magicNum0 = 40014;
-   var generate = F2(function (_v2,
-   seed) {
-      return function () {
-         switch (_v2.ctor)
-         {case "Generator":
-            return _v2._0(seed);}
-         _U.badCase($moduleName,
-         "on line 246, column 5 to 19");
-      }();
-   });
-   var Seed = F4(function (a,
-   b,
-   c,
-   d) {
-      return {_: {}
-             ,next: b
-             ,range: d
-             ,split: c
-             ,state: a};
-   });
-   var State = F2(function (a,b) {
-      return {ctor: "State"
-             ,_0: a
-             ,_1: b};
-   });
-   var initState = function (s$) {
-      return function () {
-         var s = A2($Basics.max,
-         s$,
-         0 - s$);
-         var q = s / (magicNum6 - 1) | 0;
-         var s2 = A2($Basics._op["%"],
-         q,
-         magicNum7 - 1);
-         var s1 = A2($Basics._op["%"],
-         s,
-         magicNum6 - 1);
-         return A2(State,s1 + 1,s2 + 1);
-      }();
-   };
-   var next = function (_v5) {
-      return function () {
-         switch (_v5.ctor)
-         {case "State":
-            return function () {
-                 var k$ = _v5._1 / magicNum3 | 0;
-                 var s2$ = magicNum4 * (_v5._1 - k$ * magicNum3) - k$ * magicNum5;
-                 var s2$$ = _U.cmp(s2$,
-                 0) < 0 ? s2$ + magicNum7 : s2$;
-                 var k = _v5._0 / magicNum1 | 0;
-                 var s1$ = magicNum0 * (_v5._0 - k * magicNum1) - k * magicNum2;
-                 var s1$$ = _U.cmp(s1$,
-                 0) < 0 ? s1$ + magicNum6 : s1$;
-                 var z = s1$$ - s2$$;
-                 var z$ = _U.cmp(z,
-                 1) < 0 ? z + magicNum8 : z;
-                 return {ctor: "_Tuple2"
-                        ,_0: z$
-                        ,_1: A2(State,s1$$,s2$$)};
-              }();}
-         _U.badCase($moduleName,
-         "between lines 290 and 299");
-      }();
-   };
-   var split = function (_v9) {
-      return function () {
-         switch (_v9.ctor)
-         {case "State":
-            return function () {
-                 var _raw = $Basics.snd(next(_v9)),
-                 $ = _raw.ctor === "State" ? _raw : _U.badCase($moduleName,
-                 "on line 306, column 25 to 38"),
-                 t1 = $._0,
-                 t2 = $._1;
-                 var new_s2 = _U.eq(_v9._1,
-                 1) ? magicNum7 - 1 : _v9._1 - 1;
-                 var new_s1 = _U.eq(_v9._0,
-                 magicNum6 - 1) ? 1 : _v9._0 + 1;
-                 return {ctor: "_Tuple2"
-                        ,_0: A2(State,new_s1,t2)
-                        ,_1: A2(State,t1,new_s2)};
-              }();}
-         _U.badCase($moduleName,
-         "between lines 304 and 308");
-      }();
-   };
-   var initialSeed = function (n) {
-      return A4(Seed,
-      initState(n),
-      next,
-      split,
-      range);
-   };
-   var Generator = function (a) {
-      return {ctor: "Generator"
-             ,_0: a};
-   };
-   var customGenerator = function (generate) {
-      return Generator(generate);
-   };
-   var listHelp = F4(function (list,
-   n,
-   generate,
-   seed) {
-      return _U.cmp(n,
-      1) < 0 ? {ctor: "_Tuple2"
-               ,_0: $List.reverse(list)
-               ,_1: seed} : function () {
-         var $ = generate(seed),
-         value = $._0,
-         seed$ = $._1;
-         return A4(listHelp,
-         A2($List._op["::"],value,list),
-         n - 1,
-         generate,
-         seed$);
-      }();
-   });
-   var list = F2(function (n,
-   _v13) {
-      return function () {
-         switch (_v13.ctor)
-         {case "Generator":
-            return Generator(function (seed) {
-                 return A4(listHelp,
-                 _L.fromArray([]),
-                 n,
-                 _v13._0,
-                 seed);
-              });}
-         _U.badCase($moduleName,
-         "between lines 182 and 183");
-      }();
-   });
-   var pair = F2(function (_v16,
-   _v17) {
-      return function () {
-         switch (_v17.ctor)
-         {case "Generator":
-            return function () {
-                 switch (_v16.ctor)
-                 {case "Generator":
-                    return Generator(function (seed) {
-                         return function () {
-                            var $ = _v16._0(seed),
-                            left = $._0,
-                            seed$ = $._1;
-                            var $ = _v17._0(seed$),
-                            right = $._0,
-                            seed$$ = $._1;
-                            return {ctor: "_Tuple2"
-                                   ,_0: {ctor: "_Tuple2"
-                                        ,_0: left
-                                        ,_1: right}
-                                   ,_1: seed$$};
-                         }();
-                      });}
-                 _U.badCase($moduleName,
-                 "between lines 159 and 163");
-              }();}
-         _U.badCase($moduleName,
-         "between lines 159 and 163");
-      }();
-   });
-   var minInt = -2147483648;
-   var maxInt = 2147483647;
-   var iLogBase = F2(function (b,
-   i) {
-      return _U.cmp(i,
-      b) < 0 ? 1 : 1 + A2(iLogBase,
-      b,
-      i / b | 0);
-   });
-   var $int = F2(function (a,b) {
-      return Generator(function (seed) {
-         return function () {
-            var base = 2147483561;
-            var f = F3(function (n,
-            acc,
-            state) {
-               return function () {
-                  switch (n)
-                  {case 0: return {ctor: "_Tuple2"
-                                  ,_0: acc
-                                  ,_1: state};}
-                  return function () {
-                     var $ = seed.next(state),
-                     x = $._0,
-                     state$ = $._1;
-                     return A3(f,
-                     n - 1,
-                     x + acc * base,
-                     state$);
-                  }();
-               }();
-            });
-            var $ = _U.cmp(a,
-            b) < 0 ? {ctor: "_Tuple2"
-                     ,_0: a
-                     ,_1: b} : {ctor: "_Tuple2"
-                               ,_0: b
-                               ,_1: a},
-            lo = $._0,
-            hi = $._1;
-            var k = hi - lo + 1;
-            var n = A2(iLogBase,base,k);
-            var $ = A3(f,n,1,seed.state),
-            v = $._0,
-            state$ = $._1;
-            return {ctor: "_Tuple2"
-                   ,_0: lo + A2($Basics._op["%"],
-                   v,
-                   k)
-                   ,_1: _U.replace([["state"
-                                    ,state$]],
-                   seed)};
-         }();
-      });
-   });
-   var $float = F2(function (a,b) {
-      return Generator(function (seed) {
-         return function () {
-            var $ = A2(generate,
-            A2($int,minInt,maxInt),
-            seed),
-            number = $._0,
-            seed$ = $._1;
-            var negativeOneToOne = $Basics.toFloat(number) / $Basics.toFloat(maxInt - minInt);
-            var $ = _U.cmp(a,
-            b) < 0 ? {ctor: "_Tuple2"
-                     ,_0: a
-                     ,_1: b} : {ctor: "_Tuple2"
-                               ,_0: b
-                               ,_1: a},
-            lo = $._0,
-            hi = $._1;
-            var scaled = (lo + hi) / 2 + (hi - lo) * negativeOneToOne;
-            return {ctor: "_Tuple2"
-                   ,_0: scaled
-                   ,_1: seed$};
-         }();
-      });
-   });
-   _elm.Random.values = {_op: _op
-                        ,$int: $int
-                        ,$float: $float
-                        ,list: list
-                        ,pair: pair
-                        ,minInt: minInt
-                        ,maxInt: maxInt
-                        ,generate: generate
-                        ,initialSeed: initialSeed
-                        ,customGenerator: customGenerator
-                        ,Seed: Seed};
-   return _elm.Random.values;
-};
 Elm.Result = Elm.Result || {};
 Elm.Result.make = function (_elm) {
    "use strict";
@@ -12126,95 +12163,6 @@ Elm.Set.make = function (_elm) {
                      ,toList: toList
                      ,fromList: fromList};
    return _elm.Set.values;
-};
-Elm.Shapes = Elm.Shapes || {};
-Elm.Shapes.make = function (_elm) {
-   "use strict";
-   _elm.Shapes = _elm.Shapes || {};
-   if (_elm.Shapes.values)
-   return _elm.Shapes.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Shapes",
-   $Basics = Elm.Basics.make(_elm),
-   $Color = Elm.Color.make(_elm),
-   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var roundedSquare = F3(function (size,
-   radius,
-   color) {
-      return function () {
-         var radius$ = $Basics.toFloat(radius);
-         var circleShapes = A2($List.repeat,
-         4,
-         $Graphics$Collage.circle(radius$));
-         var circleForms = A2($List.map,
-         $Graphics$Collage.filled(color),
-         circleShapes);
-         var size$ = $Basics.toFloat(size);
-         var innerSquareSize = size$ - radius$ * 2;
-         var circlePositions = _L.fromArray([{ctor: "_Tuple2"
-                                             ,_0: innerSquareSize / 2
-                                             ,_1: innerSquareSize / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: (0 - innerSquareSize) / 2
-                                             ,_1: innerSquareSize / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: innerSquareSize / 2
-                                             ,_1: (0 - innerSquareSize) / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: (0 - innerSquareSize) / 2
-                                             ,_1: (0 - innerSquareSize) / 2}]);
-         var circles = A3($List.map2,
-         $Graphics$Collage.move,
-         circlePositions,
-         circleForms);
-         var borderPositions = _L.fromArray([{ctor: "_Tuple2"
-                                             ,_0: 0
-                                             ,_1: innerSquareSize / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: 0
-                                             ,_1: (0 - innerSquareSize) / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: innerSquareSize / 2
-                                             ,_1: 0}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: (0 - innerSquareSize) / 2
-                                             ,_1: 0}]);
-         var borderShapes = _L.fromArray([A2($Graphics$Collage.rect,
-                                         innerSquareSize,
-                                         radius$ * 2)
-                                         ,A2($Graphics$Collage.rect,
-                                         innerSquareSize,
-                                         radius$ * 2)
-                                         ,A2($Graphics$Collage.rect,
-                                         radius$ * 2,
-                                         innerSquareSize)
-                                         ,A2($Graphics$Collage.rect,
-                                         radius$ * 2,
-                                         innerSquareSize)]);
-         var borderForms = A2($List.map,
-         $Graphics$Collage.filled(color),
-         borderShapes);
-         var borders = A3($List.map2,
-         $Graphics$Collage.move,
-         borderPositions,
-         borderForms);
-         var innerSquare = $Graphics$Collage.filled(color)($Graphics$Collage.square(innerSquareSize));
-         return $Graphics$Collage.group(A2($List._op["::"],
-         innerSquare,
-         $List.concat(_L.fromArray([circles
-                                   ,borders]))));
-      }();
-   });
-   _elm.Shapes.values = {_op: _op
-                        ,roundedSquare: roundedSquare};
-   return _elm.Shapes.values;
 };
 Elm.Signal = Elm.Signal || {};
 Elm.Signal.make = function (_elm) {
@@ -12772,85 +12720,6 @@ Elm.Text.make = function (_elm) {
                       ,Through: Through};
    return _elm.Text.values;
 };
-Elm.Time = Elm.Time || {};
-Elm.Time.make = function (_elm) {
-   "use strict";
-   _elm.Time = _elm.Time || {};
-   if (_elm.Time.values)
-   return _elm.Time.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Time",
-   $Basics = Elm.Basics.make(_elm),
-   $Native$Signal = Elm.Native.Signal.make(_elm),
-   $Native$Time = Elm.Native.Time.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var delay = $Native$Signal.delay;
-   var since = F2(function (time,
-   signal) {
-      return function () {
-         var stop = A2($Signal.map,
-         $Basics.always(-1),
-         A2(delay,time,signal));
-         var start = A2($Signal.map,
-         $Basics.always(1),
-         signal);
-         var delaydiff = A3($Signal.foldp,
-         F2(function (x,y) {
-            return x + y;
-         }),
-         0,
-         A2($Signal.merge,start,stop));
-         return A2($Signal.map,
-         F2(function (x,y) {
-            return !_U.eq(x,y);
-         })(0),
-         delaydiff);
-      }();
-   });
-   var timestamp = $Native$Signal.timestamp;
-   var every = $Native$Time.every;
-   var fpsWhen = $Native$Time.fpsWhen;
-   var fps = function (targetFrames) {
-      return A2(fpsWhen,
-      targetFrames,
-      $Signal.constant(true));
-   };
-   var inMilliseconds = function (t) {
-      return t;
-   };
-   var millisecond = 1;
-   var second = 1000 * millisecond;
-   var minute = 60 * second;
-   var hour = 60 * minute;
-   var inHours = function (t) {
-      return t / hour;
-   };
-   var inMinutes = function (t) {
-      return t / minute;
-   };
-   var inSeconds = function (t) {
-      return t / second;
-   };
-   _elm.Time.values = {_op: _op
-                      ,millisecond: millisecond
-                      ,second: second
-                      ,minute: minute
-                      ,hour: hour
-                      ,inMilliseconds: inMilliseconds
-                      ,inSeconds: inSeconds
-                      ,inMinutes: inMinutes
-                      ,inHours: inHours
-                      ,fps: fps
-                      ,fpsWhen: fpsWhen
-                      ,every: every
-                      ,timestamp: timestamp
-                      ,delay: delay
-                      ,since: since};
-   return _elm.Time.values;
-};
 Elm.Transform2D = Elm.Transform2D || {};
 Elm.Transform2D.make = function (_elm) {
    "use strict";
@@ -12915,209 +12784,4 @@ Elm.Transform2D.make = function (_elm) {
                              ,scaleX: scaleX
                              ,scaleY: scaleY};
    return _elm.Transform2D.values;
-};
-Elm.Views = Elm.Views || {};
-Elm.Views.Cell = Elm.Views.Cell || {};
-Elm.Views.Cell.make = function (_elm) {
-   "use strict";
-   _elm.Views = _elm.Views || {};
-   _elm.Views.Cell = _elm.Views.Cell || {};
-   if (_elm.Views.Cell.values)
-   return _elm.Views.Cell.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Views.Cell",
-   $Basics = Elm.Basics.make(_elm),
-   $Color = Elm.Color.make(_elm),
-   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Shapes = Elm.Shapes.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Text = Elm.Text.make(_elm);
-   var textColor = function (number) {
-      return function () {
-         switch (number)
-         {case 2: return A3($Color.rgb,
-              120,
-              110,
-              101);
-            case 4: return A3($Color.rgb,
-              120,
-              110,
-              101);}
-         return $Color.white;
-      }();
-   };
-   var label = F2(function (size,
-   number) {
-      return $Graphics$Collage.text($Text.monospace($Text.bold($Text.height(size)($Text.color(textColor(number))($Text.fromString(_U.cmp(number,
-      0) > 0 ? $Basics.toString(number) : ""))))));
-   });
-   var backgroungColor = function (number) {
-      return function () {
-         switch (number)
-         {case 0: return A3($Color.rgb,
-              204,
-              192,
-              179);
-            case 2: return A3($Color.rgb,
-              238,
-              228,
-              218);
-            case 4: return A3($Color.rgb,
-              236,
-              224,
-              200);
-            case 8: return A3($Color.rgb,
-              241,
-              176,
-              120);
-            case 16: return A3($Color.rgb,
-              235,
-              140,
-              82);
-            case 32: return A3($Color.rgb,
-              243,
-              123,
-              96);
-            case 64: return A3($Color.rgb,
-              233,
-              89,
-              55);
-            case 128: return A3($Color.rgb,
-              242,
-              216,
-              106);
-            case 256: return A3($Color.rgb,
-              231,
-              191,
-              41);
-            case 512: return A3($Color.rgb,
-              231,
-              191,
-              41);
-            case 1024: return A3($Color.rgb,
-              228,
-              183,
-              19);
-            case 2048: return A3($Color.rgb,
-              238,
-              195,
-              3);}
-         return $Color.gray;
-      }();
-   };
-   var backgroung = F3(function (size,
-   radius,
-   number) {
-      return A3($Shapes.roundedSquare,
-      size,
-      radius,
-      backgroungColor(number));
-   });
-   var cell = F3(function (size,
-   radius,
-   number) {
-      return $Graphics$Collage.group(_L.fromArray([A3(backgroung,
-                                                  size,
-                                                  radius,
-                                                  number)
-                                                  ,A2(label,
-                                                  $Basics.toFloat(size) / 3,
-                                                  number)]));
-   });
-   _elm.Views.Cell.values = {_op: _op
-                            ,backgroungColor: backgroungColor
-                            ,textColor: textColor
-                            ,label: label
-                            ,backgroung: backgroung
-                            ,cell: cell};
-   return _elm.Views.Cell.values;
-};
-Elm.Views = Elm.Views || {};
-Elm.Views.Grid = Elm.Views.Grid || {};
-Elm.Views.Grid.make = function (_elm) {
-   "use strict";
-   _elm.Views = _elm.Views || {};
-   _elm.Views.Grid = _elm.Views.Grid || {};
-   if (_elm.Views.Grid.values)
-   return _elm.Views.Grid.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Views.Grid",
-   $Basics = Elm.Basics.make(_elm),
-   $Color = Elm.Color.make(_elm),
-   $Config = Elm.Config.make(_elm),
-   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Graphics$Element = Elm.Graphics.Element.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Matrix = Elm.Matrix.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Shapes = Elm.Shapes.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Views$Cell = Elm.Views.Cell.make(_elm);
-   var cellPosition = F4(function (config,
-   x,
-   y,
-   number) {
-      return function () {
-         var sizeWithPadding = $Basics.toFloat(config.cell.size + 2 * config.cell.padding);
-         var gridSize = $Basics.toFloat((config.cell.size + 2 * config.cell.padding) * config.grid.rows);
-         var x$ = ($Basics.toFloat(x) + 1 / 2) * sizeWithPadding - gridSize / 2;
-         var y$ = ($Basics.toFloat(y) + 1 / 2) * sizeWithPadding - gridSize / 2;
-         return {ctor: "_Tuple2"
-                ,_0: x$
-                ,_1: y$};
-      }();
-   });
-   var cellPositions = F2(function (config,
-   model) {
-      return $Matrix.flatten(A2($Matrix.indexedMap,
-      cellPosition(config),
-      model));
-   });
-   var cells = F2(function (config,
-   model) {
-      return A2($List.map2,
-      $Graphics$Collage.move,
-      A2(cellPositions,
-      config,
-      model))($Matrix.flatten($Matrix.map(A2($Views$Cell.cell,
-      config.cell.size,
-      config.cell.radius))(model)));
-   });
-   var render = F2(function (config,
-   model) {
-      return function () {
-         var backgroungColor = A3($Color.rgb,
-         187,
-         173,
-         160);
-         var backgroundSize = (config.cell.size + 2 * config.cell.padding) * config.grid.rows + config.grid.padding;
-         var backgroungRadius = config.grid.radius;
-         var backgroung = A3($Shapes.roundedSquare,
-         backgroundSize,
-         backgroungRadius,
-         backgroungColor);
-         return A3($Graphics$Collage.collage,
-         backgroundSize,
-         backgroundSize,
-         A2($List._op["::"],
-         backgroung,
-         A2(cells,config,model)));
-      }();
-   });
-   _elm.Views.Grid.values = {_op: _op
-                            ,cellPosition: cellPosition
-                            ,cellPositions: cellPositions
-                            ,cells: cells
-                            ,render: render};
-   return _elm.Views.Grid.values;
 };

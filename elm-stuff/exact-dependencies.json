@@ -1,1 +1,11 @@
-{"TheSeamau5/elm-shrink": "2.2.1", "chendrix/elm-matrix": "3.0.0", "sindikat/elm-array-experimental": "1.0.0", "evancz/virtual-dom": "1.2.3", "TheSeamau5/elm-task-extra": "2.0.0", "TheSeamau5/elm-random-extra": "2.1.0", "sindikat/elm-matrix": "1.2.0", "deadfoxygrandpa/Elm-Test": "1.0.4", "circuithub/elm-maybe-extra": "1.5.0", "circuithub/elm-array-extra": "1.1.1", "maxsnew/IO": "1.0.1", "evancz/elm-html": "3.0.0", "TheSeamau5/elm-check": "3.2.0", "elm-lang/core": "2.1.0", "sindikat/elm-list-experimental": "1.0.0", "circuithub/elm-list-extra": "3.6.0"}
+{
+    "circuithub/elm-array-extra": "1.1.1",
+    "circuithub/elm-maybe-extra": "1.5.0",
+    "circuithub/elm-list-extra": "3.6.0",
+    "sindikat/elm-list-experimental": "1.0.0",
+    "sindikat/elm-matrix": "1.2.0",
+    "maxsnew/IO": "1.0.1",
+    "deadfoxygrandpa/Elm-Test": "1.0.4",
+    "sindikat/elm-array-experimental": "1.0.0",
+    "elm-lang/core": "2.1.0"
+}

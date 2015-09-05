@@ -22,61 +22,17 @@ type alias GameState =
   }
 
 
-sumTheSame list =
-  let
-     firstTwoTheSame list = List.take 1 list == (list |> List.take 2 |> List.drop 1)
-  in
-     if | List.length list == 0 -> list
-        | List.length list == 1 -> list
-        | List.length list >= 2 && firstTwoTheSame list ->
-            sumTheSame ((list |> List.take 2 |> List.sum) :: (List.drop 2 list))
-        | otherwise ->
-            (list |> List.take 1 |> List.sum) :: (sumTheSame (List.drop 1 list))
-
-
--- squoshing rows
-
-squashRowLeft : List Int -> List Int
-squashRowLeft list =
-  let
-      numbers = List.filter (\x -> x /= 0) list |> sumTheSame
-
-      numberOfZeroes = (List.length list) - (List.length numbers)
-  in
-      List.concat [numbers, List.repeat numberOfZeroes 0]
-
-
-squashRowRight : List Int -> List Int
-squashRowRight = List.reverse >> squashRowLeft >> List.reverse
-
-
--- squoshing the whole grid
-
-squashLeft : Matrix Int -> Matrix Int
-squashLeft = Matrix.toList >> List.map squashRowLeft >> Matrix.fromList
-
-squashRight : Matrix Int -> Matrix Int
-squashRight = Matrix.toList >> List.map squashRowRight >> Matrix.fromList
-
-squashDown : Matrix Int -> Matrix Int
-squashDown = Matrix.transpose >> squashLeft >> Matrix.transpose
-
-squashUp : Matrix Int -> Matrix Int
-squashUp = Matrix.transpose >> squashRight >> Matrix.transpose
-
-
 type alias Direction = {x: Int, y: Int}
 type alias Input = Direction
 
 
-moveCells : Direction -> Matrix Int -> Matrix Int
-moveCells {x, y} =
-  case (x, y) of
-    ( 1,  0) -> squashRight
-    (-1,  0) -> squashLeft
-    ( 0, -1) -> squashDown
-    ( 0,  1) -> squashUp
-    _ -> identity
+toAction : Direction -> Models.Grid.Action
+toAction {x, y} = case (x, y) of
+  ( 1,  0) -> Models.Grid.SquashRight
+  (-1,  0) -> Models.Grid.SquashLeft
+  ( 0, -1) -> Models.Grid.SquashUp
+  ( 0,  1) -> Models.Grid.SquashDown
+  _ -> Models.Grid.NoAction
 
 
 movement : Direction -> Bool
@@ -91,10 +47,12 @@ randomEmptyPosition randomNumber grid =
     emptyPositions |> List.drop (randomNumber % (List.length emptyPositions)) |> List.head
 
 
+
 update : Input -> GameState -> GameState
 update input {grid, seed} =
   let
-      grid' = grid |> moveCells input
+      action = toAction input
+      grid' = Models.Grid.update action grid
 
       (position, seed') = Debug.watch "Randomness" <| Random.generate (Random.int 1 16) seed
 
@@ -107,11 +65,15 @@ update input {grid, seed} =
         else { grid = grid, seed = seed }
 
 
+
 gameState : Signal GameState
-gameState = Signal.foldp update { grid = Models.Grid.grid 4 4, seed = startTimeSeed } Keyboard.arrows
+gameState =
+  let
+      initialGameState = { grid = Models.Grid.grid 4 4, seed = startTimeSeed }
+  in
+      Signal.foldp update initialGameState Keyboard.arrows
 
 
 view {grid, seed} = Views.Grid.render Config.defaultConfig (Debug.watch "Number Grid" grid)
-
 
 main = Signal.map view gameState

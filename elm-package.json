@@ -9,6 +9,7 @@
     ],
     "exposed-modules": [],
     "dependencies": {
+        "deadfoxygrandpa/Elm-Test": "1.0.4 <= v < 2.0.0",
         "elm-lang/core": "2.1.0 <= v < 3.0.0",
         "sindikat/elm-matrix": "1.2.0 <= v < 2.0.0"
     },
