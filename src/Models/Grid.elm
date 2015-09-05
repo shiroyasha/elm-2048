@@ -20,6 +20,9 @@ update action = case action of
   SquashDown  -> Matrix.transpose >> update SquashRight >> Matrix.transpose
   NoAction    -> identity
 
+emptyPositions : Grid -> List (Int, Int)
+emptyPositions = grid |> Matrix.toIndexedList |> List.filter (\(_, _, number) -> number == 0)
+
 
 sumTheSame list =
   let

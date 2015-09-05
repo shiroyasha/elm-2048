@@ -56,14 +56,15 @@ update input {grid, seed} =
 
       (position, seed') = Debug.watch "Randomness" <| Random.generate (Random.int 1 16) seed
 
-      grid'' = case randomEmptyPosition position grid' of
-        Just (x, y, number) -> Matrix.set x y 2 grid'
-        Nothing -> grid'
+      grid'' = if grid /= grid'
+                  then
+                    case randomEmptyPosition position grid' of
+                      Just (x, y, number) -> Matrix.set x y 2 grid'
+                      Nothing -> grid'
+                  else
+                    grid'
   in
-     if movement input
-        then { grid = grid'', seed = seed' }
-        else { grid = grid, seed = seed }
-
+    { grid = grid'', seed = seed' }
 
 
 gameState : Signal GameState

@@ -10,139 +10,160 @@ Elm.Main.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
-   $ElmTest$Assertion = Elm.ElmTest.Assertion.make(_elm),
-   $ElmTest$Runner$Element = Elm.ElmTest.Runner.Element.make(_elm),
-   $ElmTest$Test = Elm.ElmTest.Test.make(_elm),
-   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Config = Elm.Config.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Keyboard = Elm.Keyboard.make(_elm),
    $List = Elm.List.make(_elm),
    $Matrix = Elm.Matrix.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models$Grid = Elm.Models.Grid.make(_elm),
+   $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var squashTests = A2($ElmTest$Test.suite,
-   "squashTests",
-   _L.fromArray([$ElmTest$Test.test("doesn\'t change the length of the list")(A2($ElmTest$Assertion.assertEqual,
-                $List.length($Models$Grid.squashRowLeft(_L.fromArray([2
-                                                                     ,2
-                                                                     ,0]))),
-                3))
-                ,$ElmTest$Test.test("sums the numbers if they are equal")(A2($ElmTest$Assertion.assertEqual,
-                $Models$Grid.squashRowLeft(_L.fromArray([2
-                                                        ,2
-                                                        ,0])),
-                _L.fromArray([4,0,0])))
-                ,$ElmTest$Test.test("doesn\'t sums the numbers if they are not equal")(A2($ElmTest$Assertion.assertEqual,
-                $Models$Grid.squashRowLeft(_L.fromArray([16
-                                                        ,2
-                                                        ,0])),
-                _L.fromArray([16,2,0])))
-                ,$ElmTest$Test.test("sums the numbers even if they are not on the start of the list")(A2($ElmTest$Assertion.assertEqual,
-                $Models$Grid.squashRowLeft(_L.fromArray([16
-                                                        ,2
-                                                        ,2])),
-                _L.fromArray([16,4,0])))]));
-   var updateTests = function () {
-      var downSquash = $Matrix.fromList(_L.fromArray([_L.fromArray([0
-                                                                   ,0
-                                                                   ,0])
-                                                     ,_L.fromArray([0,0,0])
-                                                     ,_L.fromArray([0,2,0])]));
-      var upSquash = $Matrix.fromList(_L.fromArray([_L.fromArray([0
-                                                                 ,2
-                                                                 ,0])
-                                                   ,_L.fromArray([0,0,0])
-                                                   ,_L.fromArray([0,0,0])]));
-      var rightSquash = $Matrix.fromList(_L.fromArray([_L.fromArray([0
-                                                                    ,0
-                                                                    ,0])
-                                                      ,_L.fromArray([0,0,2])
-                                                      ,_L.fromArray([0,0,0])]));
-      var leftSquash = $Matrix.fromList(_L.fromArray([_L.fromArray([0
-                                                                   ,0
-                                                                   ,0])
-                                                     ,_L.fromArray([2,0,0])
-                                                     ,_L.fromArray([0,0,0])]));
-      var expectedStructure = $Matrix.fromList(_L.fromArray([_L.fromArray([0
-                                                                          ,0
-                                                                          ,0])
-                                                            ,_L.fromArray([0
-                                                                          ,2
-                                                                          ,0])
-                                                            ,_L.fromArray([0
-                                                                          ,0
-                                                                          ,0])]));
-      var testGrid = A2($Models$Grid.grid,
-      3,
-      3);
-      return A2($ElmTest$Test.suite,
-      "update",
-      _L.fromArray([$ElmTest$Test.test("original grid has the expected structure")(A2($ElmTest$Assertion.assertEqual,
-                   testGrid,
-                   expectedStructure))
-                   ,$ElmTest$Test.test("can squash numbers left")(A2($ElmTest$Assertion.assertEqual,
-                   A2($Models$Grid.update,
-                   $Models$Grid.SquashLeft,
-                   testGrid),
-                   leftSquash))
-                   ,$ElmTest$Test.test("can squash numbers right")(A2($ElmTest$Assertion.assertEqual,
-                   A2($Models$Grid.update,
-                   $Models$Grid.SquashRight,
-                   testGrid),
-                   rightSquash))
-                   ,$ElmTest$Test.test("can squash numbers up")(A2($ElmTest$Assertion.assertEqual,
-                   A2($Models$Grid.update,
-                   $Models$Grid.SquashUp,
-                   testGrid),
-                   upSquash))
-                   ,$ElmTest$Test.test("can squash numbers down")(A2($ElmTest$Assertion.assertEqual,
-                   A2($Models$Grid.update,
-                   $Models$Grid.SquashDown,
-                   testGrid),
-                   downSquash))]));
+   $Signal = Elm.Signal.make(_elm),
+   $Views$Grid = Elm.Views.Grid.make(_elm);
+   var view = function (_v0) {
+      return function () {
+         return A2($Views$Grid.render,
+         $Config.defaultConfig,
+         A2($Debug.watch,
+         "Number Grid",
+         _v0.grid));
+      }();
+   };
+   var randomEmptyPosition = F2(function (randomNumber,
+   grid) {
+      return function () {
+         var emptyPositions = $List.filter(function (_v2) {
+            return function () {
+               switch (_v2.ctor)
+               {case "_Tuple3":
+                  return _U.eq(_v2._2,0);}
+               _U.badCase($moduleName,
+               "on line 45, column 86 to 97");
+            }();
+         })($Matrix.toIndexedList(grid));
+         return $List.head($List.drop(A2($Basics._op["%"],
+         randomNumber,
+         $List.length(emptyPositions)))(emptyPositions));
+      }();
+   });
+   var movement = function (_v7) {
+      return function () {
+         return A2($List.member,
+         {ctor: "_Tuple2"
+         ,_0: _v7.x
+         ,_1: _v7.y},
+         _L.fromArray([{ctor: "_Tuple2"
+                       ,_0: 1
+                       ,_1: 0}
+                      ,{ctor: "_Tuple2",_0: -1,_1: 0}
+                      ,{ctor: "_Tuple2",_0: 0,_1: -1}
+                      ,{ctor: "_Tuple2"
+                       ,_0: 0
+                       ,_1: 1}]));
+      }();
+   };
+   var toAction = function (_v9) {
+      return function () {
+         return function () {
+            var _v11 = {ctor: "_Tuple2"
+                       ,_0: _v9.x
+                       ,_1: _v9.y};
+            switch (_v11.ctor)
+            {case "_Tuple2":
+               switch (_v11._0)
+                 {case -1: switch (_v11._1)
+                      {case 0:
+                         return $Models$Grid.SquashLeft;}
+                      break;
+                    case 0: switch (_v11._1)
+                      {case -1:
+                         return $Models$Grid.SquashUp;
+                         case 1:
+                         return $Models$Grid.SquashDown;}
+                      break;
+                    case 1: switch (_v11._1)
+                      {case 0:
+                         return $Models$Grid.SquashRight;}
+                      break;}
+                 break;}
+            return $Models$Grid.NoAction;
+         }();
+      }();
+   };
+   var update = F2(function (input,
+   _v14) {
+      return function () {
+         return function () {
+            var $ = $Debug.watch("Randomness")(A2($Random.generate,
+            A2($Random.$int,1,16),
+            _v14.seed)),
+            position = $._0,
+            seed$ = $._1;
+            var action = toAction(input);
+            var grid$ = A2($Models$Grid.update,
+            action,
+            _v14.grid);
+            var grid$$ = !_U.eq(_v14.grid,
+            grid$) ? function () {
+               var _v16 = A2(randomEmptyPosition,
+               position,
+               grid$);
+               switch (_v16.ctor)
+               {case "Just":
+                  switch (_v16._0.ctor)
+                    {case "_Tuple3":
+                       return A4($Matrix.set,
+                         _v16._0._0,
+                         _v16._0._1,
+                         2,
+                         grid$);}
+                    break;
+                  case "Nothing": return grid$;}
+               _U.badCase($moduleName,
+               "between lines 61 and 64");
+            }() : grid$;
+            return {_: {}
+                   ,grid: grid$$
+                   ,seed: seed$};
+         }();
+      }();
+   });
+   var Direction = F2(function (a,
+   b) {
+      return {_: {},x: a,y: b};
+   });
+   var GameState = F2(function (a,
+   b) {
+      return {_: {}
+             ,grid: a
+             ,seed: b};
+   });
+   var startTime = 5;
+   var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
+   var gameState = function () {
+      var initialGameState = {_: {}
+                             ,grid: A2($Models$Grid.grid,4,4)
+                             ,seed: startTimeSeed};
+      return A3($Signal.foldp,
+      update,
+      initialGameState,
+      $Keyboard.arrows);
    }();
-   var initializationTests = function () {
-      var expectedStructure = $Matrix.fromList(_L.fromArray([_L.fromArray([0
-                                                                          ,0
-                                                                          ,0
-                                                                          ,0])
-                                                            ,_L.fromArray([0
-                                                                          ,2
-                                                                          ,0
-                                                                          ,0])
-                                                            ,_L.fromArray([0
-                                                                          ,0
-                                                                          ,0
-                                                                          ,0])]));
-      var testGrid = A2($Models$Grid.grid,
-      4,
-      3);
-      return A2($ElmTest$Test.suite,
-      "grid",
-      _L.fromArray([$ElmTest$Test.test("has the provided width")(A2($ElmTest$Assertion.assertEqual,
-                   $Matrix.width(testGrid),
-                   4))
-                   ,$ElmTest$Test.test("has the provided height")(A2($ElmTest$Assertion.assertEqual,
-                   $Matrix.height(testGrid),
-                   3))
-                   ,$ElmTest$Test.test("has one element set to 2")(A2($ElmTest$Assertion.assertEqual,
-                   A3($Matrix.get,1,1,testGrid),
-                   $Maybe.Just(2)))
-                   ,$ElmTest$Test.test("has the expected structure")(A2($ElmTest$Assertion.assertEqual,
-                   testGrid,
-                   expectedStructure))]));
-   }();
-   var tests = A2($ElmTest$Test.suite,
-   "Models.Grid",
-   _L.fromArray([initializationTests
-                ,updateTests
-                ,squashTests]));
-   var main = $ElmTest$Runner$Element.runDisplay(tests);
+   var main = A2($Signal.map,
+   view,
+   gameState);
    _elm.Main.values = {_op: _op
-                      ,initializationTests: initializationTests
-                      ,updateTests: updateTests
-                      ,squashTests: squashTests
-                      ,tests: tests
+                      ,startTime: startTime
+                      ,startTimeSeed: startTimeSeed
+                      ,GameState: GameState
+                      ,Direction: Direction
+                      ,toAction: toAction
+                      ,movement: movement
+                      ,randomEmptyPosition: randomEmptyPosition
+                      ,update: update
+                      ,gameState: gameState
+                      ,view: view
                       ,main: main};
    return _elm.Main.values;
 };
