@@ -4696,6 +4696,7 @@ Elm.Main.make = function (_elm) {
    $List = Elm.List.make(_elm),
    $Matrix = Elm.Matrix.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Models$Grid = Elm.Models.Grid.make(_elm),
    $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
@@ -4718,7 +4719,7 @@ Elm.Main.make = function (_elm) {
                {case "_Tuple3":
                   return _U.eq(_v2._2,0);}
                _U.badCase($moduleName,
-               "on line 91, column 86 to 97");
+               "on line 89, column 86 to 97");
             }();
          })($Matrix.toIndexedList(grid));
          return $List.head($List.drop(A2($Basics._op["%"],
@@ -4847,7 +4848,7 @@ Elm.Main.make = function (_elm) {
                     break;
                   case "Nothing": return grid$;}
                _U.badCase($moduleName,
-               "between lines 103 and 106");
+               "between lines 101 and 104");
             }();
             return movement(input) ? {_: {}
                                      ,grid: grid$$
@@ -4863,22 +4864,12 @@ Elm.Main.make = function (_elm) {
              ,grid: a
              ,seed: b};
    });
-   var defaultGrid = F2(function (rows,
-   cols) {
-      return A3($Matrix.set,
-      1,
-      1,
-      2)(A3($Matrix.repeat,
-      rows,
-      cols,
-      0));
-   });
    var startTime = 5;
    var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
    var gameState = A3($Signal.foldp,
    update,
    {_: {}
-   ,grid: A2(defaultGrid,4,4)
+   ,grid: A2($Models$Grid.grid,4,4)
    ,seed: startTimeSeed},
    $Keyboard.arrows);
    var main = A2($Signal.map,
@@ -4887,7 +4878,6 @@ Elm.Main.make = function (_elm) {
    _elm.Main.values = {_op: _op
                       ,startTime: startTime
                       ,startTimeSeed: startTimeSeed
-                      ,defaultGrid: defaultGrid
                       ,GameState: GameState
                       ,sumTheSame: sumTheSame
                       ,squashRowLeft: squashRowLeft
@@ -5687,6 +5677,39 @@ Elm.Maybe.Extra.make = function (_elm) {
                              ,traverseArray: traverseArray
                              ,combineArray: combineArray};
    return _elm.Maybe.Extra.values;
+};
+Elm.Models = Elm.Models || {};
+Elm.Models.Grid = Elm.Models.Grid || {};
+Elm.Models.Grid.make = function (_elm) {
+   "use strict";
+   _elm.Models = _elm.Models || {};
+   _elm.Models.Grid = _elm.Models.Grid || {};
+   if (_elm.Models.Grid.values)
+   return _elm.Models.Grid.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Models.Grid",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Matrix = Elm.Matrix.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var grid = F2(function (width,
+   height) {
+      return A3($Matrix.set,
+      1,
+      1,
+      2)(A3($Matrix.repeat,
+      width,
+      height,
+      0));
+   });
+   _elm.Models.Grid.values = {_op: _op
+                             ,grid: grid};
+   return _elm.Models.Grid.values;
 };
 Elm.Native.Array = {};
 Elm.Native.Array.make = function(localRuntime) {

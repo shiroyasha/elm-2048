@@ -1,0 +1,33 @@
+Elm.Models = Elm.Models || {};
+Elm.Models.Grid = Elm.Models.Grid || {};
+Elm.Models.Grid.make = function (_elm) {
+   "use strict";
+   _elm.Models = _elm.Models || {};
+   _elm.Models.Grid = _elm.Models.Grid || {};
+   if (_elm.Models.Grid.values)
+   return _elm.Models.Grid.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Models.Grid",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Matrix = Elm.Matrix.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var grid = F2(function (width,
+   height) {
+      return A3($Matrix.set,
+      1,
+      1,
+      2)(A3($Matrix.repeat,
+      width,
+      height,
+      0));
+   });
+   _elm.Models.Grid.values = {_op: _op
+                             ,grid: grid};
+   return _elm.Models.Grid.values;
+};

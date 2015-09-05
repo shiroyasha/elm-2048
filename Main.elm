@@ -1,21 +1,19 @@
-import Matrix exposing (Matrix)
-
 import Config
-import Views.Grid
 import Random exposing (Seed)
 import Keyboard
 import Time exposing (..)
 import Debug
+
+import Matrix exposing (Matrix)
+
+import Views.Grid
+import Models.Grid
 
 -- port startTime : Float
 startTime = 5
 
 startTimeSeed : Seed
 startTimeSeed = Random.initialSeed <| round startTime
-
-
-defaultGrid : Int -> Int -> Matrix Int
-defaultGrid rows cols = Matrix.repeat rows cols 0 |> Matrix.set 1 1 2
 
 
 type alias GameState =
@@ -110,7 +108,7 @@ update input {grid, seed} =
 
 
 gameState : Signal GameState
-gameState = Signal.foldp update { grid = defaultGrid 4 4, seed = startTimeSeed } Keyboard.arrows
+gameState = Signal.foldp update { grid = Models.Grid.grid 4 4, seed = startTimeSeed } Keyboard.arrows
 
 
 view {grid, seed} = Views.Grid.render Config.defaultConfig (Debug.watch "Number Grid" grid)
