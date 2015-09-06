@@ -33,26 +33,18 @@ Elm.Main.make = function (_elm) {
    var randomEmptyPosition = F2(function (randomNumber,
    grid) {
       return function () {
-         var emptyPositions = $List.filter(function (_v2) {
-            return function () {
-               switch (_v2.ctor)
-               {case "_Tuple3":
-                  return _U.eq(_v2._2,0);}
-               _U.badCase($moduleName,
-               "on line 45, column 86 to 97");
-            }();
-         })($Matrix.toIndexedList(grid));
+         var positions = $Models$Grid.emptyPositions(grid);
          return $List.head($List.drop(A2($Basics._op["%"],
          randomNumber,
-         $List.length(emptyPositions)))(emptyPositions));
+         $List.length(positions)))(positions));
       }();
    });
-   var movement = function (_v7) {
+   var movement = function (_v2) {
       return function () {
          return A2($List.member,
          {ctor: "_Tuple2"
-         ,_0: _v7.x
-         ,_1: _v7.y},
+         ,_0: _v2.x
+         ,_1: _v2.y},
          _L.fromArray([{ctor: "_Tuple2"
                        ,_0: 1
                        ,_1: 0}
@@ -63,26 +55,25 @@ Elm.Main.make = function (_elm) {
                        ,_1: 1}]));
       }();
    };
-   var toAction = function (_v9) {
+   var toAction = function (_v4) {
       return function () {
          return function () {
-            var _v11 = {ctor: "_Tuple2"
-                       ,_0: _v9.x
-                       ,_1: _v9.y};
-            switch (_v11.ctor)
-            {case "_Tuple2":
-               switch (_v11._0)
-                 {case -1: switch (_v11._1)
+            var _v6 = {ctor: "_Tuple2"
+                      ,_0: _v4.x
+                      ,_1: _v4.y};
+            switch (_v6.ctor)
+            {case "_Tuple2": switch (_v6._0)
+                 {case -1: switch (_v6._1)
                       {case 0:
                          return $Models$Grid.SquashLeft;}
                       break;
-                    case 0: switch (_v11._1)
+                    case 0: switch (_v6._1)
                       {case -1:
                          return $Models$Grid.SquashUp;
                          case 1:
                          return $Models$Grid.SquashDown;}
                       break;
-                    case 1: switch (_v11._1)
+                    case 1: switch (_v6._1)
                       {case 0:
                          return $Models$Grid.SquashRight;}
                       break;}
@@ -92,36 +83,36 @@ Elm.Main.make = function (_elm) {
       }();
    };
    var update = F2(function (input,
-   _v14) {
+   _v9) {
       return function () {
          return function () {
             var $ = $Debug.watch("Randomness")(A2($Random.generate,
             A2($Random.$int,1,16),
-            _v14.seed)),
+            _v9.seed)),
             position = $._0,
             seed$ = $._1;
             var action = toAction(input);
             var grid$ = A2($Models$Grid.update,
             action,
-            _v14.grid);
-            var grid$$ = !_U.eq(_v14.grid,
+            _v9.grid);
+            var grid$$ = !_U.eq(_v9.grid,
             grid$) ? function () {
-               var _v16 = A2(randomEmptyPosition,
+               var _v11 = A2(randomEmptyPosition,
                position,
                grid$);
-               switch (_v16.ctor)
+               switch (_v11.ctor)
                {case "Just":
-                  switch (_v16._0.ctor)
-                    {case "_Tuple3":
+                  switch (_v11._0.ctor)
+                    {case "_Tuple2":
                        return A4($Matrix.set,
-                         _v16._0._0,
-                         _v16._0._1,
+                         _v11._0._0,
+                         _v11._0._1,
                          2,
                          grid$);}
                     break;
                   case "Nothing": return grid$;}
                _U.badCase($moduleName,
-               "between lines 61 and 64");
+               "between lines 60 and 63");
             }() : grid$;
             return {_: {}
                    ,grid: grid$$

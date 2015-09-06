@@ -56,6 +56,27 @@ Elm.Models.Grid.make = function (_elm) {
    var squashRowRight = function ($) {
       return $List.reverse(squashRowLeft($List.reverse($)));
    };
+   var emptyPositions = function ($) {
+      return $List.map(function (_v5) {
+         return function () {
+            switch (_v5.ctor)
+            {case "_Tuple3":
+               return {ctor: "_Tuple2"
+                      ,_0: _v5._0
+                      ,_1: _v5._1};}
+            _U.badCase($moduleName,
+            "on line 28, column 31 to 35");
+         }();
+      })($List.filter(function (_v0) {
+         return function () {
+            switch (_v0.ctor)
+            {case "_Tuple3":
+               return _U.eq(_v0._2,0);}
+            _U.badCase($moduleName,
+            "on line 27, column 38 to 49");
+         }();
+      })($Matrix.toIndexedList($)));
+   };
    var grid = F2(function (width,
    height) {
       return A3($Matrix.set,
@@ -104,6 +125,7 @@ Elm.Models.Grid.make = function (_elm) {
                              ,NoAction: NoAction
                              ,grid: grid
                              ,update: update
+                             ,emptyPositions: emptyPositions
                              ,sumTheSame: sumTheSame
                              ,squashRowLeft: squashRowLeft
                              ,squashRowRight: squashRowRight};

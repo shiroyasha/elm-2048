@@ -7,7 +7,7 @@ import Debug
 import Matrix exposing (Matrix)
 
 import Views.Grid
-import Models.Grid
+import Models.Grid exposing (Grid)
 
 -- port startTime : Float
 startTime = 5
@@ -39,13 +39,12 @@ movement : Direction -> Bool
 movement {x, y} = List.member (x, y) [(1, 0), (-1, 0), (0, -1), (0, 1)]
 
 
-randomEmptyPosition: Int -> Matrix Int -> Maybe (Int, Int, Int)
-randomEmptyPosition randomNumber grid =
+randomEmptyPosition: Int -> Grid -> Maybe (Int, Int)
+randomEmptyPosition randomNumber grid=
   let
-    emptyPositions = grid |> Matrix.toIndexedList |> List.filter (\(_, _, number) -> number == 0)
+    positions = Models.Grid.emptyPositions grid
   in
-    emptyPositions |> List.drop (randomNumber % (List.length emptyPositions)) |> List.head
-
+    positions |> List.drop (randomNumber % (List.length positions)) |> List.head
 
 
 update : Input -> GameState -> GameState
@@ -59,7 +58,7 @@ update input {grid, seed} =
       grid'' = if grid /= grid'
                   then
                     case randomEmptyPosition position grid' of
-                      Just (x, y, number) -> Matrix.set x y 2 grid'
+                      Just (x, y) -> Matrix.set x y 2 grid'
                       Nothing -> grid'
                   else
                     grid'

@@ -78,7 +78,7 @@ updateTests =
 
 
 squashTests =
-  suite "squashTests"
+  suite "squashRow"
     [ test "doesn't change the length of the list"
         <| assertEqual ([2, 2, 0] |> squashRowLeft |> List.length) 3
     , test "sums the numbers if they are equal"
@@ -89,12 +89,19 @@ squashTests =
         <| assertEqual ([16, 2, 2] |> squashRowLeft) [16, 4, 0]
     ]
 
+emptyPositionsTests =
+  suite "emptyPositions"
+    [ test "returns every empty position"
+        <| assertEqual (grid 2 2 |> emptyPositions) [(0, 0), (1, 0), (0, 1)]
+    ]
+
 
 tests : Test
 tests = suite "Models.Grid"
   [ initializationTests
   , updateTests
   , squashTests
+  , emptyPositionsTests
   ]
 
 main : Element
