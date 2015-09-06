@@ -1,12 +1,9 @@
 import Config
 import Random exposing (Seed)
-import Keyboard
-import Time exposing (..)
-import Debug
 
-import Views.Grid
-import Models.Grid exposing (Grid)
-import Models.GameState exposing (GameState)
+import Views.Grid exposing (render)
+import Models.GameState exposing (GameState, update, initial)
+import Input exposing (keyboard)
 
 -- port startTime : Float
 startTime = 5
@@ -15,23 +12,11 @@ startTimeSeed : Seed
 startTimeSeed = Random.initialSeed <| round startTime
 
 
-keyboard: Signal Models.Grid.Action
-keyboard =
-  let
-      toAction {x, y} = case (x, y) of
-        ( 1,  0) -> Models.Grid.SquashRight
-        (-1,  0) -> Models.Grid.SquashLeft
-        ( 0, -1) -> Models.Grid.SquashUp
-        ( 0,  1) -> Models.Grid.SquashDown
-        _ -> Models.Grid.NoAction
-  in
-     Signal.map toAction Keyboard.arrows
-
-
 gameState : Signal GameState
-gameState = Signal.foldp Models.GameState.update (Models.GameState.initial startTimeSeed) keyboard
+gameState = Signal.foldp update (initial startTimeSeed) Input.keyboard
 
 
-view {grid, seed} = Views.Grid.render Config.defaultConfig grid
+view = render Config.defaultConfig
 
-main = Signal.map view gameState
+
+main = Signal.map (\{grid, seed} -> view grid) gameState

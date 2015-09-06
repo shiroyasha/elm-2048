@@ -3200,6 +3200,60 @@ Elm.Graphics.Element.make = function (_elm) {
                                   ,Position: Position};
    return _elm.Graphics.Element.values;
 };
+Elm.Input = Elm.Input || {};
+Elm.Input.make = function (_elm) {
+   "use strict";
+   _elm.Input = _elm.Input || {};
+   if (_elm.Input.values)
+   return _elm.Input.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Input",
+   $Basics = Elm.Basics.make(_elm),
+   $Keyboard = Elm.Keyboard.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Models$Grid = Elm.Models.Grid.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var keyboard = function () {
+      var toAction = function (_v0) {
+         return function () {
+            return function () {
+               var _v2 = {ctor: "_Tuple2"
+                         ,_0: _v0.x
+                         ,_1: _v0.y};
+               switch (_v2.ctor)
+               {case "_Tuple2": switch (_v2._0)
+                    {case -1: switch (_v2._1)
+                         {case 0:
+                            return $Models$Grid.SquashLeft;}
+                         break;
+                       case 0: switch (_v2._1)
+                         {case -1:
+                            return $Models$Grid.SquashUp;
+                            case 1:
+                            return $Models$Grid.SquashDown;}
+                         break;
+                       case 1: switch (_v2._1)
+                         {case 0:
+                            return $Models$Grid.SquashRight;}
+                         break;}
+                    break;}
+               return $Models$Grid.NoAction;
+            }();
+         }();
+      };
+      return A2($Signal.map,
+      toAction,
+      $Keyboard.arrows);
+   }();
+   _elm.Input.values = {_op: _op
+                       ,keyboard: keyboard};
+   return _elm.Input.values;
+};
 Elm.Keyboard = Elm.Keyboard || {};
 Elm.Keyboard.make = function (_elm) {
    "use strict";
@@ -4691,67 +4745,31 @@ Elm.Main.make = function (_elm) {
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
    $Config = Elm.Config.make(_elm),
-   $Keyboard = Elm.Keyboard.make(_elm),
+   $Input = Elm.Input.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models$GameState = Elm.Models.GameState.make(_elm),
-   $Models$Grid = Elm.Models.Grid.make(_elm),
    $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Views$Grid = Elm.Views.Grid.make(_elm);
-   var view = function (_v0) {
-      return function () {
-         return A2($Views$Grid.render,
-         $Config.defaultConfig,
-         _v0.grid);
-      }();
-   };
-   var movement = function () {
-      var toAction = function (_v2) {
-         return function () {
-            return function () {
-               var _v4 = {ctor: "_Tuple2"
-                         ,_0: _v2.x
-                         ,_1: _v2.y};
-               switch (_v4.ctor)
-               {case "_Tuple2": switch (_v4._0)
-                    {case -1: switch (_v4._1)
-                         {case 0:
-                            return $Models$Grid.SquashLeft;}
-                         break;
-                       case 0: switch (_v4._1)
-                         {case -1:
-                            return $Models$Grid.SquashUp;
-                            case 1:
-                            return $Models$Grid.SquashDown;}
-                         break;
-                       case 1: switch (_v4._1)
-                         {case 0:
-                            return $Models$Grid.SquashRight;}
-                         break;}
-                    break;}
-               return $Models$Grid.NoAction;
-            }();
-         }();
-      };
-      return A2($Signal.map,
-      toAction,
-      $Keyboard.arrows);
-   }();
+   var view = $Views$Grid.render($Config.defaultConfig);
    var startTime = 5;
    var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
    var gameState = A3($Signal.foldp,
    $Models$GameState.update,
    $Models$GameState.initial(startTimeSeed),
-   movement);
+   $Input.keyboard);
    var main = A2($Signal.map,
-   view,
+   function (_v0) {
+      return function () {
+         return view(_v0.grid);
+      }();
+   },
    gameState);
    _elm.Main.values = {_op: _op
                       ,startTime: startTime
                       ,startTimeSeed: startTimeSeed
-                      ,movement: movement
                       ,gameState: gameState
                       ,view: view
                       ,main: main};
@@ -10972,117 +10990,6 @@ Elm.Native.Text.make = function(localRuntime) {
 	};
 };
 
-Elm.Native.Time = {};
-Elm.Native.Time.make = function(localRuntime)
-{
-
-	localRuntime.Native = localRuntime.Native || {};
-	localRuntime.Native.Time = localRuntime.Native.Time || {};
-	if (localRuntime.Native.Time.values)
-	{
-		return localRuntime.Native.Time.values;
-	}
-
-	var NS = Elm.Native.Signal.make(localRuntime);
-	var Maybe = Elm.Maybe.make(localRuntime);
-
-
-	// FRAMES PER SECOND
-
-	function fpsWhen(desiredFPS, isOn)
-	{
-		var msPerFrame = 1000 / desiredFPS;
-		var ticker = NS.input('fps-' + desiredFPS, null);
-
-		function notifyTicker()
-		{
-			localRuntime.notify(ticker.id, null);
-		}
-
-		function firstArg(x, y)
-		{
-			return x;
-		}
-
-		// input fires either when isOn changes, or when ticker fires.
-		// Its value is a tuple with the current timestamp, and the state of isOn
-		var input = NS.timestamp(A3(NS.map2, F2(firstArg), NS.dropRepeats(isOn), ticker));
-
-		var initialState = {
-			isOn: false,
-			time: localRuntime.timer.programStart,
-			delta: 0
-		};
-
-		var timeoutId;
-
-		function update(input,state)
-		{
-			var currentTime = input._0;
-			var isOn = input._1;
-			var wasOn = state.isOn;
-			var previousTime = state.time;
-
-			if (isOn)
-			{
-				timeoutId = localRuntime.setTimeout(notifyTicker, msPerFrame);
-			}
-			else if (wasOn)
-			{
-				clearTimeout(timeoutId);
-			}
-
-			return {
-				isOn: isOn,
-				time: currentTime,
-				delta: (isOn && !wasOn) ? 0 : currentTime - previousTime
-			};
-		}
-
-		return A2(
-			NS.map,
-			function(state) { return state.delta; },
-			A3(NS.foldp, F2(update), update(input.value,initialState), input)
-		);
-	}
-
-
-	// EVERY
-
-	function every(t)
-	{
-		var ticker = NS.input('every-' + t, null);
-		function tellTime()
-		{
-			localRuntime.notify(ticker.id, null);
-		}
-		var clock = A2( NS.map, fst, NS.timestamp(ticker) );
-		setInterval(tellTime, t);
-		return clock;
-	}
-
-
-	function fst(pair)
-	{
-		return pair._0;
-	}
-
-
-	function read(s)
-	{
-		var t = Date.parse(s);
-		return isNaN(t) ? Maybe.Nothing : Maybe.Just(t);
-	}
-
-	return localRuntime.Native.Time.values = {
-		fpsWhen: F2(fpsWhen),
-		every: every,
-		toDate: function(t) { return new window.Date(t); },
-		read: read
-	};
-
-};
-
 Elm.Native.Transform2D = {};
 Elm.Native.Transform2D.make = function(localRuntime) {
 
@@ -12837,85 +12744,6 @@ Elm.Text.make = function (_elm) {
                       ,Over: Over
                       ,Through: Through};
    return _elm.Text.values;
-};
-Elm.Time = Elm.Time || {};
-Elm.Time.make = function (_elm) {
-   "use strict";
-   _elm.Time = _elm.Time || {};
-   if (_elm.Time.values)
-   return _elm.Time.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Time",
-   $Basics = Elm.Basics.make(_elm),
-   $Native$Signal = Elm.Native.Signal.make(_elm),
-   $Native$Time = Elm.Native.Time.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var delay = $Native$Signal.delay;
-   var since = F2(function (time,
-   signal) {
-      return function () {
-         var stop = A2($Signal.map,
-         $Basics.always(-1),
-         A2(delay,time,signal));
-         var start = A2($Signal.map,
-         $Basics.always(1),
-         signal);
-         var delaydiff = A3($Signal.foldp,
-         F2(function (x,y) {
-            return x + y;
-         }),
-         0,
-         A2($Signal.merge,start,stop));
-         return A2($Signal.map,
-         F2(function (x,y) {
-            return !_U.eq(x,y);
-         })(0),
-         delaydiff);
-      }();
-   });
-   var timestamp = $Native$Signal.timestamp;
-   var every = $Native$Time.every;
-   var fpsWhen = $Native$Time.fpsWhen;
-   var fps = function (targetFrames) {
-      return A2(fpsWhen,
-      targetFrames,
-      $Signal.constant(true));
-   };
-   var inMilliseconds = function (t) {
-      return t;
-   };
-   var millisecond = 1;
-   var second = 1000 * millisecond;
-   var minute = 60 * second;
-   var hour = 60 * minute;
-   var inHours = function (t) {
-      return t / hour;
-   };
-   var inMinutes = function (t) {
-      return t / minute;
-   };
-   var inSeconds = function (t) {
-      return t / second;
-   };
-   _elm.Time.values = {_op: _op
-                      ,millisecond: millisecond
-                      ,second: second
-                      ,minute: minute
-                      ,hour: hour
-                      ,inMilliseconds: inMilliseconds
-                      ,inSeconds: inSeconds
-                      ,inMinutes: inMinutes
-                      ,inHours: inHours
-                      ,fps: fps
-                      ,fpsWhen: fpsWhen
-                      ,every: every
-                      ,timestamp: timestamp
-                      ,delay: delay
-                      ,since: since};
-   return _elm.Time.values;
 };
 Elm.Transform2D = Elm.Transform2D || {};
 Elm.Transform2D.make = function (_elm) {

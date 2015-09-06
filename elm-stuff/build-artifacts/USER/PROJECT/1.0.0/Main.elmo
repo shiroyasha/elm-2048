@@ -11,67 +11,31 @@ Elm.Main.make = function (_elm) {
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
    $Config = Elm.Config.make(_elm),
-   $Keyboard = Elm.Keyboard.make(_elm),
+   $Input = Elm.Input.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models$GameState = Elm.Models.GameState.make(_elm),
-   $Models$Grid = Elm.Models.Grid.make(_elm),
    $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Views$Grid = Elm.Views.Grid.make(_elm);
-   var view = function (_v0) {
-      return function () {
-         return A2($Views$Grid.render,
-         $Config.defaultConfig,
-         _v0.grid);
-      }();
-   };
-   var movement = function () {
-      var toAction = function (_v2) {
-         return function () {
-            return function () {
-               var _v4 = {ctor: "_Tuple2"
-                         ,_0: _v2.x
-                         ,_1: _v2.y};
-               switch (_v4.ctor)
-               {case "_Tuple2": switch (_v4._0)
-                    {case -1: switch (_v4._1)
-                         {case 0:
-                            return $Models$Grid.SquashLeft;}
-                         break;
-                       case 0: switch (_v4._1)
-                         {case -1:
-                            return $Models$Grid.SquashUp;
-                            case 1:
-                            return $Models$Grid.SquashDown;}
-                         break;
-                       case 1: switch (_v4._1)
-                         {case 0:
-                            return $Models$Grid.SquashRight;}
-                         break;}
-                    break;}
-               return $Models$Grid.NoAction;
-            }();
-         }();
-      };
-      return A2($Signal.map,
-      toAction,
-      $Keyboard.arrows);
-   }();
+   var view = $Views$Grid.render($Config.defaultConfig);
    var startTime = 5;
    var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
    var gameState = A3($Signal.foldp,
    $Models$GameState.update,
    $Models$GameState.initial(startTimeSeed),
-   movement);
+   $Input.keyboard);
    var main = A2($Signal.map,
-   view,
+   function (_v0) {
+      return function () {
+         return view(_v0.grid);
+      }();
+   },
    gameState);
    _elm.Main.values = {_op: _op
                       ,startTime: startTime
                       ,startTimeSeed: startTimeSeed
-                      ,movement: movement
                       ,gameState: gameState
                       ,view: view
                       ,main: main};
