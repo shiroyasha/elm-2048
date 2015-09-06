@@ -72,13 +72,13 @@ updateTests =
        [ test "original grid has the expected structure"
            <| assertEqual testGrid expectedStructure
        , test "can squash numbers left"
-           <| assertEqual (update SquashLeft testGrid) leftSquash
+           <| assertEqual (update SquashLeft testGrid) (0, leftSquash)
        , test "can squash numbers right"
-           <| assertEqual (update SquashRight testGrid) rightSquash
+           <| assertEqual (update SquashRight testGrid) (0, rightSquash)
        , test "can squash numbers up"
-           <| assertEqual (update SquashUp testGrid) upSquash
+           <| assertEqual (update SquashUp testGrid) (0, upSquash)
        , test "can squash numbers down"
-           <| assertEqual (update SquashDown testGrid) downSquash
+           <| assertEqual (update SquashDown testGrid) (0, downSquash)
        ]
 
 

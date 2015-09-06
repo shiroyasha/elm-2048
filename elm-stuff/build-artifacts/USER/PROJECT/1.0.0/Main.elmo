@@ -11,6 +11,7 @@ Elm.Main.make = function (_elm) {
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
    $Config = Elm.Config.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $Input = Elm.Input.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
@@ -19,7 +20,15 @@ Elm.Main.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Views$Grid = Elm.Views.Grid.make(_elm);
-   var view = $Views$Grid.render($Config.defaultConfig);
+   var view = F2(function (grid,
+   score) {
+      return A2($Graphics$Element.flow,
+      $Graphics$Element.down,
+      _L.fromArray([$Graphics$Element.show(score)
+                   ,A2($Views$Grid.render,
+                   $Config.defaultConfig,
+                   grid)]));
+   });
    var startTime = 5;
    var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
    var gameState = A3($Signal.foldp,
@@ -29,7 +38,9 @@ Elm.Main.make = function (_elm) {
    var main = A2($Signal.map,
    function (_v0) {
       return function () {
-         return view(_v0.grid);
+         return A2(view,
+         _v0.grid,
+         _v0.score);
       }();
    },
    gameState);

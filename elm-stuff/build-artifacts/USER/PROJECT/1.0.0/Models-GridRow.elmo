@@ -1,0 +1,77 @@
+Elm.Models = Elm.Models || {};
+Elm.Models.GridRow = Elm.Models.GridRow || {};
+Elm.Models.GridRow.make = function (_elm) {
+   "use strict";
+   _elm.Models = _elm.Models || {};
+   _elm.Models.GridRow = _elm.Models.GridRow || {};
+   if (_elm.Models.GridRow.values)
+   return _elm.Models.GridRow.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Models.GridRow",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var fill = F2(function (len,
+   row) {
+      return A2($Basics._op["++"],
+      row,
+      A2($List.repeat,
+      len - $List.length(row),
+      0));
+   });
+   var filterNumbers = $List.filter(function (el) {
+      return !_U.eq(el,0);
+   });
+   var points = function (list) {
+      return $List.sum($List.map($List.sum)($List.filter(function (list) {
+         return _U.cmp($List.length(list),
+         1) > 0;
+      })(list)));
+   };
+   var groupPairs = function (list) {
+      return function () {
+         switch (list.ctor)
+         {case "::":
+            switch (list._1.ctor)
+              {case "::":
+                 return _U.eq(list._0,
+                   list._1._0) ? A2($List._op["::"],
+                   _L.fromArray([list._0
+                                ,list._1._0]),
+                   groupPairs(list._1._1)) : A2($List._op["::"],
+                   _L.fromArray([list._0]),
+                   groupPairs(A2($List._op["::"],
+                   list._1._0,
+                   list._1._1)));
+                 case "[]":
+                 return _L.fromArray([_L.fromArray([list._0])]);}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 7 and 10");
+      }();
+   };
+   var squash = function (list) {
+      return function () {
+         var groups = groupPairs(filterNumbers(list));
+         var points$ = points(groups);
+         var list$ = fill($List.length(list))($List.map($List.sum)(groups));
+         return {ctor: "_Tuple2"
+                ,_0: points$
+                ,_1: list$};
+      }();
+   };
+   _elm.Models.GridRow.values = {_op: _op
+                                ,groupPairs: groupPairs
+                                ,points: points
+                                ,filterNumbers: filterNumbers
+                                ,fill: fill
+                                ,squash: squash};
+   return _elm.Models.GridRow.values;
+};

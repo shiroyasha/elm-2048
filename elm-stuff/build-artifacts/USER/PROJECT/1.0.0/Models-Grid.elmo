@@ -15,80 +15,94 @@ Elm.Models.Grid.make = function (_elm) {
    $List = Elm.List.make(_elm),
    $Matrix = Elm.Matrix.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Models$GridRow = Elm.Models.GridRow.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var sumTheSame = function (list) {
+   var squash = function (grid) {
       return function () {
-         var firstTwoTheSame = function (list) {
-            return _U.eq(A2($List.take,
-            1,
-            list),
-            $List.drop(1)($List.take(2)(list)));
-         };
-         return _U.eq($List.length(list),
-         0) ? list : _U.eq($List.length(list),
-         1) ? list : _U.cmp($List.length(list),
-         2) > -1 && firstTwoTheSame(list) ? sumTheSame(A2($List._op["::"],
-         $List.sum($List.take(2)(list)),
-         A2($List.drop,
-         2,
-         list))) : A2($List._op["::"],
-         $List.sum($List.take(1)(list)),
-         sumTheSame(A2($List.drop,
-         1,
-         list)));
+         var $ = $List.unzip($List.map($Models$GridRow.squash)($Matrix.toList(grid))),
+         points = $._0,
+         rows$ = $._1;
+         return {ctor: "_Tuple2"
+                ,_0: $List.sum(points)
+                ,_1: $Matrix.fromList(rows$)};
       }();
    };
-   var squashRowLeft = function (list) {
+   var flip = function ($) {
+      return $Matrix.fromList($List.map($List.reverse)($Matrix.toList($)));
+   };
+   var transpose = $Matrix.transpose;
+   var update = F2(function (action,
+   grid) {
       return function () {
-         var numbers = sumTheSame(A2($List.filter,
-         function (x) {
-            return !_U.eq(x,0);
-         },
-         list));
-         var numberOfZeroes = $List.length(list) - $List.length(numbers);
-         return $List.concat(_L.fromArray([numbers
-                                          ,A2($List.repeat,
-                                          numberOfZeroes,
-                                          0)]));
+         var $ = squash(function () {
+            switch (action.ctor)
+            {case "SquashDown":
+               return function ($) {
+                    return flip(transpose($));
+                 };
+               case "SquashLeft":
+               return $Basics.identity;
+               case "SquashRight": return flip;
+               case "SquashUp":
+               return transpose;}
+            _U.badCase($moduleName,
+            "between lines 43 and 47");
+         }()(grid)),
+         points = $._0,
+         grid$ = $._1;
+         var grid$$ = function () {
+            switch (action.ctor)
+            {case "SquashDown":
+               return function ($) {
+                    return transpose(flip($));
+                 };
+               case "SquashLeft":
+               return $Basics.identity;
+               case "SquashRight": return flip;
+               case "SquashUp":
+               return transpose;}
+            _U.badCase($moduleName,
+            "between lines 49 and 54");
+         }()(grid$);
+         return {ctor: "_Tuple2"
+                ,_0: points
+                ,_1: grid$$};
       }();
-   };
-   var squashRowRight = function ($) {
-      return $List.reverse(squashRowLeft($List.reverse($)));
-   };
+   });
    var emptyPositions = function ($) {
-      return $List.map(function (_v5) {
+      return $List.map(function (_v7) {
          return function () {
-            switch (_v5.ctor)
+            switch (_v7.ctor)
             {case "_Tuple3":
                return {ctor: "_Tuple2"
-                      ,_0: _v5._0
-                      ,_1: _v5._1};}
+                      ,_0: _v7._0
+                      ,_1: _v7._1};}
             _U.badCase($moduleName,
-            "on line 35, column 31 to 35");
+            "on line 28, column 31 to 35");
          }();
-      })($List.filter(function (_v0) {
+      })($List.filter(function (_v2) {
          return function () {
-            switch (_v0.ctor)
+            switch (_v2.ctor)
             {case "_Tuple3":
-               return _U.eq(_v0._2,0);}
+               return _U.eq(_v2._2,0);}
             _U.badCase($moduleName,
-            "on line 34, column 38 to 49");
+            "on line 27, column 38 to 49");
          }();
       })($Matrix.toIndexedList($)));
    };
-   var addCell = F2(function (_v10,
+   var addCell = F2(function (_v12,
    grid) {
       return function () {
-         switch (_v10.ctor)
+         switch (_v12.ctor)
          {case "_Tuple2":
             return A4($Matrix.set,
-              _v10._0,
-              _v10._1,
+              _v12._0,
+              _v12._1,
               2,
               grid);}
          _U.badCase($moduleName,
-         "on line 19, column 23 to 44");
+         "on line 21, column 23 to 44");
       }();
    });
    var emptyGrid = F2(function (width,
@@ -109,31 +123,6 @@ Elm.Models.Grid.make = function (_elm) {
    var NoAction = {ctor: "NoAction"};
    var SquashRight = {ctor: "SquashRight"};
    var SquashLeft = {ctor: "SquashLeft"};
-   var update = function (action) {
-      return function () {
-         switch (action.ctor)
-         {case "NoAction":
-            return $Basics.identity;
-            case "SquashDown":
-            return function ($) {
-                 return $Matrix.transpose(update(SquashRight)($Matrix.transpose($)));
-              };
-            case "SquashLeft":
-            return function ($) {
-                 return $Matrix.fromList($List.map(squashRowLeft)($Matrix.toList($)));
-              };
-            case "SquashRight":
-            return function ($) {
-                 return $Matrix.fromList($List.map(squashRowRight)($Matrix.toList($)));
-              };
-            case "SquashUp":
-            return function ($) {
-                 return $Matrix.transpose(update(SquashLeft)($Matrix.transpose($)));
-              };}
-         _U.badCase($moduleName,
-         "between lines 23 and 28");
-      }();
-   };
    var SquashDown = {ctor: "SquashDown"};
    var SquashUp = {ctor: "SquashUp"};
    _elm.Models.Grid.values = {_op: _op
@@ -145,10 +134,10 @@ Elm.Models.Grid.make = function (_elm) {
                              ,emptyGrid: emptyGrid
                              ,grid: grid
                              ,addCell: addCell
-                             ,update: update
                              ,emptyPositions: emptyPositions
-                             ,sumTheSame: sumTheSame
-                             ,squashRowLeft: squashRowLeft
-                             ,squashRowRight: squashRowRight};
+                             ,transpose: transpose
+                             ,flip: flip
+                             ,update: update
+                             ,squash: squash};
    return _elm.Models.Grid.values;
 };

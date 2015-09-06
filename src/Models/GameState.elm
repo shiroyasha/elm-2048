@@ -24,7 +24,9 @@ initial seed = { grid = Models.Grid.grid 4 4, seed = seed, score = 0}
 update : Models.Grid.Action -> GameState -> GameState
 update gridAction {grid, seed, score} =
   let
-      grid' = Models.Grid.update gridAction grid
+      (points, grid') = if gridAction /= Models.Grid.NoAction
+                           then Models.Grid.update gridAction grid
+                           else (0, grid)
 
       emptyPositions = Models.Grid.emptyPositions grid'
 
@@ -40,4 +42,4 @@ update gridAction {grid, seed, score} =
                   else
                     grid'
   in
-    { grid = grid'', seed = seed', score = score}
+    { grid = grid'', seed = seed', score = score + points}

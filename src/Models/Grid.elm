@@ -1,9 +1,10 @@
 module Models.Grid where
 
 import Matrix exposing (Matrix)
+import Models.GridRow
 
+type alias Points = Int
 type alias Grid = Matrix Int
-
 
 type Action = SquashUp | SquashDown | SquashLeft | SquashRight | NoAction
 
@@ -20,15 +21,6 @@ addCell : (Int, Int) -> Grid -> Grid
 addCell (x, y) grid = Matrix.set x y 2 grid
 
 
-update : Action -> Grid -> Grid
-update action = case action of
-  SquashLeft  -> Matrix.toList >> List.map squashRowLeft >> Matrix.fromList
-  SquashRight -> Matrix.toList >> List.map squashRowRight >> Matrix.fromList
-  SquashUp    -> Matrix.transpose >> update SquashLeft >> Matrix.transpose
-  SquashDown  -> Matrix.transpose >> update SquashRight >> Matrix.transpose
-  NoAction    -> identity
-
-
 emptyPositions : Grid -> List (Int, Int)
 emptyPositions =
   Matrix.toIndexedList
@@ -36,27 +28,36 @@ emptyPositions =
   >> List.map (\(x, y, _) -> (x, y))
 
 
-sumTheSame list =
+transpose: Grid -> Grid
+transpose = Matrix.transpose
+
+
+flip: Grid -> Grid
+flip = Matrix.toList >> List.map List.reverse >> Matrix.fromList
+
+
+
+update : Action -> Grid -> (Points, Grid)
+update action grid =
   let
-     firstTwoTheSame list = List.take 1 list == (list |> List.take 2 |> List.drop 1)
+    (points, grid') = squash <| (grid |> case action of
+      SquashLeft  -> identity
+      SquashRight -> flip
+      SquashUp    -> transpose
+      SquashDown  -> transpose >> flip)
+
+    grid'' = grid' |> case action of
+      SquashLeft  -> identity
+      SquashRight -> flip
+      SquashUp    -> transpose
+      SquashDown  -> flip >> transpose
   in
-     if | List.length list == 0 -> list
-        | List.length list == 1 -> list
-        | List.length list >= 2 && firstTwoTheSame list ->
-            sumTheSame ((list |> List.take 2 |> List.sum) :: (List.drop 2 list))
-        | otherwise ->
-            (list |> List.take 1 |> List.sum) :: (sumTheSame (List.drop 1 list))
+     (points, grid'')
 
 
-squashRowLeft : List Int -> List Int
-squashRowLeft list =
+squash: Grid -> (Points, Grid)
+squash grid =
   let
-      numbers = List.filter (\x -> x /= 0) list |> sumTheSame
-
-      numberOfZeroes = (List.length list) - (List.length numbers)
+      (points, rows') = grid |> Matrix.toList |> List.map Models.GridRow.squash |> List.unzip
   in
-      List.concat [numbers, List.repeat numberOfZeroes 0]
-
-
-squashRowRight : List Int -> List Int
-squashRowRight = List.reverse >> squashRowLeft >> List.reverse
+     (points |> List.sum, rows' |> Matrix.fromList)
