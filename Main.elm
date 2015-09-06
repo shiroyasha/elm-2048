@@ -21,12 +21,10 @@ type alias GameState =
   , seed : Random.Seed
   }
 
-
-type alias Direction = {x: Int, y: Int}
-type alias Input = Direction
+type alias Input = {x: Int, y: Int}
 
 
-toAction : Direction -> Models.Grid.Action
+toAction : Input -> Models.Grid.Action
 toAction {x, y} = case (x, y) of
   ( 1,  0) -> Models.Grid.SquashRight
   (-1,  0) -> Models.Grid.SquashLeft
@@ -35,16 +33,12 @@ toAction {x, y} = case (x, y) of
   _ -> Models.Grid.NoAction
 
 
-movement : Direction -> Bool
-movement {x, y} = List.member (x, y) [(1, 0), (-1, 0), (0, -1), (0, 1)]
 
-
-randomEmptyPosition: Int -> Grid -> Maybe (Int, Int)
-randomEmptyPosition randomNumber grid=
-  let
-    positions = Models.Grid.emptyPositions grid
-  in
-    positions |> List.drop (randomNumber % (List.length positions)) |> List.head
+nth: Int -> List a -> Maybe a
+nth index list =
+  case index of
+    0 -> List.head list
+    _ -> nth (index - 1) (Maybe.withDefault [] <| List.tail list)
 
 
 update : Input -> GameState -> GameState
@@ -53,12 +47,16 @@ update input {grid, seed} =
       action = toAction input
       grid' = Models.Grid.update action grid
 
-      (position, seed') = Debug.watch "Randomness" <| Random.generate (Random.int 1 16) seed
+      emptyPositions = Models.Grid.emptyPositions grid'
+
+      (randomNumber, seed') = Random.generate (Random.int 0 (List.length emptyPositions)) seed
+
+      randomPosition = nth randomNumber emptyPositions
 
       grid'' = if grid /= grid'
                   then
-                    case randomEmptyPosition position grid' of
-                      Just (x, y) -> Matrix.set x y 2 grid'
+                    case randomPosition of
+                      Just position -> Models.Grid.addCell position grid'
                       Nothing -> grid'
                   else
                     grid'

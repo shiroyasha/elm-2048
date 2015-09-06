@@ -4710,6 +4710,17 @@ Elm.Main.make = function (_elm) {
          _v0.grid));
       }();
    };
+   var nth = F2(function (index,
+   list) {
+      return function () {
+         switch (index)
+         {case 0:
+            return $List.head(list);}
+         return A2(nth,
+         index - 1,
+         $Maybe.withDefault(_L.fromArray([]))($List.tail(list)));
+      }();
+   });
    var randomEmptyPosition = F2(function (randomNumber,
    grid) {
       return function () {
@@ -4719,41 +4730,25 @@ Elm.Main.make = function (_elm) {
          $List.length(positions)))(positions));
       }();
    });
-   var movement = function (_v2) {
-      return function () {
-         return A2($List.member,
-         {ctor: "_Tuple2"
-         ,_0: _v2.x
-         ,_1: _v2.y},
-         _L.fromArray([{ctor: "_Tuple2"
-                       ,_0: 1
-                       ,_1: 0}
-                      ,{ctor: "_Tuple2",_0: -1,_1: 0}
-                      ,{ctor: "_Tuple2",_0: 0,_1: -1}
-                      ,{ctor: "_Tuple2"
-                       ,_0: 0
-                       ,_1: 1}]));
-      }();
-   };
-   var toAction = function (_v4) {
+   var toAction = function (_v3) {
       return function () {
          return function () {
-            var _v6 = {ctor: "_Tuple2"
-                      ,_0: _v4.x
-                      ,_1: _v4.y};
-            switch (_v6.ctor)
-            {case "_Tuple2": switch (_v6._0)
-                 {case -1: switch (_v6._1)
+            var _v5 = {ctor: "_Tuple2"
+                      ,_0: _v3.x
+                      ,_1: _v3.y};
+            switch (_v5.ctor)
+            {case "_Tuple2": switch (_v5._0)
+                 {case -1: switch (_v5._1)
                       {case 0:
                          return $Models$Grid.SquashLeft;}
                       break;
-                    case 0: switch (_v6._1)
+                    case 0: switch (_v5._1)
                       {case -1:
                          return $Models$Grid.SquashUp;
                          case 1:
                          return $Models$Grid.SquashDown;}
                       break;
-                    case 1: switch (_v6._1)
+                    case 1: switch (_v5._1)
                       {case 0:
                          return $Models$Grid.SquashRight;}
                       break;}
@@ -4763,36 +4758,34 @@ Elm.Main.make = function (_elm) {
       }();
    };
    var update = F2(function (input,
-   _v9) {
+   _v8) {
       return function () {
          return function () {
-            var $ = $Debug.watch("Randomness")(A2($Random.generate,
-            A2($Random.$int,1,16),
-            _v9.seed)),
-            position = $._0,
-            seed$ = $._1;
             var action = toAction(input);
             var grid$ = A2($Models$Grid.update,
             action,
-            _v9.grid);
-            var grid$$ = !_U.eq(_v9.grid,
+            _v8.grid);
+            var emptyPositions = $Models$Grid.emptyPositions(grid$);
+            var $ = A2($Random.generate,
+            A2($Random.$int,
+            0,
+            $List.length(emptyPositions)),
+            _v8.seed),
+            randomNumber = $._0,
+            seed$ = $._1;
+            var randomPosition = A2(nth,
+            randomNumber,
+            emptyPositions);
+            var grid$$ = !_U.eq(_v8.grid,
             grid$) ? function () {
-               var _v11 = A2(randomEmptyPosition,
-               position,
-               grid$);
-               switch (_v11.ctor)
+               switch (randomPosition.ctor)
                {case "Just":
-                  switch (_v11._0.ctor)
-                    {case "_Tuple2":
-                       return A4($Matrix.set,
-                         _v11._0._0,
-                         _v11._0._1,
-                         2,
-                         grid$);}
-                    break;
+                  return A2($Models$Grid.addCell,
+                    randomPosition._0,
+                    grid$);
                   case "Nothing": return grid$;}
                _U.badCase($moduleName,
-               "between lines 60 and 63");
+               "between lines 65 and 68");
             }() : grid$;
             return {_: {}
                    ,grid: grid$$
@@ -4830,8 +4823,8 @@ Elm.Main.make = function (_elm) {
                       ,GameState: GameState
                       ,Direction: Direction
                       ,toAction: toAction
-                      ,movement: movement
                       ,randomEmptyPosition: randomEmptyPosition
+                      ,nth: nth
                       ,update: update
                       ,gameState: gameState
                       ,view: view
