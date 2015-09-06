@@ -11,7 +11,7 @@ backgroung w h = Shapes.roundedRect (w - 15) (h - 40) 3 (rgb 187 173 160)
 
 
 title =
-  "SCORE"
+  "SCORE!!"
   |> Text.fromString
   |> Text.color (rgb 238 228 218)
   |> Text.height 14
