@@ -4691,11 +4691,10 @@ Elm.Main.make = function (_elm) {
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
    $Config = Elm.Config.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
    $Keyboard = Elm.Keyboard.make(_elm),
    $List = Elm.List.make(_elm),
-   $Matrix = Elm.Matrix.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Models$GameState = Elm.Models.GameState.make(_elm),
    $Models$Grid = Elm.Models.Grid.make(_elm),
    $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
@@ -4705,127 +4704,54 @@ Elm.Main.make = function (_elm) {
       return function () {
          return A2($Views$Grid.render,
          $Config.defaultConfig,
-         A2($Debug.watch,
-         "Number Grid",
-         _v0.grid));
+         _v0.grid);
       }();
    };
-   var nth = F2(function (index,
-   list) {
-      return function () {
-         switch (index)
-         {case 0:
-            return $List.head(list);}
-         return A2(nth,
-         index - 1,
-         $Maybe.withDefault(_L.fromArray([]))($List.tail(list)));
-      }();
-   });
-   var randomEmptyPosition = F2(function (randomNumber,
-   grid) {
-      return function () {
-         var positions = $Models$Grid.emptyPositions(grid);
-         return $List.head($List.drop(A2($Basics._op["%"],
-         randomNumber,
-         $List.length(positions)))(positions));
-      }();
-   });
-   var toAction = function (_v3) {
-      return function () {
+   var movement = function () {
+      var toAction = function (_v2) {
          return function () {
-            var _v5 = {ctor: "_Tuple2"
-                      ,_0: _v3.x
-                      ,_1: _v3.y};
-            switch (_v5.ctor)
-            {case "_Tuple2": switch (_v5._0)
-                 {case -1: switch (_v5._1)
-                      {case 0:
-                         return $Models$Grid.SquashLeft;}
-                      break;
-                    case 0: switch (_v5._1)
-                      {case -1:
-                         return $Models$Grid.SquashUp;
-                         case 1:
-                         return $Models$Grid.SquashDown;}
-                      break;
-                    case 1: switch (_v5._1)
-                      {case 0:
-                         return $Models$Grid.SquashRight;}
-                      break;}
-                 break;}
-            return $Models$Grid.NoAction;
+            return function () {
+               var _v4 = {ctor: "_Tuple2"
+                         ,_0: _v2.x
+                         ,_1: _v2.y};
+               switch (_v4.ctor)
+               {case "_Tuple2": switch (_v4._0)
+                    {case -1: switch (_v4._1)
+                         {case 0:
+                            return $Models$Grid.SquashLeft;}
+                         break;
+                       case 0: switch (_v4._1)
+                         {case -1:
+                            return $Models$Grid.SquashUp;
+                            case 1:
+                            return $Models$Grid.SquashDown;}
+                         break;
+                       case 1: switch (_v4._1)
+                         {case 0:
+                            return $Models$Grid.SquashRight;}
+                         break;}
+                    break;}
+               return $Models$Grid.NoAction;
+            }();
          }();
-      }();
-   };
-   var update = F2(function (input,
-   _v8) {
-      return function () {
-         return function () {
-            var action = toAction(input);
-            var grid$ = A2($Models$Grid.update,
-            action,
-            _v8.grid);
-            var emptyPositions = $Models$Grid.emptyPositions(grid$);
-            var $ = A2($Random.generate,
-            A2($Random.$int,
-            0,
-            $List.length(emptyPositions)),
-            _v8.seed),
-            randomNumber = $._0,
-            seed$ = $._1;
-            var randomPosition = A2(nth,
-            randomNumber,
-            emptyPositions);
-            var grid$$ = !_U.eq(_v8.grid,
-            grid$) ? function () {
-               switch (randomPosition.ctor)
-               {case "Just":
-                  return A2($Models$Grid.addCell,
-                    randomPosition._0,
-                    grid$);
-                  case "Nothing": return grid$;}
-               _U.badCase($moduleName,
-               "between lines 65 and 68");
-            }() : grid$;
-            return {_: {}
-                   ,grid: grid$$
-                   ,seed: seed$};
-         }();
-      }();
-   });
-   var Direction = F2(function (a,
-   b) {
-      return {_: {},x: a,y: b};
-   });
-   var GameState = F2(function (a,
-   b) {
-      return {_: {}
-             ,grid: a
-             ,seed: b};
-   });
-   var startTime = 5;
-   var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
-   var gameState = function () {
-      var initialGameState = {_: {}
-                             ,grid: A2($Models$Grid.grid,4,4)
-                             ,seed: startTimeSeed};
-      return A3($Signal.foldp,
-      update,
-      initialGameState,
+      };
+      return A2($Signal.map,
+      toAction,
       $Keyboard.arrows);
    }();
+   var startTime = 5;
+   var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
+   var gameState = A3($Signal.foldp,
+   $Models$GameState.update,
+   $Models$GameState.initial(startTimeSeed),
+   movement);
    var main = A2($Signal.map,
    view,
    gameState);
    _elm.Main.values = {_op: _op
                       ,startTime: startTime
                       ,startTimeSeed: startTimeSeed
-                      ,GameState: GameState
-                      ,Direction: Direction
-                      ,toAction: toAction
-                      ,randomEmptyPosition: randomEmptyPosition
-                      ,nth: nth
-                      ,update: update
+                      ,movement: movement
                       ,gameState: gameState
                       ,view: view
                       ,main: main};
@@ -5612,6 +5538,90 @@ Elm.Maybe.Extra.make = function (_elm) {
                              ,traverseArray: traverseArray
                              ,combineArray: combineArray};
    return _elm.Maybe.Extra.values;
+};
+Elm.Models = Elm.Models || {};
+Elm.Models.GameState = Elm.Models.GameState || {};
+Elm.Models.GameState.make = function (_elm) {
+   "use strict";
+   _elm.Models = _elm.Models || {};
+   _elm.Models.GameState = _elm.Models.GameState || {};
+   if (_elm.Models.GameState.values)
+   return _elm.Models.GameState.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Models.GameState",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Models$Grid = Elm.Models.Grid.make(_elm),
+   $Random = Elm.Random.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var initial = function (seed) {
+      return {_: {}
+             ,grid: A2($Models$Grid.grid,4,4)
+             ,seed: seed};
+   };
+   var nth = F2(function (index,
+   list) {
+      return function () {
+         switch (index)
+         {case 0:
+            return $List.head(list);}
+         return A2(nth,
+         index - 1,
+         $Maybe.withDefault(_L.fromArray([]))($List.tail(list)));
+      }();
+   });
+   var update = F2(function (gridAction,
+   _v1) {
+      return function () {
+         return function () {
+            var grid$ = A2($Models$Grid.update,
+            gridAction,
+            _v1.grid);
+            var emptyPositions = $Models$Grid.emptyPositions(grid$);
+            var $ = A2($Random.generate,
+            A2($Random.$int,
+            0,
+            $List.length(emptyPositions)),
+            _v1.seed),
+            randomNumber = $._0,
+            seed$ = $._1;
+            var randomPosition = A2(nth,
+            randomNumber,
+            emptyPositions);
+            var grid$$ = !_U.eq(_v1.grid,
+            grid$) ? function () {
+               switch (randomPosition.ctor)
+               {case "Just":
+                  return A2($Models$Grid.addCell,
+                    randomPosition._0,
+                    grid$);
+                  case "Nothing": return grid$;}
+               _U.badCase($moduleName,
+               "between lines 36 and 39");
+            }() : grid$;
+            return {_: {}
+                   ,grid: grid$$
+                   ,seed: seed$};
+         }();
+      }();
+   });
+   var GameState = F2(function (a,
+   b) {
+      return {_: {}
+             ,grid: a
+             ,seed: b};
+   });
+   _elm.Models.GameState.values = {_op: _op
+                                  ,GameState: GameState
+                                  ,nth: nth
+                                  ,initial: initial
+                                  ,update: update};
+   return _elm.Models.GameState.values;
 };
 Elm.Models = Elm.Models || {};
 Elm.Models.Grid = Elm.Models.Grid || {};

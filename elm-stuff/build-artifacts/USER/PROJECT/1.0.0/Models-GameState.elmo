@@ -1,0 +1,84 @@
+Elm.Models = Elm.Models || {};
+Elm.Models.GameState = Elm.Models.GameState || {};
+Elm.Models.GameState.make = function (_elm) {
+   "use strict";
+   _elm.Models = _elm.Models || {};
+   _elm.Models.GameState = _elm.Models.GameState || {};
+   if (_elm.Models.GameState.values)
+   return _elm.Models.GameState.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Models.GameState",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Models$Grid = Elm.Models.Grid.make(_elm),
+   $Random = Elm.Random.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var initial = function (seed) {
+      return {_: {}
+             ,grid: A2($Models$Grid.grid,4,4)
+             ,seed: seed};
+   };
+   var nth = F2(function (index,
+   list) {
+      return function () {
+         switch (index)
+         {case 0:
+            return $List.head(list);}
+         return A2(nth,
+         index - 1,
+         $Maybe.withDefault(_L.fromArray([]))($List.tail(list)));
+      }();
+   });
+   var update = F2(function (gridAction,
+   _v1) {
+      return function () {
+         return function () {
+            var grid$ = A2($Models$Grid.update,
+            gridAction,
+            _v1.grid);
+            var emptyPositions = $Models$Grid.emptyPositions(grid$);
+            var $ = A2($Random.generate,
+            A2($Random.$int,
+            0,
+            $List.length(emptyPositions)),
+            _v1.seed),
+            randomNumber = $._0,
+            seed$ = $._1;
+            var randomPosition = A2(nth,
+            randomNumber,
+            emptyPositions);
+            var grid$$ = !_U.eq(_v1.grid,
+            grid$) ? function () {
+               switch (randomPosition.ctor)
+               {case "Just":
+                  return A2($Models$Grid.addCell,
+                    randomPosition._0,
+                    grid$);
+                  case "Nothing": return grid$;}
+               _U.badCase($moduleName,
+               "between lines 36 and 39");
+            }() : grid$;
+            return {_: {}
+                   ,grid: grid$$
+                   ,seed: seed$};
+         }();
+      }();
+   });
+   var GameState = F2(function (a,
+   b) {
+      return {_: {}
+             ,grid: a
+             ,seed: b};
+   });
+   _elm.Models.GameState.values = {_op: _op
+                                  ,GameState: GameState
+                                  ,nth: nth
+                                  ,initial: initial
+                                  ,update: update};
+   return _elm.Models.GameState.values;
+};
