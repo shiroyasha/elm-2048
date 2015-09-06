@@ -4,39 +4,45 @@ import Color exposing (..)
 import Graphics.Collage exposing (..)
 
 roundedSquare : Int -> Int -> Color -> Form
-roundedSquare size radius color =
+roundedSquare size radius color = roundedRect size size radius color
+
+
+roundedRect : Int -> Int -> Int -> Color -> Form
+roundedRect width height radius color =
   let
-    size'   = toFloat size
+    width'  = toFloat width
+    height' = toFloat height
     radius' = toFloat radius
 
-    innerSquareSize = size' - radius' * 2
+    innerWidth  = width' - radius' * 2
+    innerHeight = height' - radius' * 2
 
-    circlePositions = [ ( innerSquareSize/2,  innerSquareSize/2)
-                      , (-innerSquareSize/2,  innerSquareSize/2)
-                      , ( innerSquareSize/2, -innerSquareSize/2)
-                      , (-innerSquareSize/2, -innerSquareSize/2)
+    circlePositions = [ ( innerWidth/2,  innerHeight/2)
+                      , (-innerWidth/2,  innerHeight/2)
+                      , ( innerWidth/2, -innerHeight/2)
+                      , (-innerWidth/2, -innerHeight/2)
                       ]
 
-    borderPositions = [ (0, innerSquareSize/2)
-                      , (0, -innerSquareSize/2)
-                      , ( innerSquareSize/2, 0)
-                      , (-innerSquareSize/2, 0)
+    borderPositions = [ (0, innerHeight/2)
+                      , (0, -innerHeight/2)
+                      , ( innerWidth/2, 0)
+                      , (-innerWidth/2, 0)
                       ]
 
     circleShapes = List.repeat 4 (circle radius')
-    borderShapes = [ rect innerSquareSize (radius' * 2)
-                   , rect innerSquareSize (radius' * 2)
-                   , rect (radius' * 2) innerSquareSize
-                   , rect (radius' * 2) innerSquareSize
+    borderShapes = [ rect innerWidth (radius' * 2)
+                   , rect innerWidth (radius' * 2)
+                   , rect (radius' * 2) innerHeight
+                   , rect (radius' * 2) innerHeight
                    ]
 
     circleForms = List.map (filled color) circleShapes
     borderForms = List.map (filled color) borderShapes
 
-    innerSquare = square innerSquareSize |> filled color
+    innerRect = rect innerWidth innerHeight |> filled color
 
     circles     = List.map2 move circlePositions circleForms
     borders     = List.map2 move borderPositions borderForms
 
   in
-     group <| innerSquare :: List.concat [circles, borders]
+     group <| innerRect :: List.concat [circles, borders]

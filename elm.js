@@ -4753,15 +4753,18 @@ Elm.Main.make = function (_elm) {
    $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
-   $Views$Grid = Elm.Views.Grid.make(_elm);
+   $Views$Grid = Elm.Views.Grid.make(_elm),
+   $Views$Score = Elm.Views.Score.make(_elm);
    var view = F2(function (grid,
    score) {
       return A2($Graphics$Element.flow,
       $Graphics$Element.down,
-      _L.fromArray([$Graphics$Element.show(score)
-                   ,A2($Views$Grid.render,
+      _L.fromArray([$Views$Score.render(score)
+                   ,A2($Graphics$Element.flow,
+                   $Graphics$Element.right,
+                   _L.fromArray([A2($Views$Grid.render,
                    $Config.defaultConfig,
-                   grid)]));
+                   grid)]))]));
    });
    var startTime = 5;
    var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
@@ -12204,7 +12207,8 @@ Elm.Shapes.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var roundedSquare = F3(function (size,
+   var roundedRect = F4(function (width,
+   height,
    radius,
    color) {
       return function () {
@@ -12215,48 +12219,50 @@ Elm.Shapes.make = function (_elm) {
          var circleForms = A2($List.map,
          $Graphics$Collage.filled(color),
          circleShapes);
-         var size$ = $Basics.toFloat(size);
-         var innerSquareSize = size$ - radius$ * 2;
+         var height$ = $Basics.toFloat(height);
+         var innerHeight = height$ - radius$ * 2;
+         var width$ = $Basics.toFloat(width);
+         var innerWidth = width$ - radius$ * 2;
          var circlePositions = _L.fromArray([{ctor: "_Tuple2"
-                                             ,_0: innerSquareSize / 2
-                                             ,_1: innerSquareSize / 2}
+                                             ,_0: innerWidth / 2
+                                             ,_1: innerHeight / 2}
                                             ,{ctor: "_Tuple2"
-                                             ,_0: (0 - innerSquareSize) / 2
-                                             ,_1: innerSquareSize / 2}
+                                             ,_0: (0 - innerWidth) / 2
+                                             ,_1: innerHeight / 2}
                                             ,{ctor: "_Tuple2"
-                                             ,_0: innerSquareSize / 2
-                                             ,_1: (0 - innerSquareSize) / 2}
+                                             ,_0: innerWidth / 2
+                                             ,_1: (0 - innerHeight) / 2}
                                             ,{ctor: "_Tuple2"
-                                             ,_0: (0 - innerSquareSize) / 2
-                                             ,_1: (0 - innerSquareSize) / 2}]);
+                                             ,_0: (0 - innerWidth) / 2
+                                             ,_1: (0 - innerHeight) / 2}]);
          var circles = A3($List.map2,
          $Graphics$Collage.move,
          circlePositions,
          circleForms);
          var borderPositions = _L.fromArray([{ctor: "_Tuple2"
                                              ,_0: 0
-                                             ,_1: innerSquareSize / 2}
+                                             ,_1: innerHeight / 2}
                                             ,{ctor: "_Tuple2"
                                              ,_0: 0
-                                             ,_1: (0 - innerSquareSize) / 2}
+                                             ,_1: (0 - innerHeight) / 2}
                                             ,{ctor: "_Tuple2"
-                                             ,_0: innerSquareSize / 2
+                                             ,_0: innerWidth / 2
                                              ,_1: 0}
                                             ,{ctor: "_Tuple2"
-                                             ,_0: (0 - innerSquareSize) / 2
+                                             ,_0: (0 - innerWidth) / 2
                                              ,_1: 0}]);
          var borderShapes = _L.fromArray([A2($Graphics$Collage.rect,
-                                         innerSquareSize,
+                                         innerWidth,
                                          radius$ * 2)
                                          ,A2($Graphics$Collage.rect,
-                                         innerSquareSize,
+                                         innerWidth,
                                          radius$ * 2)
                                          ,A2($Graphics$Collage.rect,
                                          radius$ * 2,
-                                         innerSquareSize)
+                                         innerHeight)
                                          ,A2($Graphics$Collage.rect,
                                          radius$ * 2,
-                                         innerSquareSize)]);
+                                         innerHeight)]);
          var borderForms = A2($List.map,
          $Graphics$Collage.filled(color),
          borderShapes);
@@ -12264,15 +12270,27 @@ Elm.Shapes.make = function (_elm) {
          $Graphics$Collage.move,
          borderPositions,
          borderForms);
-         var innerSquare = $Graphics$Collage.filled(color)($Graphics$Collage.square(innerSquareSize));
+         var innerRect = $Graphics$Collage.filled(color)(A2($Graphics$Collage.rect,
+         innerWidth,
+         innerHeight));
          return $Graphics$Collage.group(A2($List._op["::"],
-         innerSquare,
+         innerRect,
          $List.concat(_L.fromArray([circles
                                    ,borders]))));
       }();
    });
+   var roundedSquare = F3(function (size,
+   radius,
+   color) {
+      return A4(roundedRect,
+      size,
+      size,
+      radius,
+      color);
+   });
    _elm.Shapes.values = {_op: _op
-                        ,roundedSquare: roundedSquare};
+                        ,roundedSquare: roundedSquare
+                        ,roundedRect: roundedRect};
    return _elm.Shapes.values;
 };
 Elm.Signal = Elm.Signal || {};
@@ -13100,4 +13118,67 @@ Elm.Views.Grid.make = function (_elm) {
                             ,cells: cells
                             ,render: render};
    return _elm.Views.Grid.values;
+};
+Elm.Views = Elm.Views || {};
+Elm.Views.Score = Elm.Views.Score || {};
+Elm.Views.Score.make = function (_elm) {
+   "use strict";
+   _elm.Views = _elm.Views || {};
+   _elm.Views.Score = _elm.Views.Score || {};
+   if (_elm.Views.Score.values)
+   return _elm.Views.Score.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Views.Score",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Shapes = Elm.Shapes.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var label = function (score) {
+      return $Graphics$Collage.move({ctor: "_Tuple2"
+                                    ,_0: 0
+                                    ,_1: -5})($Graphics$Collage.text($Text.monospace($Text.bold($Text.height(20)($Text.color($Color.white)($Text.fromString($Basics.toString(score))))))));
+   };
+   var title = $Graphics$Collage.move({ctor: "_Tuple2"
+                                      ,_0: 0
+                                      ,_1: 15})($Graphics$Collage.text($Text.monospace($Text.bold($Text.height(14)($Text.color(A3($Color.rgb,
+   238,
+   228,
+   218))($Text.fromString("SCORE")))))));
+   var backgroung = F2(function (w,
+   h) {
+      return A4($Shapes.roundedRect,
+      w - 15,
+      h - 40,
+      3,
+      A3($Color.rgb,187,173,160));
+   });
+   var render = function (score) {
+      return function () {
+         var height = 100;
+         var width = 120;
+         return A3($Graphics$Collage.collage,
+         width,
+         height,
+         _L.fromArray([A2(backgroung,
+                      width,
+                      height)
+                      ,title
+                      ,label(score)]));
+      }();
+   };
+   _elm.Views.Score.values = {_op: _op
+                             ,backgroung: backgroung
+                             ,title: title
+                             ,label: label
+                             ,render: render};
+   return _elm.Views.Score.values;
 };

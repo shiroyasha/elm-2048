@@ -19,15 +19,18 @@ Elm.Main.make = function (_elm) {
    $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
-   $Views$Grid = Elm.Views.Grid.make(_elm);
+   $Views$Grid = Elm.Views.Grid.make(_elm),
+   $Views$Score = Elm.Views.Score.make(_elm);
    var view = F2(function (grid,
    score) {
       return A2($Graphics$Element.flow,
       $Graphics$Element.down,
-      _L.fromArray([$Graphics$Element.show(score)
-                   ,A2($Views$Grid.render,
+      _L.fromArray([$Views$Score.render(score)
+                   ,A2($Graphics$Element.flow,
+                   $Graphics$Element.right,
+                   _L.fromArray([A2($Views$Grid.render,
                    $Config.defaultConfig,
-                   grid)]));
+                   grid)]))]));
    });
    var startTime = 5;
    var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
