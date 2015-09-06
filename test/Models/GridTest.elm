@@ -6,8 +6,13 @@ import ElmTest.Runner.Element exposing (runDisplay)
 import Models.Grid exposing (..)
 import Matrix
 
+emptyGridTests =
+  suite "emptyGrid"
+    [ test "produces an empty grid"
+        <| assertEqual (emptyGrid 2 2) ([[0, 0], [0, 0]] |> Matrix.fromList)
+    ]
 
-initializationTests =
+gridTests =
   let
       testGrid = grid 4 3
 
@@ -98,7 +103,8 @@ emptyPositionsTests =
 
 tests : Test
 tests = suite "Models.Grid"
-  [ initializationTests
+  [ emptyGridTests
+  , gridTests
   , updateTests
   , squashTests
   , emptyPositionsTests

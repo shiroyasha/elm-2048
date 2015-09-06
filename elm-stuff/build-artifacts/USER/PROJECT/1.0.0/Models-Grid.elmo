@@ -65,7 +65,7 @@ Elm.Models.Grid.make = function (_elm) {
                       ,_0: _v5._0
                       ,_1: _v5._1};}
             _U.badCase($moduleName,
-            "on line 28, column 31 to 35");
+            "on line 35, column 31 to 35");
          }();
       })($List.filter(function (_v0) {
          return function () {
@@ -73,19 +73,38 @@ Elm.Models.Grid.make = function (_elm) {
             {case "_Tuple3":
                return _U.eq(_v0._2,0);}
             _U.badCase($moduleName,
-            "on line 27, column 38 to 49");
+            "on line 34, column 38 to 49");
          }();
       })($Matrix.toIndexedList($)));
    };
-   var grid = F2(function (width,
+   var addCell = F2(function (_v10,
+   grid) {
+      return function () {
+         switch (_v10.ctor)
+         {case "_Tuple2":
+            return A4($Matrix.set,
+              _v10._0,
+              _v10._1,
+              2,
+              grid);}
+         _U.badCase($moduleName,
+         "on line 19, column 23 to 44");
+      }();
+   });
+   var emptyGrid = F2(function (width,
    height) {
-      return A3($Matrix.set,
-      1,
-      1,
-      2)(A3($Matrix.repeat,
+      return A3($Matrix.repeat,
       width,
       height,
-      0));
+      0);
+   });
+   var grid = F2(function (width,
+   height) {
+      return addCell({ctor: "_Tuple2"
+                     ,_0: 1
+                     ,_1: 1})(A2(emptyGrid,
+      width,
+      height));
    });
    var NoAction = {ctor: "NoAction"};
    var SquashRight = {ctor: "SquashRight"};
@@ -112,7 +131,7 @@ Elm.Models.Grid.make = function (_elm) {
                  return $Matrix.transpose(update(SquashLeft)($Matrix.transpose($)));
               };}
          _U.badCase($moduleName,
-         "between lines 16 and 21");
+         "between lines 23 and 28");
       }();
    };
    var SquashDown = {ctor: "SquashDown"};
@@ -123,7 +142,9 @@ Elm.Models.Grid.make = function (_elm) {
                              ,SquashLeft: SquashLeft
                              ,SquashRight: SquashRight
                              ,NoAction: NoAction
+                             ,emptyGrid: emptyGrid
                              ,grid: grid
+                             ,addCell: addCell
                              ,update: update
                              ,emptyPositions: emptyPositions
                              ,sumTheSame: sumTheSame
