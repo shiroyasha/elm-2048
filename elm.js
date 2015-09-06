@@ -5608,43 +5608,57 @@ Elm.Models.GameState.make = function (_elm) {
          $Maybe.withDefault(_L.fromArray([]))($List.tail(list)));
       }();
    });
+   var addRandomCell = F2(function (seed,
+   grid) {
+      return function () {
+         var emptyPositions = $Models$Grid.emptyPositions(grid);
+         var $ = A2($Random.generate,
+         A2($Random.$int,0,100),
+         seed),
+         randomNumber = $._0,
+         seed$ = $._1;
+         var randomPosition = A2(nth,
+         A2($Basics._op["%"],
+         randomNumber,
+         $List.length(emptyPositions)),
+         emptyPositions);
+         var grid$ = function () {
+            switch (randomPosition.ctor)
+            {case "Just":
+               return A2($Models$Grid.addCell,
+                 randomPosition._0,
+                 grid);}
+            _U.badCase($moduleName,
+            "between lines 33 and 35");
+         }();
+         return {ctor: "_Tuple2"
+                ,_0: seed$
+                ,_1: grid$};
+      }();
+   });
    var update = F2(function (gridAction,
-   _v1) {
+   _v3) {
       return function () {
          return function () {
             var $ = !_U.eq(gridAction,
             $Models$Grid.NoAction) ? A2($Models$Grid.update,
             gridAction,
-            _v1.grid) : {ctor: "_Tuple2"
+            _v3.grid) : {ctor: "_Tuple2"
                         ,_0: 0
-                        ,_1: _v1.grid},
+                        ,_1: _v3.grid},
             points = $._0,
             grid$ = $._1;
-            var emptyPositions = $Models$Grid.emptyPositions(grid$);
-            var $ = A2($Random.generate,
-            A2($Random.$int,
-            0,
-            $List.length(emptyPositions)),
-            _v1.seed),
-            randomNumber = $._0,
-            seed$ = $._1;
-            var randomPosition = A2(nth,
-            randomNumber,
-            emptyPositions);
-            var grid$$ = !_U.eq(_v1.grid,
-            grid$) ? function () {
-               switch (randomPosition.ctor)
-               {case "Just":
-                  return A2($Models$Grid.addCell,
-                    randomPosition._0,
-                    grid$);
-                  case "Nothing": return grid$;}
-               _U.badCase($moduleName,
-               "between lines 39 and 42");
-            }() : grid$;
+            var $ = _U.eq(_v3.grid,
+            grid$) ? {ctor: "_Tuple2"
+                     ,_0: _v3.seed
+                     ,_1: grid$} : A2(addRandomCell,
+            _v3.seed,
+            grid$),
+            seed$ = $._0,
+            grid$$ = $._1;
             return {_: {}
                    ,grid: grid$$
-                   ,score: _v1.score + points
+                   ,score: _v3.score + points
                    ,seed: seed$};
          }();
       }();
@@ -5661,6 +5675,7 @@ Elm.Models.GameState.make = function (_elm) {
                                   ,GameState: GameState
                                   ,nth: nth
                                   ,initial: initial
+                                  ,addRandomCell: addRandomCell
                                   ,update: update};
    return _elm.Models.GameState.values;
 };
