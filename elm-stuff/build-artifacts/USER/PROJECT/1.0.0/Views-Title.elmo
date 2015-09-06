@@ -12,22 +12,16 @@ Elm.Views.Title.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Views.Title",
    $Basics = Elm.Basics.make(_elm),
-   $Color = Elm.Color.make(_elm),
-   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Html = Elm.Html.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Text = Elm.Text.make(_elm);
-   var render = A3($Graphics$Collage.collage,
-   330,
-   100,
-   _L.fromArray([$Graphics$Collage.move({ctor: "_Tuple2"
-                                        ,_0: -80
-                                        ,_1: 7})($Graphics$Collage.text($Text.bold($Text.height(60)($Text.color(A3($Color.rgb,
-   120,
-   110,
-   101))($Text.fromString("2048"))))))]));
+   $Signal = Elm.Signal.make(_elm);
+   var render = A2($Html.toElement,
+   370,
+   100)(A2($Html.h1,
+   _L.fromArray([]),
+   _L.fromArray([$Html.text("2048")])));
    _elm.Views.Title.values = {_op: _op
                              ,render: render};
    return _elm.Views.Title.values;

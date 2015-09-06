@@ -22,7 +22,7 @@ Elm.Config.make = function (_elm) {
    var defaultCellConfig = {_: {}
                            ,padding: 5
                            ,radius: 5
-                           ,size: 100};
+                           ,size: 110};
    var CellConfig = F3(function (a,
    b,
    c) {
