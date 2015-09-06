@@ -39,8 +39,15 @@ label size number =
    |> Text.color (textColor number)
    |> Text.height size
    |> Text.bold
-   |> Text.monospace
    |> text
+   |> move (0, 7)
+
+
+labelSize : Int -> Int -> Float
+labelSize cellSize number =
+  if | number < 100 -> (toFloat cellSize) / 2
+     | number > 100 && number < 1000 -> (toFloat cellSize) / 2.5
+     | number > 1000  -> (toFloat cellSize) / 3
 
 
 backgroung : Int -> Int -> Int -> Form
@@ -50,4 +57,4 @@ backgroung size radius number =
 
 cell : Int -> Int -> Int -> Form
 cell size radius number =
-  group [ backgroung size radius number, label ((toFloat size) / 3) number ]
+  group [ backgroung size radius number, label (labelSize size number) number ]

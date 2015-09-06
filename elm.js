@@ -4754,17 +4754,19 @@ Elm.Main.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Views$Grid = Elm.Views.Grid.make(_elm),
-   $Views$Score = Elm.Views.Score.make(_elm);
+   $Views$Score = Elm.Views.Score.make(_elm),
+   $Views$Title = Elm.Views.Title.make(_elm);
    var view = F2(function (grid,
    score) {
       return A2($Graphics$Element.flow,
       $Graphics$Element.down,
-      _L.fromArray([$Views$Score.render(score)
-                   ,A2($Graphics$Element.flow,
+      _L.fromArray([A2($Graphics$Element.flow,
                    $Graphics$Element.right,
-                   _L.fromArray([A2($Views$Grid.render,
+                   _L.fromArray([$Views$Title.render
+                                ,$Views$Score.render(score)]))
+                   ,A2($Views$Grid.render,
                    $Config.defaultConfig,
-                   grid)]))]));
+                   grid)]));
    });
    var startTime = 5;
    var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
@@ -12951,6 +12953,15 @@ Elm.Views.Cell.make = function (_elm) {
    $Shapes = Elm.Shapes.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Text = Elm.Text.make(_elm);
+   var labelSize = F2(function (cellSize,
+   number) {
+      return _U.cmp(number,
+      100) < 0 ? $Basics.toFloat(cellSize) / 2 : _U.cmp(number,
+      100) > 0 && _U.cmp(number,
+      1000) < 0 ? $Basics.toFloat(cellSize) / 2.5 : _U.cmp(number,
+      1000) > 0 ? $Basics.toFloat(cellSize) / 3 : _U.badIf($moduleName,
+      "between lines 48 and 50");
+   });
    var textColor = function (number) {
       return function () {
          switch (number)
@@ -12967,7 +12978,9 @@ Elm.Views.Cell.make = function (_elm) {
    };
    var label = F2(function (size,
    number) {
-      return $Graphics$Collage.text($Text.monospace($Text.bold($Text.height(size)($Text.color(textColor(number))($Text.fromString(_U.cmp(number,
+      return $Graphics$Collage.move({ctor: "_Tuple2"
+                                    ,_0: 0
+                                    ,_1: 7})($Graphics$Collage.text($Text.bold($Text.height(size)($Text.color(textColor(number))($Text.fromString(_U.cmp(number,
       0) > 0 ? $Basics.toString(number) : ""))))));
    });
    var backgroungColor = function (number) {
@@ -13040,13 +13053,14 @@ Elm.Views.Cell.make = function (_elm) {
                                                   radius,
                                                   number)
                                                   ,A2(label,
-                                                  $Basics.toFloat(size) / 3,
+                                                  A2(labelSize,size,number),
                                                   number)]));
    });
    _elm.Views.Cell.values = {_op: _op
                             ,backgroungColor: backgroungColor
                             ,textColor: textColor
                             ,label: label
+                            ,labelSize: labelSize
                             ,backgroung: backgroung
                             ,cell: cell};
    return _elm.Views.Cell.values;
@@ -13160,14 +13174,14 @@ Elm.Views.Score.make = function (_elm) {
    var label = function (score) {
       return $Graphics$Collage.move({ctor: "_Tuple2"
                                     ,_0: 0
-                                    ,_1: -5})($Graphics$Collage.text($Text.monospace($Text.bold($Text.height(20)($Text.color($Color.white)($Text.fromString($Basics.toString(score))))))));
+                                    ,_1: -5})($Graphics$Collage.text($Text.bold($Text.height(20)($Text.color($Color.white)($Text.fromString($Basics.toString(score)))))));
    };
    var title = $Graphics$Collage.move({ctor: "_Tuple2"
                                       ,_0: 0
-                                      ,_1: 15})($Graphics$Collage.text($Text.monospace($Text.bold($Text.height(14)($Text.color(A3($Color.rgb,
+                                      ,_1: 15})($Graphics$Collage.text($Text.bold($Text.height(14)($Text.color(A3($Color.rgb,
    238,
    228,
-   218))($Text.fromString("SCORE")))))));
+   218))($Text.fromString("SCORE"))))));
    var backgroung = F2(function (w,
    h) {
       return A4($Shapes.roundedRect,
@@ -13196,4 +13210,38 @@ Elm.Views.Score.make = function (_elm) {
                              ,label: label
                              ,render: render};
    return _elm.Views.Score.values;
+};
+Elm.Views = Elm.Views || {};
+Elm.Views.Title = Elm.Views.Title || {};
+Elm.Views.Title.make = function (_elm) {
+   "use strict";
+   _elm.Views = _elm.Views || {};
+   _elm.Views.Title = _elm.Views.Title || {};
+   if (_elm.Views.Title.values)
+   return _elm.Views.Title.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Views.Title",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var render = A3($Graphics$Collage.collage,
+   330,
+   100,
+   _L.fromArray([$Graphics$Collage.move({ctor: "_Tuple2"
+                                        ,_0: -80
+                                        ,_1: 7})($Graphics$Collage.text($Text.bold($Text.height(60)($Text.color(A3($Color.rgb,
+   120,
+   110,
+   101))($Text.fromString("2048"))))))]));
+   _elm.Views.Title.values = {_op: _op
+                             ,render: render};
+   return _elm.Views.Title.values;
 };

@@ -11,12 +11,11 @@ backgroung w h = Shapes.roundedRect (w - 15) (h - 40) 3 (rgb 187 173 160)
 
 
 title =
-  "SCORE!!"
+  "SCORE"
   |> Text.fromString
   |> Text.color (rgb 238 228 218)
   |> Text.height 14
   |> Text.bold
-  |> Text.monospace
   |> text
   |> move (0, 15)
 
@@ -28,7 +27,6 @@ label score =
   |> Text.color white
   |> Text.height 20
   |> Text.bold
-  |> Text.monospace
   |> text
   |> move (0, -5)
 

@@ -24,14 +24,14 @@ Elm.Views.Score.make = function (_elm) {
    var label = function (score) {
       return $Graphics$Collage.move({ctor: "_Tuple2"
                                     ,_0: 0
-                                    ,_1: -5})($Graphics$Collage.text($Text.monospace($Text.bold($Text.height(20)($Text.color($Color.white)($Text.fromString($Basics.toString(score))))))));
+                                    ,_1: -5})($Graphics$Collage.text($Text.bold($Text.height(20)($Text.color($Color.white)($Text.fromString($Basics.toString(score)))))));
    };
    var title = $Graphics$Collage.move({ctor: "_Tuple2"
                                       ,_0: 0
-                                      ,_1: 15})($Graphics$Collage.text($Text.monospace($Text.bold($Text.height(14)($Text.color(A3($Color.rgb,
+                                      ,_1: 15})($Graphics$Collage.text($Text.bold($Text.height(14)($Text.color(A3($Color.rgb,
    238,
    228,
-   218))($Text.fromString("SCORE")))))));
+   218))($Text.fromString("SCORE"))))));
    var backgroung = F2(function (w,
    h) {
       return A4($Shapes.roundedRect,

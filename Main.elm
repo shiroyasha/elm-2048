@@ -6,6 +6,7 @@ import Input exposing (keyboard)
 
 import Views.Grid
 import Views.Score
+import Views.Title
 
 import Models.GameState exposing (GameState, update, initial)
 
@@ -22,8 +23,8 @@ gameState = Signal.foldp update (initial startTimeSeed) Input.keyboard
 
 
 view grid score = flow down
-  [ Views.Score.render score
-  , flow right [Views.Grid.render Config.defaultConfig grid]
+  [ flow right [Views.Title.render, Views.Score.render score]
+  , Views.Grid.render Config.defaultConfig grid
   ]
 
 
