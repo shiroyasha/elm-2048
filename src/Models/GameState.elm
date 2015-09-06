@@ -7,6 +7,7 @@ import Models.Grid exposing (..)
 type alias GameState =
   { grid : Grid
   , seed : Seed
+  , score : Int
   }
 
 
@@ -17,11 +18,11 @@ nth index list =
     _ -> nth (index - 1) (Maybe.withDefault [] <| List.tail list)
 
 
-initial seed = { grid = Models.Grid.grid 4 4, seed = seed }
+initial seed = { grid = Models.Grid.grid 4 4, seed = seed, score = 0}
 
 
 update : Models.Grid.Action -> GameState -> GameState
-update gridAction {grid, seed} =
+update gridAction {grid, seed, score} =
   let
       grid' = Models.Grid.update gridAction grid
 
@@ -39,4 +40,4 @@ update gridAction {grid, seed} =
                   else
                     grid'
   in
-    { grid = grid'', seed = seed' }
+    { grid = grid'', seed = seed', score = score}

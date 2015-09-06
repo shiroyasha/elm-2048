@@ -7,6 +7,7 @@ type alias Grid = Matrix Int
 
 type Action = SquashUp | SquashDown | SquashLeft | SquashRight | NoAction
 
+
 emptyGrid : Int -> Int -> Grid
 emptyGrid width height = Matrix.repeat width height 0
 

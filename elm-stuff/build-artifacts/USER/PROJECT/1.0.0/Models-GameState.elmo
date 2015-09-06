@@ -21,6 +21,7 @@ Elm.Models.GameState.make = function (_elm) {
    var initial = function (seed) {
       return {_: {}
              ,grid: A2($Models$Grid.grid,4,4)
+             ,score: 0
              ,seed: seed};
    };
    var nth = F2(function (index,
@@ -61,18 +62,21 @@ Elm.Models.GameState.make = function (_elm) {
                     grid$);
                   case "Nothing": return grid$;}
                _U.badCase($moduleName,
-               "between lines 36 and 39");
+               "between lines 37 and 40");
             }() : grid$;
             return {_: {}
                    ,grid: grid$$
+                   ,score: _v1.score
                    ,seed: seed$};
          }();
       }();
    });
-   var GameState = F2(function (a,
-   b) {
+   var GameState = F3(function (a,
+   b,
+   c) {
       return {_: {}
              ,grid: a
+             ,score: c
              ,seed: b};
    });
    _elm.Models.GameState.values = {_op: _op
