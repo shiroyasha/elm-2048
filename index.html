@@ -1,9 +1,43 @@
-<div id="game"> </div>
+<!doctype html>
 
-<script src="elm.js"></script>
+<html>
+  <head>
+    <script src="elm.js"></script>
 
-<script>
-var div = document.getElementById('game');
+    <style>
+      body {
+        font-family: sans-serif;
+        font-size: 20px;
+        line-height: 1.5;
+        background: #faf8ef;
+        color: #776e65;
+      }
 
-Elm.embed(Elm.Main, div);
-</script>
+      .content {
+        text-align: center;
+        width: 500px;
+        margin: 30px auto;
+      }
+
+      #game {
+        display: inline-block;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="content">
+      <div id="game"></div>
+
+      <p>
+        <strong>HOW TO PLAY</strong>: Use your <strong>arrow keys</strong> to move the tiles. When two tiles with the same number touch, they <strong>merge into one</strong>!
+      </p>
+    </div>
+
+    <script>
+      var div = document.getElementById('game');
+
+      Elm.embed(Elm.Main, div);
+    </script>
+  </body>
+</html>
