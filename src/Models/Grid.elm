@@ -1,5 +1,7 @@
 module Models.Grid where
 
+import Random exposing (Seed)
+
 import Matrix exposing (Matrix)
 import Models.GridRow
 
@@ -36,6 +38,9 @@ flip: Grid -> Grid
 flip = Matrix.toList >> List.map List.reverse >> Matrix.fromList
 
 
+numbers : Grid -> List Int
+numbers = Matrix.toList >> List.concat
+
 
 update : Action -> Grid -> (Points, Grid)
 update action grid =
@@ -53,6 +58,29 @@ update action grid =
       SquashDown  -> flip >> transpose
   in
      (points, grid'')
+
+
+
+nth: Int -> List a -> Maybe a
+nth index list =
+  case index of
+    0 -> List.head list
+    _ -> nth (index - 1) (Maybe.withDefault [] <| List.tail list)
+
+
+addRandomCell: Seed -> Grid -> (Seed, Grid)
+addRandomCell seed grid =
+  let
+    (randomNumber, seed') = Random.generate (Random.int 0 100) seed
+
+    positions = emptyPositions grid
+
+    randomPosition = nth (randomNumber % (List.length positions)) positions
+
+    grid' = case randomPosition of
+      Just position -> addCell position grid
+  in
+     (seed', grid')
 
 
 squash: Grid -> (Points, Grid)

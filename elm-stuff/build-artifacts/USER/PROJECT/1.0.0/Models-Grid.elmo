@@ -16,6 +16,7 @@ Elm.Models.Grid.make = function (_elm) {
    $Matrix = Elm.Matrix.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models$GridRow = Elm.Models.GridRow.make(_elm),
+   $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var squash = function (grid) {
@@ -27,6 +28,20 @@ Elm.Models.Grid.make = function (_elm) {
                 ,_0: $List.sum(points)
                 ,_1: $Matrix.fromList(rows$)};
       }();
+   };
+   var nth = F2(function (index,
+   list) {
+      return function () {
+         switch (index)
+         {case 0:
+            return $List.head(list);}
+         return A2(nth,
+         index - 1,
+         $Maybe.withDefault(_L.fromArray([]))($List.tail(list)));
+      }();
+   });
+   var numbers = function ($) {
+      return $List.concat($Matrix.toList($));
    };
    var flip = function ($) {
       return $Matrix.fromList($List.map($List.reverse)($Matrix.toList($)));
@@ -47,7 +62,7 @@ Elm.Models.Grid.make = function (_elm) {
                case "SquashUp":
                return transpose;}
             _U.badCase($moduleName,
-            "between lines 43 and 47");
+            "between lines 48 and 52");
          }()(grid)),
          points = $._0,
          grid$ = $._1;
@@ -63,7 +78,7 @@ Elm.Models.Grid.make = function (_elm) {
                case "SquashUp":
                return transpose;}
             _U.badCase($moduleName,
-            "between lines 49 and 54");
+            "between lines 54 and 59");
          }()(grid$);
          return {ctor: "_Tuple2"
                 ,_0: points
@@ -71,38 +86,65 @@ Elm.Models.Grid.make = function (_elm) {
       }();
    });
    var emptyPositions = function ($) {
-      return $List.map(function (_v7) {
+      return $List.map(function (_v8) {
          return function () {
-            switch (_v7.ctor)
+            switch (_v8.ctor)
             {case "_Tuple3":
                return {ctor: "_Tuple2"
-                      ,_0: _v7._0
-                      ,_1: _v7._1};}
+                      ,_0: _v8._0
+                      ,_1: _v8._1};}
             _U.badCase($moduleName,
-            "on line 28, column 31 to 35");
+            "on line 30, column 31 to 35");
          }();
-      })($List.filter(function (_v2) {
+      })($List.filter(function (_v3) {
          return function () {
-            switch (_v2.ctor)
+            switch (_v3.ctor)
             {case "_Tuple3":
-               return _U.eq(_v2._2,0);}
+               return _U.eq(_v3._2,0);}
             _U.badCase($moduleName,
-            "on line 27, column 38 to 49");
+            "on line 29, column 38 to 49");
          }();
       })($Matrix.toIndexedList($)));
    };
-   var addCell = F2(function (_v12,
+   var addCell = F2(function (_v13,
    grid) {
       return function () {
-         switch (_v12.ctor)
+         switch (_v13.ctor)
          {case "_Tuple2":
             return A4($Matrix.set,
-              _v12._0,
-              _v12._1,
+              _v13._0,
+              _v13._1,
               2,
               grid);}
          _U.badCase($moduleName,
-         "on line 21, column 23 to 44");
+         "on line 23, column 23 to 44");
+      }();
+   });
+   var addRandomCell = F2(function (seed,
+   grid) {
+      return function () {
+         var positions = emptyPositions(grid);
+         var $ = A2($Random.generate,
+         A2($Random.$int,0,100),
+         seed),
+         randomNumber = $._0,
+         seed$ = $._1;
+         var randomPosition = A2(nth,
+         A2($Basics._op["%"],
+         randomNumber,
+         $List.length(positions)),
+         positions);
+         var grid$ = function () {
+            switch (randomPosition.ctor)
+            {case "Just": return A2(addCell,
+                 randomPosition._0,
+                 grid);}
+            _U.badCase($moduleName,
+            "between lines 80 and 82");
+         }();
+         return {ctor: "_Tuple2"
+                ,_0: seed$
+                ,_1: grid$};
       }();
    });
    var emptyGrid = F2(function (width,
@@ -137,7 +179,10 @@ Elm.Models.Grid.make = function (_elm) {
                              ,emptyPositions: emptyPositions
                              ,transpose: transpose
                              ,flip: flip
+                             ,numbers: numbers
                              ,update: update
+                             ,nth: nth
+                             ,addRandomCell: addRandomCell
                              ,squash: squash};
    return _elm.Models.Grid.values;
 };

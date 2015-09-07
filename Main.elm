@@ -23,11 +23,11 @@ gameState : Signal GameState
 gameState = Signal.foldp update (initial startTimeSeed) Input.keyboard
 
 
-view grid score = flow down
-  [ flow right [Views.Title.render, Views.Score.render score]
+view game = flow down
+  [ flow right [Views.Title.render, Views.Score.render game.score]
   , Views.Objective.render
-  , Views.Grid.render Config.defaultConfig grid
+  , Views.Grid.render Config.defaultConfig game
   ]
 
 
-main = Signal.map (\{grid, score} -> view grid score) gameState
+main = Signal.map view gameState

@@ -23,19 +23,18 @@ Elm.Main.make = function (_elm) {
    $Views$Objective = Elm.Views.Objective.make(_elm),
    $Views$Score = Elm.Views.Score.make(_elm),
    $Views$Title = Elm.Views.Title.make(_elm);
-   var view = F2(function (grid,
-   score) {
+   var view = function (game) {
       return A2($Graphics$Element.flow,
       $Graphics$Element.down,
       _L.fromArray([A2($Graphics$Element.flow,
                    $Graphics$Element.right,
                    _L.fromArray([$Views$Title.render
-                                ,$Views$Score.render(score)]))
+                                ,$Views$Score.render(game.score)]))
                    ,$Views$Objective.render
                    ,A2($Views$Grid.render,
                    $Config.defaultConfig,
-                   grid)]));
-   });
+                   game)]));
+   };
    var startTime = 5;
    var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
    var gameState = A3($Signal.foldp,
@@ -43,13 +42,7 @@ Elm.Main.make = function (_elm) {
    $Models$GameState.initial(startTimeSeed),
    $Input.keyboard);
    var main = A2($Signal.map,
-   function (_v0) {
-      return function () {
-         return A2(view,
-         _v0.grid,
-         _v0.score);
-      }();
-   },
+   view,
    gameState);
    _elm.Main.values = {_op: _op
                       ,startTime: startTime

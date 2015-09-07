@@ -12,97 +12,118 @@ Elm.Models.GameState.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Models.GameState",
    $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models$Grid = Elm.Models.Grid.make(_elm),
    $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var initial = function (seed) {
-      return {_: {}
-             ,grid: A2($Models$Grid.grid,4,4)
-             ,score: 0
-             ,seed: seed};
+   var addCell = F2(function (originalGame,
+   game) {
+      return function () {
+         var $ = _U.eq(originalGame.grid,
+         game.grid) ? {ctor: "_Tuple2"
+                      ,_0: game.seed
+                      ,_1: game.grid} : A2($Models$Grid.addRandomCell,
+         game.seed,
+         game.grid),
+         seed$ = $._0,
+         grid$ = $._1;
+         return _U.replace([["seed"
+                            ,seed$]
+                           ,["grid",grid$]],
+         game);
+      }();
+   });
+   var applyAction = F2(function (action,
+   game) {
+      return function () {
+         var $ = A2($Models$Grid.update,
+         action,
+         game.grid),
+         points = $._0,
+         grid$ = $._1;
+         return _U.replace([["score"
+                            ,game.score + points]
+                           ,["grid",grid$]],
+         game);
+      }();
+   });
+   var won = function (grid) {
+      return A2($List.any,
+      F2(function (x,y) {
+         return _U.eq(x,y);
+      })(2048),
+      $Models$Grid.numbers(grid));
    };
-   var nth = F2(function (index,
-   list) {
+   var lost = function (grid) {
       return function () {
-         switch (index)
-         {case 0:
-            return $List.head(list);}
-         return A2(nth,
-         index - 1,
-         $Maybe.withDefault(_L.fromArray([]))($List.tail(list)));
+         var movements = _L.fromArray([$Models$Grid.SquashLeft
+                                      ,$Models$Grid.SquashRight
+                                      ,$Models$Grid.SquashUp
+                                      ,$Models$Grid.SquashDown]);
+         var grids = A2($List.map,
+         function (movement) {
+            return $Basics.snd(A2($Models$Grid.update,
+            movement,
+            grid));
+         },
+         movements);
+         return A2($List.all,
+         F2(function (x,y) {
+            return _U.eq(x,y);
+         })(grid),
+         grids);
       }();
-   });
-   var addRandomCell = F2(function (seed,
-   grid) {
-      return function () {
-         var emptyPositions = $Models$Grid.emptyPositions(grid);
-         var $ = A2($Random.generate,
-         A2($Random.$int,0,100),
-         seed),
-         randomNumber = $._0,
-         seed$ = $._1;
-         var randomPosition = A2(nth,
-         A2($Basics._op["%"],
-         randomNumber,
-         $List.length(emptyPositions)),
-         emptyPositions);
-         var grid$ = function () {
-            switch (randomPosition.ctor)
-            {case "Just":
-               return A2($Models$Grid.addCell,
-                 randomPosition._0,
-                 grid);}
-            _U.badCase($moduleName,
-            "between lines 33 and 35");
-         }();
-         return {ctor: "_Tuple2"
-                ,_0: seed$
-                ,_1: grid$};
-      }();
-   });
-   var update = F2(function (gridAction,
-   _v3) {
-      return function () {
-         return function () {
-            var $ = !_U.eq(gridAction,
-            $Models$Grid.NoAction) ? A2($Models$Grid.update,
-            gridAction,
-            _v3.grid) : {ctor: "_Tuple2"
-                        ,_0: 0
-                        ,_1: _v3.grid},
-            points = $._0,
-            grid$ = $._1;
-            var $ = _U.eq(_v3.grid,
-            grid$) ? {ctor: "_Tuple2"
-                     ,_0: _v3.seed
-                     ,_1: grid$} : A2(addRandomCell,
-            _v3.seed,
-            grid$),
-            seed$ = $._0,
-            grid$$ = $._1;
-            return {_: {}
-                   ,grid: grid$$
-                   ,score: _v3.score + points
-                   ,seed: seed$};
-         }();
-      }();
-   });
-   var GameState = F3(function (a,
+   };
+   var GameState = F4(function (a,
    b,
-   c) {
+   c,
+   d) {
       return {_: {}
              ,grid: a
+             ,phase: d
              ,score: c
              ,seed: b};
    });
+   var Won = {ctor: "Won"};
+   var GameOver = {ctor: "GameOver"};
+   var updatePhase = function (game) {
+      return function () {
+         var phase$ = won(game.grid) ? Won : lost(game.grid) ? GameOver : game.phase;
+         return _U.replace([["phase"
+                            ,phase$]],
+         game);
+      }();
+   };
+   var update = F2(function (action,
+   game) {
+      return $Debug.watch("State")(function () {
+         switch (action.ctor)
+         {case "NoAction": return game;}
+         return updatePhase(addCell(game)(applyAction(action)(game)));
+      }());
+   });
+   var InProgress = {ctor: "InProgress"};
+   var initial = function (seed) {
+      return {_: {}
+             ,grid: A2($Models$Grid.grid,4,4)
+             ,phase: InProgress
+             ,score: 0
+             ,seed: seed};
+   };
    _elm.Models.GameState.values = {_op: _op
+                                  ,InProgress: InProgress
+                                  ,GameOver: GameOver
+                                  ,Won: Won
                                   ,GameState: GameState
-                                  ,nth: nth
                                   ,initial: initial
-                                  ,addRandomCell: addRandomCell
+                                  ,lost: lost
+                                  ,won: won
+                                  ,updatePhase: updatePhase
+                                  ,applyAction: applyAction
+                                  ,addCell: addCell
                                   ,update: update};
    return _elm.Models.GameState.values;
 };

@@ -2,50 +2,69 @@ module Models.GameState where
 
 import Random exposing (Seed)
 import Models.Grid exposing (..)
+import Debug
 
+type GamePhase = InProgress | GameOver | Won
 
 type alias GameState =
   { grid : Grid
   , seed : Seed
   , score : Int
+  , phase: GamePhase
+  }
+
+initial seed =
+  { grid = Models.Grid.grid 4 4
+  , seed = seed
+  , score = 0
+  , phase = InProgress
   }
 
 
-nth: Int -> List a -> Maybe a
-nth index list =
-  case index of
-    0 -> List.head list
-    _ -> nth (index - 1) (Maybe.withDefault [] <| List.tail list)
-
-
-initial seed = { grid = Models.Grid.grid 4 4, seed = seed, score = 0}
-
-
-addRandomCell: Seed -> Grid -> (Seed, Grid)
-addRandomCell seed grid =
+lost : Grid -> Bool
+lost grid =
   let
-    (randomNumber, seed') = Random.generate (Random.int 0 100) seed
-
-    emptyPositions = Models.Grid.emptyPositions grid
-
-    randomPosition = nth (randomNumber % (List.length emptyPositions)) emptyPositions
-
-    grid' = case randomPosition of
-      Just position -> Models.Grid.addCell position grid
+      movements = [SquashLeft, SquashRight, SquashUp, SquashDown]
+      grids = List.map (\movement -> snd (Models.Grid.update movement grid)) movements
   in
-     (seed', grid')
+     List.all ((==) grid) grids
 
+
+
+won : Grid -> Bool
+won grid = List.any ((==) 2048) (Models.Grid.numbers grid)
+
+
+updatePhase: GameState -> GameState
+updatePhase game =
+  let
+     phase' = if | won game.grid -> Won
+                 | lost game.grid -> GameOver
+                 | otherwise -> game.phase
+  in
+     { game | phase <- phase' }
+
+
+applyAction: Models.Grid.Action -> GameState -> GameState
+applyAction action game =
+  let
+     (points, grid') = Models.Grid.update action game.grid
+  in
+     { game | score <- (game.score + points), grid <- grid' }
+
+
+addCell: GameState -> GameState -> GameState
+addCell originalGame game =
+  let
+      (seed', grid') = if originalGame.grid == game.grid
+                          then (game.seed, game.grid)
+                          else Models.Grid.addRandomCell game.seed game.grid
+  in
+     { game | seed <- seed', grid <- grid' }
 
 
 update : Models.Grid.Action -> GameState -> GameState
-update gridAction {grid, seed, score} =
-  let
-      (points, grid') = if gridAction /= Models.Grid.NoAction
-                           then Models.Grid.update gridAction grid
-                           else (0, grid)
-
-      (seed', grid'') = if grid == grid'
-                           then (seed, grid')
-                           else addRandomCell seed grid'
-  in
-    { grid = grid'', seed = seed', score = score + points}
+update action game =
+  Debug.watch "State" <| case action of
+    NoAction -> game
+    _ -> game |> applyAction action |> addCell game |> updatePhase

@@ -5132,19 +5132,18 @@ Elm.Main.make = function (_elm) {
    $Views$Objective = Elm.Views.Objective.make(_elm),
    $Views$Score = Elm.Views.Score.make(_elm),
    $Views$Title = Elm.Views.Title.make(_elm);
-   var view = F2(function (grid,
-   score) {
+   var view = function (game) {
       return A2($Graphics$Element.flow,
       $Graphics$Element.down,
       _L.fromArray([A2($Graphics$Element.flow,
                    $Graphics$Element.right,
                    _L.fromArray([$Views$Title.render
-                                ,$Views$Score.render(score)]))
+                                ,$Views$Score.render(game.score)]))
                    ,$Views$Objective.render
                    ,A2($Views$Grid.render,
                    $Config.defaultConfig,
-                   grid)]));
-   });
+                   game)]));
+   };
    var startTime = 5;
    var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
    var gameState = A3($Signal.foldp,
@@ -5152,13 +5151,7 @@ Elm.Main.make = function (_elm) {
    $Models$GameState.initial(startTimeSeed),
    $Input.keyboard);
    var main = A2($Signal.map,
-   function (_v0) {
-      return function () {
-         return A2(view,
-         _v0.grid,
-         _v0.score);
-      }();
-   },
+   view,
    gameState);
    _elm.Main.values = {_op: _op
                       ,startTime: startTime
@@ -5964,97 +5957,118 @@ Elm.Models.GameState.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Models.GameState",
    $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models$Grid = Elm.Models.Grid.make(_elm),
    $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   var initial = function (seed) {
-      return {_: {}
-             ,grid: A2($Models$Grid.grid,4,4)
-             ,score: 0
-             ,seed: seed};
+   var addCell = F2(function (originalGame,
+   game) {
+      return function () {
+         var $ = _U.eq(originalGame.grid,
+         game.grid) ? {ctor: "_Tuple2"
+                      ,_0: game.seed
+                      ,_1: game.grid} : A2($Models$Grid.addRandomCell,
+         game.seed,
+         game.grid),
+         seed$ = $._0,
+         grid$ = $._1;
+         return _U.replace([["seed"
+                            ,seed$]
+                           ,["grid",grid$]],
+         game);
+      }();
+   });
+   var applyAction = F2(function (action,
+   game) {
+      return function () {
+         var $ = A2($Models$Grid.update,
+         action,
+         game.grid),
+         points = $._0,
+         grid$ = $._1;
+         return _U.replace([["score"
+                            ,game.score + points]
+                           ,["grid",grid$]],
+         game);
+      }();
+   });
+   var won = function (grid) {
+      return A2($List.any,
+      F2(function (x,y) {
+         return _U.eq(x,y);
+      })(2048),
+      $Models$Grid.numbers(grid));
    };
-   var nth = F2(function (index,
-   list) {
+   var lost = function (grid) {
       return function () {
-         switch (index)
-         {case 0:
-            return $List.head(list);}
-         return A2(nth,
-         index - 1,
-         $Maybe.withDefault(_L.fromArray([]))($List.tail(list)));
+         var movements = _L.fromArray([$Models$Grid.SquashLeft
+                                      ,$Models$Grid.SquashRight
+                                      ,$Models$Grid.SquashUp
+                                      ,$Models$Grid.SquashDown]);
+         var grids = A2($List.map,
+         function (movement) {
+            return $Basics.snd(A2($Models$Grid.update,
+            movement,
+            grid));
+         },
+         movements);
+         return A2($List.all,
+         F2(function (x,y) {
+            return _U.eq(x,y);
+         })(grid),
+         grids);
       }();
-   });
-   var addRandomCell = F2(function (seed,
-   grid) {
-      return function () {
-         var emptyPositions = $Models$Grid.emptyPositions(grid);
-         var $ = A2($Random.generate,
-         A2($Random.$int,0,100),
-         seed),
-         randomNumber = $._0,
-         seed$ = $._1;
-         var randomPosition = A2(nth,
-         A2($Basics._op["%"],
-         randomNumber,
-         $List.length(emptyPositions)),
-         emptyPositions);
-         var grid$ = function () {
-            switch (randomPosition.ctor)
-            {case "Just":
-               return A2($Models$Grid.addCell,
-                 randomPosition._0,
-                 grid);}
-            _U.badCase($moduleName,
-            "between lines 33 and 35");
-         }();
-         return {ctor: "_Tuple2"
-                ,_0: seed$
-                ,_1: grid$};
-      }();
-   });
-   var update = F2(function (gridAction,
-   _v3) {
-      return function () {
-         return function () {
-            var $ = !_U.eq(gridAction,
-            $Models$Grid.NoAction) ? A2($Models$Grid.update,
-            gridAction,
-            _v3.grid) : {ctor: "_Tuple2"
-                        ,_0: 0
-                        ,_1: _v3.grid},
-            points = $._0,
-            grid$ = $._1;
-            var $ = _U.eq(_v3.grid,
-            grid$) ? {ctor: "_Tuple2"
-                     ,_0: _v3.seed
-                     ,_1: grid$} : A2(addRandomCell,
-            _v3.seed,
-            grid$),
-            seed$ = $._0,
-            grid$$ = $._1;
-            return {_: {}
-                   ,grid: grid$$
-                   ,score: _v3.score + points
-                   ,seed: seed$};
-         }();
-      }();
-   });
-   var GameState = F3(function (a,
+   };
+   var GameState = F4(function (a,
    b,
-   c) {
+   c,
+   d) {
       return {_: {}
              ,grid: a
+             ,phase: d
              ,score: c
              ,seed: b};
    });
+   var Won = {ctor: "Won"};
+   var GameOver = {ctor: "GameOver"};
+   var updatePhase = function (game) {
+      return function () {
+         var phase$ = won(game.grid) ? Won : lost(game.grid) ? GameOver : game.phase;
+         return _U.replace([["phase"
+                            ,phase$]],
+         game);
+      }();
+   };
+   var update = F2(function (action,
+   game) {
+      return $Debug.watch("State")(function () {
+         switch (action.ctor)
+         {case "NoAction": return game;}
+         return updatePhase(addCell(game)(applyAction(action)(game)));
+      }());
+   });
+   var InProgress = {ctor: "InProgress"};
+   var initial = function (seed) {
+      return {_: {}
+             ,grid: A2($Models$Grid.grid,4,4)
+             ,phase: InProgress
+             ,score: 0
+             ,seed: seed};
+   };
    _elm.Models.GameState.values = {_op: _op
+                                  ,InProgress: InProgress
+                                  ,GameOver: GameOver
+                                  ,Won: Won
                                   ,GameState: GameState
-                                  ,nth: nth
                                   ,initial: initial
-                                  ,addRandomCell: addRandomCell
+                                  ,lost: lost
+                                  ,won: won
+                                  ,updatePhase: updatePhase
+                                  ,applyAction: applyAction
+                                  ,addCell: addCell
                                   ,update: update};
    return _elm.Models.GameState.values;
 };
@@ -6076,6 +6090,7 @@ Elm.Models.Grid.make = function (_elm) {
    $Matrix = Elm.Matrix.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models$GridRow = Elm.Models.GridRow.make(_elm),
+   $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var squash = function (grid) {
@@ -6087,6 +6102,20 @@ Elm.Models.Grid.make = function (_elm) {
                 ,_0: $List.sum(points)
                 ,_1: $Matrix.fromList(rows$)};
       }();
+   };
+   var nth = F2(function (index,
+   list) {
+      return function () {
+         switch (index)
+         {case 0:
+            return $List.head(list);}
+         return A2(nth,
+         index - 1,
+         $Maybe.withDefault(_L.fromArray([]))($List.tail(list)));
+      }();
+   });
+   var numbers = function ($) {
+      return $List.concat($Matrix.toList($));
    };
    var flip = function ($) {
       return $Matrix.fromList($List.map($List.reverse)($Matrix.toList($)));
@@ -6107,7 +6136,7 @@ Elm.Models.Grid.make = function (_elm) {
                case "SquashUp":
                return transpose;}
             _U.badCase($moduleName,
-            "between lines 43 and 47");
+            "between lines 48 and 52");
          }()(grid)),
          points = $._0,
          grid$ = $._1;
@@ -6123,7 +6152,7 @@ Elm.Models.Grid.make = function (_elm) {
                case "SquashUp":
                return transpose;}
             _U.badCase($moduleName,
-            "between lines 49 and 54");
+            "between lines 54 and 59");
          }()(grid$);
          return {ctor: "_Tuple2"
                 ,_0: points
@@ -6131,38 +6160,65 @@ Elm.Models.Grid.make = function (_elm) {
       }();
    });
    var emptyPositions = function ($) {
-      return $List.map(function (_v7) {
+      return $List.map(function (_v8) {
          return function () {
-            switch (_v7.ctor)
+            switch (_v8.ctor)
             {case "_Tuple3":
                return {ctor: "_Tuple2"
-                      ,_0: _v7._0
-                      ,_1: _v7._1};}
+                      ,_0: _v8._0
+                      ,_1: _v8._1};}
             _U.badCase($moduleName,
-            "on line 28, column 31 to 35");
+            "on line 30, column 31 to 35");
          }();
-      })($List.filter(function (_v2) {
+      })($List.filter(function (_v3) {
          return function () {
-            switch (_v2.ctor)
+            switch (_v3.ctor)
             {case "_Tuple3":
-               return _U.eq(_v2._2,0);}
+               return _U.eq(_v3._2,0);}
             _U.badCase($moduleName,
-            "on line 27, column 38 to 49");
+            "on line 29, column 38 to 49");
          }();
       })($Matrix.toIndexedList($)));
    };
-   var addCell = F2(function (_v12,
+   var addCell = F2(function (_v13,
    grid) {
       return function () {
-         switch (_v12.ctor)
+         switch (_v13.ctor)
          {case "_Tuple2":
             return A4($Matrix.set,
-              _v12._0,
-              _v12._1,
+              _v13._0,
+              _v13._1,
               2,
               grid);}
          _U.badCase($moduleName,
-         "on line 21, column 23 to 44");
+         "on line 23, column 23 to 44");
+      }();
+   });
+   var addRandomCell = F2(function (seed,
+   grid) {
+      return function () {
+         var positions = emptyPositions(grid);
+         var $ = A2($Random.generate,
+         A2($Random.$int,0,100),
+         seed),
+         randomNumber = $._0,
+         seed$ = $._1;
+         var randomPosition = A2(nth,
+         A2($Basics._op["%"],
+         randomNumber,
+         $List.length(positions)),
+         positions);
+         var grid$ = function () {
+            switch (randomPosition.ctor)
+            {case "Just": return A2(addCell,
+                 randomPosition._0,
+                 grid);}
+            _U.badCase($moduleName,
+            "between lines 80 and 82");
+         }();
+         return {ctor: "_Tuple2"
+                ,_0: seed$
+                ,_1: grid$};
       }();
    });
    var emptyGrid = F2(function (width,
@@ -6197,7 +6253,10 @@ Elm.Models.Grid.make = function (_elm) {
                              ,emptyPositions: emptyPositions
                              ,transpose: transpose
                              ,flip: flip
+                             ,numbers: numbers
                              ,update: update
+                             ,nth: nth
+                             ,addRandomCell: addRandomCell
                              ,squash: squash};
    return _elm.Models.Grid.values;
 };
@@ -15470,10 +15529,41 @@ Elm.Views.Grid.make = function (_elm) {
    $List = Elm.List.make(_elm),
    $Matrix = Elm.Matrix.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Models$GameState = Elm.Models.GameState.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Shapes = Elm.Shapes.make(_elm),
    $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm),
    $Views$Cell = Elm.Views.Cell.make(_elm);
+   var message = F3(function (label,
+   width,
+   height) {
+      return $Graphics$Collage.group(_L.fromArray([$Graphics$Collage.filled(A4($Color.rgba,
+                                                  255,
+                                                  255,
+                                                  255,
+                                                  0.3))(A2($Graphics$Collage.rect,
+                                                  $Basics.toFloat(width),
+                                                  $Basics.toFloat(height)))
+                                                  ,$Graphics$Collage.text($Text.color(A3($Color.rgb,
+                                                  120,
+                                                  110,
+                                                  101))($Text.bold($Text.height(80)($Text.fromString(label)))))]));
+   });
+   var won = F2(function (width,
+   height) {
+      return A3(message,
+      "You won!",
+      width,
+      height);
+   });
+   var lost = F2(function (width,
+   height) {
+      return A3(message,
+      "You lost!",
+      width,
+      height);
+   });
    var cellPosition = F4(function (config,
    x,
    y,
@@ -15496,39 +15586,63 @@ Elm.Views.Grid.make = function (_elm) {
    });
    var cells = F2(function (config,
    model) {
-      return A2($List.map2,
+      return $Graphics$Collage.group(A2($List.map2,
       $Graphics$Collage.move,
       A2(cellPositions,
       config,
       model))($Matrix.flatten($Matrix.map(A2($Views$Cell.cell,
       config.cell.size,
-      config.cell.radius))(model)));
+      config.cell.radius))(model))));
    });
    var render = F2(function (config,
-   model) {
+   _v0) {
       return function () {
-         var backgroungColor = A3($Color.rgb,
-         187,
-         173,
-         160);
-         var backgroundSize = (config.cell.size + 2 * config.cell.padding) * config.grid.rows + config.grid.padding;
-         var backgroungRadius = config.grid.radius;
-         var backgroung = A3($Shapes.roundedSquare,
-         backgroundSize,
-         backgroungRadius,
-         backgroungColor);
-         return A3($Graphics$Collage.collage,
-         backgroundSize,
-         backgroundSize,
-         A2($List._op["::"],
-         backgroung,
-         A2(cells,config,model)));
+         return function () {
+            var backgroungColor = A3($Color.rgb,
+            187,
+            173,
+            160);
+            var backgroundSize = (config.cell.size + 2 * config.cell.padding) * config.grid.rows + config.grid.padding;
+            var forms = function () {
+               var _v2 = _v0.phase;
+               switch (_v2.ctor)
+               {case "GameOver":
+                  return _L.fromArray([A2(lost,
+                    backgroundSize,
+                    backgroundSize)]);
+                  case "InProgress":
+                  return _L.fromArray([]);
+                  case "Won":
+                  return _L.fromArray([A2(won,
+                    backgroundSize,
+                    backgroundSize)]);}
+               _U.badCase($moduleName,
+               "between lines 65 and 70");
+            }();
+            var backgroungRadius = config.grid.radius;
+            var backgroung = A3($Shapes.roundedSquare,
+            backgroundSize,
+            backgroungRadius,
+            backgroungColor);
+            var forms$ = A2($List._op["::"],
+            backgroung,
+            A2($List._op["::"],
+            A2(cells,config,_v0.grid),
+            forms));
+            return A3($Graphics$Collage.collage,
+            backgroundSize,
+            backgroundSize,
+            forms$);
+         }();
       }();
    });
    _elm.Views.Grid.values = {_op: _op
                             ,cellPosition: cellPosition
                             ,cellPositions: cellPositions
                             ,cells: cells
+                            ,message: message
+                            ,won: won
+                            ,lost: lost
                             ,render: render};
    return _elm.Views.Grid.values;
 };
