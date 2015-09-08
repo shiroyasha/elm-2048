@@ -15,11 +15,16 @@ type alias GameState =
   }
 
 initial seed =
-  { grid = Models.Grid.grid 4 4
-  , seed = seed
-  , score = 0
-  , phase = InProgress
-  }
+  let
+      empty = Models.Grid.emptyGrid 4 4
+      (seed', grid') = empty |> Models.Grid.addRandomCell seed
+      (seed'', grid'') = grid' |> Models.Grid.addRandomCell seed'
+  in
+    { grid = grid''
+    , seed = seed''
+    , score = 0
+    , phase = InProgress
+    }
 
 
 lost : Grid -> Bool

@@ -99,11 +99,22 @@ Elm.Models.GameState.make = function (_elm) {
    };
    var InProgress = {ctor: "InProgress"};
    var initial = function (seed) {
-      return {_: {}
-             ,grid: A2($Models$Grid.grid,4,4)
-             ,phase: InProgress
-             ,score: 0
-             ,seed: seed};
+      return function () {
+         var empty = A2($Models$Grid.emptyGrid,
+         4,
+         4);
+         var $ = $Models$Grid.addRandomCell(seed)(empty),
+         seed$ = $._0,
+         grid$ = $._1;
+         var $ = $Models$Grid.addRandomCell(seed$)(grid$),
+         seed$$ = $._0,
+         grid$$ = $._1;
+         return {_: {}
+                ,grid: grid$$
+                ,phase: InProgress
+                ,score: 0
+                ,seed: seed$$};
+      }();
    };
    var update = F2(function (input,
    game) {
@@ -121,7 +132,7 @@ Elm.Models.GameState.make = function (_elm) {
                  return initial(game.seed);}
               break;}
          _U.badCase($moduleName,
-         "between lines 69 and 74");
+         "between lines 74 and 79");
       }();
    });
    _elm.Models.GameState.values = {_op: _op

@@ -6099,11 +6099,22 @@ Elm.Models.GameState.make = function (_elm) {
    };
    var InProgress = {ctor: "InProgress"};
    var initial = function (seed) {
-      return {_: {}
-             ,grid: A2($Models$Grid.grid,4,4)
-             ,phase: InProgress
-             ,score: 0
-             ,seed: seed};
+      return function () {
+         var empty = A2($Models$Grid.emptyGrid,
+         4,
+         4);
+         var $ = $Models$Grid.addRandomCell(seed)(empty),
+         seed$ = $._0,
+         grid$ = $._1;
+         var $ = $Models$Grid.addRandomCell(seed$)(grid$),
+         seed$$ = $._0,
+         grid$$ = $._1;
+         return {_: {}
+                ,grid: grid$$
+                ,phase: InProgress
+                ,score: 0
+                ,seed: seed$$};
+      }();
    };
    var update = F2(function (input,
    game) {
@@ -6121,7 +6132,7 @@ Elm.Models.GameState.make = function (_elm) {
                  return initial(game.seed);}
               break;}
          _U.badCase($moduleName,
-         "between lines 69 and 74");
+         "between lines 74 and 79");
       }();
    });
    _elm.Models.GameState.values = {_op: _op
@@ -6202,7 +6213,7 @@ Elm.Models.Grid.make = function (_elm) {
                case "SquashUp":
                return transpose;}
             _U.badCase($moduleName,
-            "between lines 48 and 52");
+            "between lines 44 and 48");
          }()(grid)),
          points = $._0,
          grid$ = $._1;
@@ -6218,7 +6229,7 @@ Elm.Models.Grid.make = function (_elm) {
                case "SquashUp":
                return transpose;}
             _U.badCase($moduleName,
-            "between lines 54 and 59");
+            "between lines 50 and 55");
          }()(grid$);
          return {ctor: "_Tuple2"
                 ,_0: points
@@ -6234,7 +6245,7 @@ Elm.Models.Grid.make = function (_elm) {
                       ,_0: _v8._0
                       ,_1: _v8._1};}
             _U.badCase($moduleName,
-            "on line 30, column 31 to 35");
+            "on line 26, column 31 to 35");
          }();
       })($List.filter(function (_v3) {
          return function () {
@@ -6242,7 +6253,7 @@ Elm.Models.Grid.make = function (_elm) {
             {case "_Tuple3":
                return _U.eq(_v3._2,0);}
             _U.badCase($moduleName,
-            "on line 29, column 38 to 49");
+            "on line 25, column 38 to 49");
          }();
       })($Matrix.toIndexedList($)));
    };
@@ -6257,7 +6268,7 @@ Elm.Models.Grid.make = function (_elm) {
               2,
               grid);}
          _U.badCase($moduleName,
-         "on line 23, column 23 to 44");
+         "on line 19, column 23 to 44");
       }();
    });
    var addRandomCell = F2(function (seed,
@@ -6280,7 +6291,7 @@ Elm.Models.Grid.make = function (_elm) {
                  randomPosition._0,
                  grid);}
             _U.badCase($moduleName,
-            "between lines 80 and 82");
+            "between lines 76 and 78");
          }();
          return {ctor: "_Tuple2"
                 ,_0: seed$
@@ -6294,14 +6305,6 @@ Elm.Models.Grid.make = function (_elm) {
       height,
       0);
    });
-   var grid = F2(function (width,
-   height) {
-      return addCell({ctor: "_Tuple2"
-                     ,_0: 1
-                     ,_1: 1})(A2(emptyGrid,
-      width,
-      height));
-   });
    var NoAction = {ctor: "NoAction"};
    var SquashRight = {ctor: "SquashRight"};
    var SquashLeft = {ctor: "SquashLeft"};
@@ -6314,7 +6317,6 @@ Elm.Models.Grid.make = function (_elm) {
                              ,SquashRight: SquashRight
                              ,NoAction: NoAction
                              ,emptyGrid: emptyGrid
-                             ,grid: grid
                              ,addCell: addCell
                              ,emptyPositions: emptyPositions
                              ,transpose: transpose

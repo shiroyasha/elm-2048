@@ -15,10 +15,6 @@ emptyGrid : Int -> Int -> Grid
 emptyGrid width height = Matrix.repeat width height 0
 
 
-grid : Int -> Int -> Grid
-grid width height = emptyGrid width height |> addCell (1, 1)
-
-
 addCell : (Int, Int) -> Grid -> Grid
 addCell (x, y) grid = Matrix.set x y 2 grid
 
