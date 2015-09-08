@@ -16,6 +16,15 @@ Elm.Input.make = function (_elm) {
    $Models$Grid = Elm.Models.Grid.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var Movement = function (a) {
+      return {ctor: "Movement"
+             ,_0: a};
+   };
+   var NewGame = function (a) {
+      return {ctor: "NewGame"
+             ,_0: a};
+   };
+   var newGame = $Signal.mailbox({ctor: "_Tuple0"});
    var keyboard = function () {
       var toAction = function (_v0) {
          return function () {
@@ -48,7 +57,18 @@ Elm.Input.make = function (_elm) {
       toAction,
       $Keyboard.arrows);
    }();
+   var input = A2($Signal.merge,
+   A2($Signal._op["<~"],
+   NewGame,
+   newGame.signal),
+   A2($Signal._op["<~"],
+   Movement,
+   keyboard));
    _elm.Input.values = {_op: _op
-                       ,keyboard: keyboard};
+                       ,keyboard: keyboard
+                       ,newGame: newGame
+                       ,NewGame: NewGame
+                       ,Movement: Movement
+                       ,input: input};
    return _elm.Input.values;
 };

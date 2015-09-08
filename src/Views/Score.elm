@@ -37,5 +37,4 @@ render score =
       width = 120
       height = 100
   in
-     collage width height [backgroung width height, title, label score]
-
+     collage width height [group [backgroung width height, title, label score] |> move (0, -5)]

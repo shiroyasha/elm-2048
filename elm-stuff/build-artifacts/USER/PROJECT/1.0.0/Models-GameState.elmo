@@ -12,7 +12,7 @@ Elm.Models.GameState.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Models.GameState",
    $Basics = Elm.Basics.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
+   $Input = Elm.Input.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models$Grid = Elm.Models.Grid.make(_elm),
@@ -97,14 +97,6 @@ Elm.Models.GameState.make = function (_elm) {
          game);
       }();
    };
-   var update = F2(function (action,
-   game) {
-      return $Debug.watch("State")(function () {
-         switch (action.ctor)
-         {case "NoAction": return game;}
-         return updatePhase(addCell(game)(applyAction(action)(game)));
-      }());
-   });
    var InProgress = {ctor: "InProgress"};
    var initial = function (seed) {
       return {_: {}
@@ -113,6 +105,25 @@ Elm.Models.GameState.make = function (_elm) {
              ,score: 0
              ,seed: seed};
    };
+   var update = F2(function (input,
+   game) {
+      return function () {
+         switch (input.ctor)
+         {case "Movement":
+            return function () {
+                 switch (input._0.ctor)
+                 {case "NoAction": return game;}
+                 return updatePhase(addCell(game)(applyAction(input._0)(game)));
+              }();
+            case "NewGame":
+            switch (input._0.ctor)
+              {case "_Tuple0":
+                 return initial(game.seed);}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 69 and 74");
+      }();
+   });
    _elm.Models.GameState.values = {_op: _op
                                   ,InProgress: InProgress
                                   ,GameOver: GameOver

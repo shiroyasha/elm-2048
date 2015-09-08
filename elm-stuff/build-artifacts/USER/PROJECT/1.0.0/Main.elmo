@@ -20,6 +20,7 @@ Elm.Main.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Views$Grid = Elm.Views.Grid.make(_elm),
+   $Views$NewGame = Elm.Views.NewGame.make(_elm),
    $Views$Objective = Elm.Views.Objective.make(_elm),
    $Views$Score = Elm.Views.Score.make(_elm),
    $Views$Title = Elm.Views.Title.make(_elm);
@@ -30,7 +31,10 @@ Elm.Main.make = function (_elm) {
                    $Graphics$Element.right,
                    _L.fromArray([$Views$Title.render
                                 ,$Views$Score.render(game.score)]))
-                   ,$Views$Objective.render
+                   ,A2($Graphics$Element.flow,
+                   $Graphics$Element.right,
+                   _L.fromArray([$Views$Objective.render
+                                ,$Views$NewGame.render($Input.newGame)]))
                    ,A2($Views$Grid.render,
                    $Config.defaultConfig,
                    game)]));
@@ -40,7 +44,7 @@ Elm.Main.make = function (_elm) {
    var gameState = A3($Signal.foldp,
    $Models$GameState.update,
    $Models$GameState.initial(startTimeSeed),
-   $Input.keyboard);
+   $Input.input);
    var main = A2($Signal.map,
    view,
    gameState);

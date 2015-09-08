@@ -3200,6 +3200,37 @@ Elm.Graphics.Element.make = function (_elm) {
                                   ,Position: Position};
    return _elm.Graphics.Element.values;
 };
+Elm.Graphics = Elm.Graphics || {};
+Elm.Graphics.Input = Elm.Graphics.Input || {};
+Elm.Graphics.Input.make = function (_elm) {
+   "use strict";
+   _elm.Graphics = _elm.Graphics || {};
+   _elm.Graphics.Input = _elm.Graphics.Input || {};
+   if (_elm.Graphics.Input.values)
+   return _elm.Graphics.Input.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Graphics.Input",
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Native$Graphics$Input = Elm.Native.Graphics.Input.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var clickable = $Native$Graphics$Input.clickable;
+   var hoverable = $Native$Graphics$Input.hoverable;
+   var dropDown = $Native$Graphics$Input.dropDown;
+   var checkbox = $Native$Graphics$Input.checkbox;
+   var customButton = $Native$Graphics$Input.customButton;
+   var button = $Native$Graphics$Input.button;
+   _elm.Graphics.Input.values = {_op: _op
+                                ,button: button
+                                ,customButton: customButton
+                                ,checkbox: checkbox
+                                ,dropDown: dropDown
+                                ,hoverable: hoverable
+                                ,clickable: clickable};
+   return _elm.Graphics.Input.values;
+};
 Elm.Html = Elm.Html || {};
 Elm.Html.make = function (_elm) {
    "use strict";
@@ -3445,6 +3476,15 @@ Elm.Input.make = function (_elm) {
    $Models$Grid = Elm.Models.Grid.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var Movement = function (a) {
+      return {ctor: "Movement"
+             ,_0: a};
+   };
+   var NewGame = function (a) {
+      return {ctor: "NewGame"
+             ,_0: a};
+   };
+   var newGame = $Signal.mailbox({ctor: "_Tuple0"});
    var keyboard = function () {
       var toAction = function (_v0) {
          return function () {
@@ -3477,8 +3517,19 @@ Elm.Input.make = function (_elm) {
       toAction,
       $Keyboard.arrows);
    }();
+   var input = A2($Signal.merge,
+   A2($Signal._op["<~"],
+   NewGame,
+   newGame.signal),
+   A2($Signal._op["<~"],
+   Movement,
+   keyboard));
    _elm.Input.values = {_op: _op
-                       ,keyboard: keyboard};
+                       ,keyboard: keyboard
+                       ,newGame: newGame
+                       ,NewGame: NewGame
+                       ,Movement: Movement
+                       ,input: input};
    return _elm.Input.values;
 };
 Elm.Json = Elm.Json || {};
@@ -5129,6 +5180,7 @@ Elm.Main.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Views$Grid = Elm.Views.Grid.make(_elm),
+   $Views$NewGame = Elm.Views.NewGame.make(_elm),
    $Views$Objective = Elm.Views.Objective.make(_elm),
    $Views$Score = Elm.Views.Score.make(_elm),
    $Views$Title = Elm.Views.Title.make(_elm);
@@ -5139,7 +5191,10 @@ Elm.Main.make = function (_elm) {
                    $Graphics$Element.right,
                    _L.fromArray([$Views$Title.render
                                 ,$Views$Score.render(game.score)]))
-                   ,$Views$Objective.render
+                   ,A2($Graphics$Element.flow,
+                   $Graphics$Element.right,
+                   _L.fromArray([$Views$Objective.render
+                                ,$Views$NewGame.render($Input.newGame)]))
                    ,A2($Views$Grid.render,
                    $Config.defaultConfig,
                    game)]));
@@ -5149,7 +5204,7 @@ Elm.Main.make = function (_elm) {
    var gameState = A3($Signal.foldp,
    $Models$GameState.update,
    $Models$GameState.initial(startTimeSeed),
-   $Input.keyboard);
+   $Input.input);
    var main = A2($Signal.map,
    view,
    gameState);
@@ -5957,7 +6012,7 @@ Elm.Models.GameState.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Models.GameState",
    $Basics = Elm.Basics.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
+   $Input = Elm.Input.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Models$Grid = Elm.Models.Grid.make(_elm),
@@ -6042,14 +6097,6 @@ Elm.Models.GameState.make = function (_elm) {
          game);
       }();
    };
-   var update = F2(function (action,
-   game) {
-      return $Debug.watch("State")(function () {
-         switch (action.ctor)
-         {case "NoAction": return game;}
-         return updatePhase(addCell(game)(applyAction(action)(game)));
-      }());
-   });
    var InProgress = {ctor: "InProgress"};
    var initial = function (seed) {
       return {_: {}
@@ -6058,6 +6105,25 @@ Elm.Models.GameState.make = function (_elm) {
              ,score: 0
              ,seed: seed};
    };
+   var update = F2(function (input,
+   game) {
+      return function () {
+         switch (input.ctor)
+         {case "Movement":
+            return function () {
+                 switch (input._0.ctor)
+                 {case "NoAction": return game;}
+                 return updatePhase(addCell(game)(applyAction(input._0)(game)));
+              }();
+            case "NewGame":
+            switch (input._0.ctor)
+              {case "_Tuple0":
+                 return initial(game.seed);}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 69 and 74");
+      }();
+   });
    _elm.Models.GameState.values = {_op: _op
                                   ,InProgress: InProgress
                                   ,GameOver: GameOver
@@ -8959,6 +9025,479 @@ Elm.Native.Graphics.Element.make = function(localRuntime) {
 
 		block: block,
 		markdown: markdown
+	};
+
+};
+
+// setup
+Elm.Native = Elm.Native || {};
+Elm.Native.Graphics = Elm.Native.Graphics || {};
+Elm.Native.Graphics.Input = Elm.Native.Graphics.Input || {};
+
+// definition
+Elm.Native.Graphics.Input.make = function(localRuntime) {
+	'use strict';
+
+	// attempt to short-circuit
+	if ('values' in Elm.Native.Graphics.Input) {
+		return Elm.Native.Graphics.Input.values;
+	}
+
+	var Color = Elm.Native.Color.make(localRuntime);
+	var List = Elm.Native.List.make(localRuntime);
+	var Signal = Elm.Native.Signal.make(localRuntime);
+	var Text = Elm.Native.Text.make(localRuntime);
+	var Utils = Elm.Native.Utils.make(localRuntime);
+
+	var Element = Elm.Native.Graphics.Element.make(localRuntime);
+
+
+	function renderDropDown(model)
+	{
+		var drop = Element.createNode('select');
+		drop.style.border = '0 solid';
+		drop.style.pointerEvents = 'auto';
+		drop.style.display = 'block';
+
+		drop.elm_values = List.toArray(model.values);
+		drop.elm_handler = model.handler;
+		var values = drop.elm_values;
+
+		for (var i = 0; i < values.length; ++i)
+		{
+			var option = Element.createNode('option');
+			var name = values[i]._0;
+			option.value = name;
+			option.innerHTML = name;
+			drop.appendChild(option);
+		}
+		drop.addEventListener('change', function() {
+			Signal.sendMessage(drop.elm_handler(drop.elm_values[drop.selectedIndex]._1));
+		});
+
+		return drop;
+	}
+
+	function updateDropDown(node, oldModel, newModel)
+	{
+		node.elm_values = List.toArray(newModel.values);
+		node.elm_handler = newModel.handler;
+
+		var values = node.elm_values;
+		var kids = node.childNodes;
+		var kidsLength = kids.length;
+
+		var i = 0;
+		for (; i < kidsLength && i < values.length; ++i)
+		{
+			var option = kids[i];
+			var name = values[i]._0;
+			option.value = name;
+			option.innerHTML = name;
+		}
+		for (; i < kidsLength; ++i)
+		{
+			node.removeChild(node.lastChild);
+		}
+		for (; i < values.length; ++i)
+		{
+			var option = Element.createNode('option');
+			var name = values[i]._0;
+			option.value = name;
+			option.innerHTML = name;
+			node.appendChild(option);
+		}
+		return node;
+	}
+
+	function dropDown(handler, values)
+	{
+		return A3(Element.newElement, 100, 24, {
+			ctor: 'Custom',
+			type: 'DropDown',
+			render: renderDropDown,
+			update: updateDropDown,
+			model: {
+				values: values,
+				handler: handler
+			}
+		});
+	}
+
+	function renderButton(model)
+	{
+		var node = Element.createNode('button');
+		node.style.display = 'block';
+		node.style.pointerEvents = 'auto';
+		node.elm_message = model.message;
+		function click()
+		{
+			Signal.sendMessage(node.elm_message);
+		}
+		node.addEventListener('click', click);
+		node.innerHTML = model.text;
+		return node;
+	}
+
+	function updateButton(node, oldModel, newModel)
+	{
+		node.elm_message = newModel.message;
+		var txt = newModel.text;
+		if (oldModel.text !== txt)
+		{
+			node.innerHTML = txt;
+		}
+		return node;
+	}
+
+	function button(message, text)
+	{
+		return A3(Element.newElement, 100, 40, {
+			ctor: 'Custom',
+			type: 'Button',
+			render: renderButton,
+			update: updateButton,
+			model: {
+				message: message,
+				text:text
+			}
+		});
+	}
+
+	function renderCustomButton(model)
+	{
+		var btn = Element.createNode('div');
+		btn.style.pointerEvents = 'auto';
+		btn.elm_message = model.message;
+
+		btn.elm_up    = Element.render(model.up);
+		btn.elm_hover = Element.render(model.hover);
+		btn.elm_down  = Element.render(model.down);
+
+		btn.elm_up.style.display = 'block';
+		btn.elm_hover.style.display = 'none';
+		btn.elm_down.style.display = 'none';
+
+		btn.appendChild(btn.elm_up);
+		btn.appendChild(btn.elm_hover);
+		btn.appendChild(btn.elm_down);
+
+		function swap(visibleNode, hiddenNode1, hiddenNode2)
+		{
+			visibleNode.style.display = 'block';
+			hiddenNode1.style.display = 'none';
+			hiddenNode2.style.display = 'none';
+		}
+
+		var overCount = 0;
+		function over(e)
+		{
+			if (overCount++ > 0) return;
+			swap(btn.elm_hover, btn.elm_down, btn.elm_up);
+		}
+		function out(e)
+		{
+			if (btn.contains(e.toElement || e.relatedTarget)) return;
+			overCount = 0;
+			swap(btn.elm_up, btn.elm_down, btn.elm_hover);
+		}
+		function up()
+		{
+			swap(btn.elm_hover, btn.elm_down, btn.elm_up);
+			Signal.sendMessage(btn.elm_message);
+		}
+		function down()
+		{
+			swap(btn.elm_down, btn.elm_hover, btn.elm_up);
+		}
+
+		btn.addEventListener('mouseover', over);
+		btn.addEventListener('mouseout' , out);
+		btn.addEventListener('mousedown', down);
+		btn.addEventListener('mouseup'  , up);
+
+		return btn;
+	}
+
+	function updateCustomButton(node, oldModel, newModel)
+	{
+		node.elm_message = newModel.message;
+
+		var kids = node.childNodes;
+		var styleUp    = kids[0].style.display;
+		var styleHover = kids[1].style.display;
+		var styleDown  = kids[2].style.display;
+
+		Element.updateAndReplace(kids[0], oldModel.up, newModel.up);
+		Element.updateAndReplace(kids[1], oldModel.hover, newModel.hover);
+		Element.updateAndReplace(kids[2], oldModel.down, newModel.down);
+
+		var kids = node.childNodes;
+		kids[0].style.display = styleUp;
+		kids[1].style.display = styleHover;
+		kids[2].style.display = styleDown;
+
+		return node;
+	}
+
+	function max3(a,b,c)
+	{
+		var ab = a > b ? a : b;
+		return ab > c ? ab : c;
+	}
+
+	function customButton(message, up, hover, down)
+	{
+		return A3(Element.newElement,
+				  max3(up.props.width, hover.props.width, down.props.width),
+				  max3(up.props.height, hover.props.height, down.props.height),
+				  { ctor: 'Custom',
+					type: 'CustomButton',
+					render: renderCustomButton,
+					update: updateCustomButton,
+					model: {
+						message: message,
+						up: up,
+						hover: hover,
+						down: down
+					}
+				  });
+	}
+
+	function renderCheckbox(model)
+	{
+		var node = Element.createNode('input');
+		node.type = 'checkbox';
+		node.checked = model.checked;
+		node.style.display = 'block';
+		node.style.pointerEvents = 'auto';
+		node.elm_handler = model.handler;
+		function change()
+		{
+			Signal.sendMessage(node.elm_handler(node.checked));
+		}
+		node.addEventListener('change', change);
+		return node;
+	}
+
+	function updateCheckbox(node, oldModel, newModel)
+	{
+		node.elm_handler = newModel.handler;
+		node.checked = newModel.checked;
+		return node;
+	}
+
+	function checkbox(handler, checked)
+	{
+		return A3(Element.newElement, 13, 13, {
+			ctor: 'Custom',
+			type: 'CheckBox',
+			render: renderCheckbox,
+			update: updateCheckbox,
+			model: { handler:handler, checked:checked }
+		});
+	}
+
+	function setRange(node, start, end, dir)
+	{
+		if (node.parentNode)
+		{
+			node.setSelectionRange(start, end, dir);
+		}
+		else
+		{
+			setTimeout(function(){node.setSelectionRange(start, end, dir);}, 0);
+		}
+	}
+
+	function updateIfNeeded(css, attribute, latestAttribute)
+	{
+		if (css[attribute] !== latestAttribute)
+		{
+			css[attribute] = latestAttribute;
+		}
+	}
+	function cssDimensions(dimensions)
+	{
+		return dimensions.top    + 'px ' +
+			   dimensions.right  + 'px ' +
+			   dimensions.bottom + 'px ' +
+			   dimensions.left   + 'px';
+	}
+	function updateFieldStyle(css, style)
+	{
+		updateIfNeeded(css, 'padding', cssDimensions(style.padding));
+
+		var outline = style.outline;
+		updateIfNeeded(css, 'border-width', cssDimensions(outline.width));
+		updateIfNeeded(css, 'border-color', Color.toCss(outline.color));
+		updateIfNeeded(css, 'border-radius', outline.radius + 'px');
+
+		var highlight = style.highlight;
+		if (highlight.width === 0)
+		{
+			css.outline = 'none';
+		}
+		else
+		{
+			updateIfNeeded(css, 'outline-width', highlight.width + 'px');
+			updateIfNeeded(css, 'outline-color', Color.toCss(highlight.color));
+		}
+
+		var textStyle = style.style;
+		updateIfNeeded(css, 'color', Color.toCss(textStyle.color));
+		if (textStyle.typeface.ctor !== '[]')
+		{
+			updateIfNeeded(css, 'font-family', Text.toTypefaces(textStyle.typeface));
+		}
+		if (textStyle.height.ctor !== "Nothing")
+		{
+			updateIfNeeded(css, 'font-size', textStyle.height._0 + 'px');
+		}
+		updateIfNeeded(css, 'font-weight', textStyle.bold ? 'bold' : 'normal');
+		updateIfNeeded(css, 'font-style', textStyle.italic ? 'italic' : 'normal');
+		if (textStyle.line.ctor !== 'Nothing')
+		{
+			updateIfNeeded(css, 'text-decoration', Text.toLine(textStyle.line._0));
+		}
+	}
+
+	function renderField(model)
+	{
+		var field = Element.createNode('input');
+		updateFieldStyle(field.style, model.style);
+		field.style.borderStyle = 'solid';
+		field.style.pointerEvents = 'auto';
+
+		field.type = model.type;
+		field.placeholder = model.placeHolder;
+		field.value = model.content.string;
+
+		field.elm_handler = model.handler;
+		field.elm_old_value = field.value;
+
+		function inputUpdate(event)
+		{
+			var curr = field.elm_old_value;
+			var next = field.value;
+			if (curr === next)
+			{
+				return;
+			}
+
+			var direction = field.selectionDirection === 'forward' ? 'Forward' : 'Backward';
+			var start = field.selectionStart;
+			var end = field.selectionEnd;
+			field.value = field.elm_old_value;
+
+			Signal.sendMessage(field.elm_handler({
+				_:{},
+				string: next,
+				selection: {
+					_:{},
+					start: start,
+					end: end,
+					direction: { ctor: direction }
+				}
+			}));
+		}
+
+		field.addEventListener('input', inputUpdate);
+		field.addEventListener('focus', function() {
+			field.elm_hasFocus = true;
+		});
+		field.addEventListener('blur', function() {
+			field.elm_hasFocus = false;
+		});
+
+		return field;
+	}
+
+	function updateField(field, oldModel, newModel)
+	{
+		if (oldModel.style !== newModel.style)
+		{
+			updateFieldStyle(field.style, newModel.style);
+		}
+		field.elm_handler = newModel.handler;
+
+		field.type = newModel.type;
+		field.placeholder = newModel.placeHolder;
+		var value = newModel.content.string;
+		field.value = value;
+		field.elm_old_value = value;
+		if (field.elm_hasFocus)
+		{
+			var selection = newModel.content.selection;
+			var direction = selection.direction.ctor === 'Forward' ? 'forward' : 'backward';
+			setRange(field, selection.start, selection.end, direction);
+		}
+		return field;
+	}
+
+	function mkField(type)
+	{
+		function field(style, handler, placeHolder, content)
+		{
+			var padding = style.padding;
+			var outline = style.outline.width;
+			var adjustWidth = padding.left + padding.right + outline.left + outline.right;
+			var adjustHeight = padding.top + padding.bottom + outline.top + outline.bottom;
+			return A3(Element.newElement, 200, 30, {
+				ctor: 'Custom',
+				type: type + 'Field',
+				adjustWidth: adjustWidth,
+				adjustHeight: adjustHeight,
+				render: renderField,
+				update: updateField,
+				model: {
+					handler:handler,
+					placeHolder:placeHolder,
+					content:content,
+					style:style,
+					type:type
+				}
+			});
+		}
+		return F4(field);
+	}
+
+	function hoverable(handler, elem)
+	{
+		function onHover(bool)
+		{
+			Signal.sendMessage(handler(bool));
+		}
+		var props = Utils.replace([['hover',onHover]], elem.props);
+		return {
+			props: props,
+			element: elem.element
+		};
+	}
+
+	function clickable(message, elem)
+	{
+		function onClick()
+		{
+			Signal.sendMessage(message);
+		}
+		var props = Utils.replace([['click',onClick]], elem.props);
+		return {
+			props: props,
+			element: elem.element
+		};
+	}
+
+	return Elm.Native.Graphics.Input.values = {
+		button: F2(button),
+		customButton: F4(customButton),
+		checkbox: F2(checkbox),
+		dropDown: F2(dropDown),
+		field: mkField('text'),
+		email: mkField('email'),
+		password: mkField('password'),
+		hoverable: F2(hoverable),
+		clickable: F2(clickable)
 	};
 
 };
@@ -15647,6 +16186,68 @@ Elm.Views.Grid.make = function (_elm) {
    return _elm.Views.Grid.values;
 };
 Elm.Views = Elm.Views || {};
+Elm.Views.NewGame = Elm.Views.NewGame || {};
+Elm.Views.NewGame.make = function (_elm) {
+   "use strict";
+   _elm.Views = _elm.Views || {};
+   _elm.Views.NewGame = _elm.Views.NewGame || {};
+   if (_elm.Views.NewGame.values)
+   return _elm.Views.NewGame.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Views.NewGame",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Graphics$Input = Elm.Graphics.Input.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Shapes = Elm.Shapes.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var title = $Graphics$Collage.move({ctor: "_Tuple2"
+                                      ,_0: 0
+                                      ,_1: 2})($Graphics$Collage.text($Text.bold($Text.height(18)($Text.color($Color.white)($Text.fromString("New Game"))))));
+   var basicButton = function (color) {
+      return A3($Graphics$Collage.collage,
+      140,
+      50,
+      _L.fromArray([A4($Shapes.roundedRect,
+                   140,
+                   40,
+                   3,
+                   color)
+                   ,title]));
+   };
+   var render = function (mailbox) {
+      return A4($Graphics$Input.customButton,
+      A2($Signal.message,
+      mailbox.address,
+      {ctor: "_Tuple0"}),
+      basicButton(A3($Color.rgb,
+      120,
+      110,
+      101)),
+      basicButton(A3($Color.rgb,
+      130,
+      120,
+      111)),
+      basicButton(A3($Color.rgb,
+      120,
+      110,
+      101)));
+   };
+   _elm.Views.NewGame.values = {_op: _op
+                               ,title: title
+                               ,basicButton: basicButton
+                               ,render: render};
+   return _elm.Views.NewGame.values;
+};
+Elm.Views = Elm.Views || {};
 Elm.Views.Objective = Elm.Views.Objective || {};
 Elm.Views.Objective.make = function (_elm) {
    "use strict";
@@ -15666,8 +16267,8 @@ Elm.Views.Objective.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var render = A2($Html.toElement,
-   370,
-   50)(A2($Html.p,
+   350,
+   70)(A2($Html.p,
    _L.fromArray([]),
    _L.fromArray([A2($Html.span,
                 _L.fromArray([]),
@@ -15728,11 +16329,13 @@ Elm.Views.Score.make = function (_elm) {
          return A3($Graphics$Collage.collage,
          width,
          height,
-         _L.fromArray([A2(backgroung,
-                      width,
-                      height)
-                      ,title
-                      ,label(score)]));
+         _L.fromArray([$Graphics$Collage.move({ctor: "_Tuple2"
+                                              ,_0: 0
+                                              ,_1: -5})($Graphics$Collage.group(_L.fromArray([A2(backgroung,
+                                                                                             width,
+                                                                                             height)
+                                                                                             ,title
+                                                                                             ,label(score)])))]));
       }();
    };
    _elm.Views.Score.values = {_op: _op

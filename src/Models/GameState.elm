@@ -1,5 +1,6 @@
 module Models.GameState where
 
+import Input
 import Random exposing (Seed)
 import Models.Grid exposing (..)
 import Debug
@@ -63,8 +64,11 @@ addCell originalGame game =
      { game | seed <- seed', grid <- grid' }
 
 
-update : Models.Grid.Action -> GameState -> GameState
-update action game =
-  Debug.watch "State" <| case action of
-    NoAction -> game
-    _ -> game |> applyAction action |> addCell game |> updatePhase
+update : Input.Input -> GameState -> GameState
+update input game =
+  case input of
+    Input.NewGame () -> initial game.seed
+    Input.Movement action ->
+      case action of
+        NoAction -> game
+        _ -> game |> applyAction action |> addCell game |> updatePhase

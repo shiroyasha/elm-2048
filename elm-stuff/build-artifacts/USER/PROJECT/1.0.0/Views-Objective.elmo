@@ -18,8 +18,8 @@ Elm.Views.Objective.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var render = A2($Html.toElement,
-   370,
-   50)(A2($Html.p,
+   350,
+   70)(A2($Html.p,
    _L.fromArray([]),
    _L.fromArray([A2($Html.span,
                 _L.fromArray([]),

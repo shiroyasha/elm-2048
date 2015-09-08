@@ -47,11 +47,13 @@ Elm.Views.Score.make = function (_elm) {
          return A3($Graphics$Collage.collage,
          width,
          height,
-         _L.fromArray([A2(backgroung,
-                      width,
-                      height)
-                      ,title
-                      ,label(score)]));
+         _L.fromArray([$Graphics$Collage.move({ctor: "_Tuple2"
+                                              ,_0: 0
+                                              ,_1: -5})($Graphics$Collage.group(_L.fromArray([A2(backgroung,
+                                                                                             width,
+                                                                                             height)
+                                                                                             ,title
+                                                                                             ,label(score)])))]));
       }();
    };
    _elm.Views.Score.values = {_op: _op

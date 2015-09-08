@@ -3,6 +3,8 @@ module Input where
 import Keyboard
 import Models.Grid exposing (Grid)
 
+import Signal exposing ((<~))
+
 keyboard: Signal Models.Grid.Action
 keyboard =
   let
@@ -14,3 +16,14 @@ keyboard =
         _ -> Models.Grid.NoAction
   in
      Signal.map toAction Keyboard.arrows
+
+
+newGame: Signal.Mailbox ()
+newGame = Signal.mailbox ()
+
+
+type Input = NewGame () | Movement Models.Grid.Action
+
+
+input: Signal Input
+input = Signal.merge (NewGame <~ newGame.signal) (Movement <~ keyboard)
