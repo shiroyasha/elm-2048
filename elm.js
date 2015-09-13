@@ -4117,36 +4117,129 @@ Elm.Grid.make = function (_elm) {
                  model);
               }();}
          _U.badCase($moduleName,
-         "between lines 31 and 36");
+         "between lines 60 and 65");
       }();
    });
    var Tick = function (a) {
       return {ctor: "Tick",_0: a};
    };
-   var init = F2(function (size,
-   _v2) {
+   var cellPaddingRatio = 0.95;
+   var cellPadding = F2(function (_v2,
+   _v3) {
       return function () {
-         switch (_v2.ctor)
+         switch (_v3.ctor)
          {case "_Tuple2":
             return function () {
-                 var cell = F2(function (x,
-                 y) {
+                 switch (_v2.ctor)
+                 {case "_Tuple2":
+                    return function () {
+                         var factor = $Basics.toFloat(_v3._0 + 1) + $Basics.toFloat(_v3._1) * (cellPaddingRatio / (1 - cellPaddingRatio));
+                         return _v2._0 / (2 * factor);
+                      }();}
+                 _U.badCase($moduleName,
+                 "between lines 19 and 22");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 19 and 22");
+      }();
+   });
+   var cellSize = F2(function (_v10,
+   _v11) {
+      return function () {
+         switch (_v11.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v10.ctor)
+                 {case "_Tuple2":
+                    return cellPaddingRatio / (1 - cellPaddingRatio) * 2 * A2(cellPadding,
+                      {ctor: "_Tuple2"
+                      ,_0: _v10._0
+                      ,_1: _v10._1},
+                      {ctor: "_Tuple2"
+                      ,_0: _v11._0
+                      ,_1: _v11._1});}
+                 _U.badCase($moduleName,
+                 "on line 27, column 4 to 93");
+              }();}
+         _U.badCase($moduleName,
+         "on line 27, column 4 to 93");
+      }();
+   });
+   var cellPosition = F3(function (_v18,
+   _v19,
+   _v20) {
+      return function () {
+         switch (_v20.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v19.ctor)
+                 {case "_Tuple2":
+                    return function () {
+                         switch (_v18.ctor)
+                         {case "_Tuple2":
+                            return function () {
+                                 var cellSize$ = A2(cellSize,
+                                 {ctor: "_Tuple2"
+                                 ,_0: _v18._0
+                                 ,_1: _v18._1},
+                                 {ctor: "_Tuple2"
+                                 ,_0: _v19._0
+                                 ,_1: _v19._1});
+                                 var padding$ = A2(cellPadding,
+                                 {ctor: "_Tuple2"
+                                 ,_0: _v18._0
+                                 ,_1: _v18._1},
+                                 {ctor: "_Tuple2"
+                                 ,_0: _v19._0
+                                 ,_1: _v19._1});
+                                 var cellSizeWithPadding$ = 2 * padding$ + cellSize$;
+                                 var x$ = padding$ + cellSizeWithPadding$ * $Basics.toFloat(_v20._0) - _v18._0 / 2 + cellSizeWithPadding$ / 2;
+                                 var y$ = padding$ + cellSizeWithPadding$ * $Basics.toFloat(_v20._1) - _v18._1 / 2 + cellSizeWithPadding$ / 2;
+                                 return {ctor: "_Tuple2"
+                                        ,_0: x$
+                                        ,_1: y$};
+                              }();}
+                         _U.badCase($moduleName,
+                         "between lines 32 and 41");
+                      }();}
+                 _U.badCase($moduleName,
+                 "between lines 32 and 41");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 32 and 41");
+      }();
+   });
+   var init = F2(function (size,
+   _v30) {
+      return function () {
+         switch (_v30.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var cellSize$ = A2(cellSize,
+                 size,
+                 {ctor: "_Tuple2"
+                 ,_0: _v30._0
+                 ,_1: _v30._1}) * 0.95;
+                 var cell = F2(function (x,y) {
                     return A3($Cell.init,
+                    A3(cellPosition,
+                    size,
                     {ctor: "_Tuple2"
-                    ,_0: $Basics.toFloat(x) * 100.0
-                    ,_1: $Basics.toFloat(y) * 100.0},
-                    90.0,
+                    ,_0: _v30._0
+                    ,_1: _v30._1},
+                    {ctor: "_Tuple2",_0: x,_1: y}),
+                    cellSize$,
                     2);
                  });
                  return {_: {}
                         ,cells: A3($Matrix.matrix,
-                        _v2._0,
-                        _v2._1,
+                        _v30._0,
+                        _v30._1,
                         cell)
                         ,size: size};
               }();}
          _U.badCase($moduleName,
-         "between lines 19 and 22");
+         "between lines 46 and 51");
       }();
    });
    var Model = F2(function (a,b) {
@@ -4156,6 +4249,10 @@ Elm.Grid.make = function (_elm) {
    });
    _elm.Grid.values = {_op: _op
                       ,Model: Model
+                      ,cellPaddingRatio: cellPaddingRatio
+                      ,cellPadding: cellPadding
+                      ,cellSize: cellSize
+                      ,cellPosition: cellPosition
                       ,init: init
                       ,Tick: Tick
                       ,update: update
