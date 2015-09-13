@@ -29,7 +29,7 @@ init size ((rows, cols) as matrixSize) =
 
 -- UPDATE
 
-type Action = Tick Float | NewCell (MatrixPosition, Int)
+type Action = Tick Float | NewCell (MatrixPosition, Int) | Move Direction
 
 
 addCell : MatrixPosition -> Int -> Model -> Model

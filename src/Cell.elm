@@ -29,7 +29,7 @@ init position size number =
   { number = number
   , position = position
   , size = size
-  , state = Appearing 0.0
+  , state = if number == 0 then Stationary else Appearing 0.0
   }
 
 
@@ -121,12 +121,13 @@ labelSize cellSize number =
 view : Model -> Form
 view model =
   let
+      base = Shapes.roundedSquare model.size 3 (backgroungColor 0)
       bg = Shapes.roundedSquare model.size 3 (backgroungColor model.number)
 
       fgSize = labelSize model.size model.number
       fg = label fgSize model.number
 
-      cell = group [bg, fg] |> move model.position
+      cell = group [base, bg, fg] |> move model.position
   in
      case model.state of
        Stationary ->

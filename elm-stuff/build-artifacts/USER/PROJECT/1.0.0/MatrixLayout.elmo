@@ -38,7 +38,7 @@ Elm.MatrixLayout.make = function (_elm) {
                         ,_1: y$$};
               }();}
          _U.badCase($moduleName,
-         "between lines 32 and 39");
+         "between lines 30 and 37");
       }();
    });
    var cellPaddingRatio = 10;
@@ -52,10 +52,10 @@ Elm.MatrixLayout.make = function (_elm) {
                  {case "_Tuple2":
                     return _v4._0 / (2 * ($Basics.toFloat(_v5._1) * (cellPaddingRatio + 1) + 1));}
                  _U.badCase($moduleName,
-                 "on line 20, column 3 to 61");
+                 "on line 18, column 3 to 61");
               }();}
          _U.badCase($moduleName,
-         "on line 20, column 3 to 61");
+         "on line 18, column 3 to 61");
       }();
    });
    var cellSize = function (padding) {
@@ -87,10 +87,10 @@ Elm.MatrixLayout.make = function (_elm) {
                                 ,width: _v12._0};
                       }();}
                  _U.badCase($moduleName,
-                 "between lines 48 and 58");
+                 "between lines 46 and 56");
               }();}
          _U.badCase($moduleName,
-         "between lines 48 and 58");
+         "between lines 46 and 56");
       }();
    });
    var Model = F6(function (a,

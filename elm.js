@@ -1311,7 +1311,12 @@ Elm.Cell.make = function (_elm) {
          model.size,
          3,
          backgroungColor(model.number));
-         var cell = $Graphics$Collage.move(model.position)($Graphics$Collage.group(_L.fromArray([bg
+         var base = A3($Shapes.roundedSquare,
+         model.size,
+         3,
+         backgroungColor(0));
+         var cell = $Graphics$Collage.move(model.position)($Graphics$Collage.group(_L.fromArray([base
+                                                                                                ,bg
                                                                                                 ,fg])));
          return function () {
             var _v2 = model.state;
@@ -1325,7 +1330,7 @@ Elm.Cell.make = function (_elm) {
                case "Moving": return cell;
                case "Stationary": return cell;}
             _U.badCase($moduleName,
-            "between lines 131 and 139");
+            "between lines 132 and 140");
          }();
       }();
    };
@@ -1351,7 +1356,8 @@ Elm.Cell.make = function (_elm) {
              ,number: number
              ,position: position
              ,size: size
-             ,state: Appearing(0.0)};
+             ,state: _U.eq(number,
+             0) ? Stationary : Appearing(0.0)};
    });
    var Moving = F2(function (a,b) {
       return {ctor: "Moving"
@@ -4244,6 +4250,9 @@ Elm.Grid.make = function (_elm) {
          "between lines 46 and 54");
       }();
    });
+   var Move = function (a) {
+      return {ctor: "Move",_0: a};
+   };
    var NewCell = function (a) {
       return {ctor: "NewCell"
              ,_0: a};
@@ -4289,6 +4298,7 @@ Elm.Grid.make = function (_elm) {
                       ,init: init
                       ,Tick: Tick
                       ,NewCell: NewCell
+                      ,Move: Move
                       ,addCell: addCell
                       ,update: update
                       ,view: view};
@@ -6213,7 +6223,7 @@ Elm.MatrixLayout.make = function (_elm) {
                         ,_1: y$$};
               }();}
          _U.badCase($moduleName,
-         "between lines 32 and 39");
+         "between lines 30 and 37");
       }();
    });
    var cellPaddingRatio = 10;
@@ -6227,10 +6237,10 @@ Elm.MatrixLayout.make = function (_elm) {
                  {case "_Tuple2":
                     return _v4._0 / (2 * ($Basics.toFloat(_v5._1) * (cellPaddingRatio + 1) + 1));}
                  _U.badCase($moduleName,
-                 "on line 20, column 3 to 61");
+                 "on line 18, column 3 to 61");
               }();}
          _U.badCase($moduleName,
-         "on line 20, column 3 to 61");
+         "on line 18, column 3 to 61");
       }();
    });
    var cellSize = function (padding) {
@@ -6262,10 +6272,10 @@ Elm.MatrixLayout.make = function (_elm) {
                                 ,width: _v12._0};
                       }();}
                  _U.badCase($moduleName,
-                 "between lines 48 and 58");
+                 "between lines 46 and 56");
               }();}
          _U.badCase($moduleName,
-         "between lines 48 and 58");
+         "between lines 46 and 56");
       }();
    });
    var Model = F6(function (a,
@@ -13475,6 +13485,14 @@ Elm.Units.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   _elm.Units.values = {_op: _op};
+   var Down = {ctor: "Down"};
+   var Up = {ctor: "Up"};
+   var Right = {ctor: "Right"};
+   var Left = {ctor: "Left"};
+   _elm.Units.values = {_op: _op
+                       ,Left: Left
+                       ,Right: Right
+                       ,Up: Up
+                       ,Down: Down};
    return _elm.Units.values;
 };

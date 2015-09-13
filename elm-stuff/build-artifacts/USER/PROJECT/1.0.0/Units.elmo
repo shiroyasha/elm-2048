@@ -14,6 +14,14 @@ Elm.Units.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
-   _elm.Units.values = {_op: _op};
+   var Down = {ctor: "Down"};
+   var Up = {ctor: "Up"};
+   var Right = {ctor: "Right"};
+   var Left = {ctor: "Left"};
+   _elm.Units.values = {_op: _op
+                       ,Left: Left
+                       ,Right: Right
+                       ,Up: Up
+                       ,Down: Down};
    return _elm.Units.values;
 };

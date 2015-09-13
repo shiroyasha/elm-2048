@@ -85,6 +85,9 @@ Elm.Grid.make = function (_elm) {
          "between lines 46 and 54");
       }();
    });
+   var Move = function (a) {
+      return {ctor: "Move",_0: a};
+   };
    var NewCell = function (a) {
       return {ctor: "NewCell"
              ,_0: a};
@@ -130,6 +133,7 @@ Elm.Grid.make = function (_elm) {
                       ,init: init
                       ,Tick: Tick
                       ,NewCell: NewCell
+                      ,Move: Move
                       ,addCell: addCell
                       ,update: update
                       ,view: view};

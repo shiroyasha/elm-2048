@@ -2,8 +2,6 @@ module MatrixLayout where
 
 import Units exposing (..)
 
-import Debug
-
 type alias Model =
   { cellSize : Float
   , cellPadding : Float

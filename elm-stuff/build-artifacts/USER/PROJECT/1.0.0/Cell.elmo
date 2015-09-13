@@ -126,7 +126,12 @@ Elm.Cell.make = function (_elm) {
          model.size,
          3,
          backgroungColor(model.number));
-         var cell = $Graphics$Collage.move(model.position)($Graphics$Collage.group(_L.fromArray([bg
+         var base = A3($Shapes.roundedSquare,
+         model.size,
+         3,
+         backgroungColor(0));
+         var cell = $Graphics$Collage.move(model.position)($Graphics$Collage.group(_L.fromArray([base
+                                                                                                ,bg
                                                                                                 ,fg])));
          return function () {
             var _v2 = model.state;
@@ -140,7 +145,7 @@ Elm.Cell.make = function (_elm) {
                case "Moving": return cell;
                case "Stationary": return cell;}
             _U.badCase($moduleName,
-            "between lines 131 and 139");
+            "between lines 132 and 140");
          }();
       }();
    };
@@ -166,7 +171,8 @@ Elm.Cell.make = function (_elm) {
              ,number: number
              ,position: position
              ,size: size
-             ,state: Appearing(0.0)};
+             ,state: _U.eq(number,
+             0) ? Stationary : Appearing(0.0)};
    });
    var Moving = F2(function (a,b) {
       return {ctor: "Moving"
