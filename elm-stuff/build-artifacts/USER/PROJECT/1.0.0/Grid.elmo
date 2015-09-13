@@ -1,0 +1,100 @@
+Elm.Grid = Elm.Grid || {};
+Elm.Grid.make = function (_elm) {
+   "use strict";
+   _elm.Grid = _elm.Grid || {};
+   if (_elm.Grid.values)
+   return _elm.Grid.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Grid",
+   $Basics = Elm.Basics.make(_elm),
+   $Cell = Elm.Cell.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Matrix = Elm.Matrix.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Shapes = Elm.Shapes.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var view = function (model) {
+      return function () {
+         var cells = $Graphics$Collage.group($Matrix.flatten(A2($Matrix.map,
+         $Cell.view,
+         model.cells)));
+         var bgHeight = $Basics.round($Basics.snd(model.size));
+         var bgWidth = $Basics.round($Basics.fst(model.size));
+         var bgColor = A3($Color.rgb,
+         187,
+         173,
+         160);
+         var bg = A4($Shapes.roundedRect,
+         bgWidth,
+         bgHeight,
+         3,
+         bgColor);
+         return $Graphics$Collage.group(_L.fromArray([bg
+                                                     ,cells]));
+      }();
+   };
+   var update = F2(function (action,
+   model) {
+      return function () {
+         switch (action.ctor)
+         {case "Tick":
+            return function () {
+                 var cells$ = A2($Matrix.map,
+                 $Cell.update($Cell.Tick(action._0)),
+                 model.cells);
+                 return _U.replace([["cells"
+                                    ,cells$]],
+                 model);
+              }();}
+         _U.badCase($moduleName,
+         "between lines 31 and 36");
+      }();
+   });
+   var Tick = function (a) {
+      return {ctor: "Tick",_0: a};
+   };
+   var init = F2(function (size,
+   _v2) {
+      return function () {
+         switch (_v2.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var cell = F2(function (x,
+                 y) {
+                    return A3($Cell.init,
+                    {ctor: "_Tuple2"
+                    ,_0: $Basics.toFloat(x) * 100.0
+                    ,_1: $Basics.toFloat(y) * 100.0},
+                    90.0,
+                    2);
+                 });
+                 return {_: {}
+                        ,cells: A3($Matrix.matrix,
+                        _v2._0,
+                        _v2._1,
+                        cell)
+                        ,size: size};
+              }();}
+         _U.badCase($moduleName,
+         "between lines 19 and 22");
+      }();
+   });
+   var Model = F2(function (a,b) {
+      return {_: {}
+             ,cells: a
+             ,size: b};
+   });
+   _elm.Grid.values = {_op: _op
+                      ,Model: Model
+                      ,init: init
+                      ,Tick: Tick
+                      ,update: update
+                      ,view: view};
+   return _elm.Grid.values;
+};

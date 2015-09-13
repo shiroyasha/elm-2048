@@ -1,0 +1,143 @@
+Elm.Cell = Elm.Cell || {};
+Elm.Cell.make = function (_elm) {
+   "use strict";
+   _elm.Cell = _elm.Cell || {};
+   if (_elm.Cell.values)
+   return _elm.Cell.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Cell",
+   $Animation = Elm.Animation.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Easing = Elm.Easing.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Shapes = Elm.Shapes.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var Tick = function (a) {
+      return {ctor: "Tick",_0: a};
+   };
+   var Move = function (a) {
+      return {ctor: "Move",_0: a};
+   };
+   var appearingAnimation = $Animation.ease($Easing.easeOutBack)($Animation.duration($Time.second / 2)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
+   var view = function (model) {
+      return function () {
+         var fg = $Graphics$Collage.text($Text.fromString($Basics.toString(model.number)));
+         var bg = A3($Shapes.roundedSquare,
+         $Basics.round(model.size),
+         3,
+         A3($Color.rgb,100,100,100));
+         var cell = $Graphics$Collage.move(model.position)($Graphics$Collage.group(_L.fromArray([bg
+                                                                                                ,fg])));
+         return function () {
+            var _v0 = model.state;
+            switch (_v0.ctor)
+            {case "Appearing":
+               return A2($Graphics$Collage.scale,
+                 A2($Animation.animate,
+                 _v0._0,
+                 appearingAnimation),
+                 cell);
+               case "Moving": return cell;
+               case "Stationary": return cell;}
+            _U.badCase($moduleName,
+            "between lines 85 and 93");
+         }();
+      }();
+   };
+   var Model = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,number: a
+             ,position: b
+             ,size: c
+             ,state: d};
+   });
+   var Stationary = {ctor: "Stationary"};
+   var Appearing = function (a) {
+      return {ctor: "Appearing"
+             ,_0: a};
+   };
+   var init = F3(function (position,
+   size,
+   number) {
+      return {_: {}
+             ,number: number
+             ,position: position
+             ,size: size
+             ,state: Appearing(0.0)};
+   });
+   var Moving = F2(function (a,b) {
+      return {ctor: "Moving"
+             ,_0: a
+             ,_1: b};
+   });
+   var update = F2(function (action,
+   model) {
+      return function () {
+         switch (action.ctor)
+         {case "Move":
+            switch (action._0.ctor)
+              {case "_Tuple2":
+                 return _U.replace([["state"
+                                    ,A2(Moving,
+                                    {ctor: "_Tuple2"
+                                    ,_0: action._0._0
+                                    ,_1: action._0._1},
+                                    0.0)]],
+                   model);}
+              break;
+            case "Tick":
+            return function () {
+                 var _v9 = model.state;
+                 switch (_v9.ctor)
+                 {case "Appearing":
+                    return function () {
+                         var time$ = _v9._0 + action._0;
+                         return A2($Animation.isDone,
+                         time$,
+                         appearingAnimation) ? _U.replace([["state"
+                                                           ,Stationary]],
+                         model) : _U.replace([["state"
+                                              ,Appearing(time$)]],
+                         model);
+                      }();
+                    case "Moving":
+                    return function () {
+                         var time$ = _v9._1 + action._0;
+                         return _U.replace([["state"
+                                            ,A2(Moving,_v9._0,time$)]],
+                         model);
+                      }();
+                    case "Stationary":
+                    return model;}
+                 _U.badCase($moduleName,
+                 "between lines 54 and 72");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 49 and 72");
+      }();
+   });
+   _elm.Cell.values = {_op: _op
+                      ,Moving: Moving
+                      ,Appearing: Appearing
+                      ,Stationary: Stationary
+                      ,Model: Model
+                      ,init: init
+                      ,appearingAnimation: appearingAnimation
+                      ,Move: Move
+                      ,Tick: Tick
+                      ,update: update
+                      ,view: view};
+   return _elm.Cell.values;
+};
