@@ -41,7 +41,12 @@ import Time exposing (..)
 import Grid
 
 initial : Grid.Model
-initial = Grid.init (500, 500) (4, 4)
+initial
+  = Grid.init (500, 500) (4, 4)
+  |> Grid.addCell (1, 1) 2
+  |> Grid.addCell (2, 2) 2
+  |> Grid.addCell (1, 2) 2
+
 
 gameState : Signal Grid.Model
 gameState = Signal.foldp update initial (Time.fps 60)

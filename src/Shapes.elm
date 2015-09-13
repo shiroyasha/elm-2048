@@ -2,20 +2,17 @@ module Shapes where
 
 import Color exposing (..)
 import Graphics.Collage exposing (..)
+import Units exposing (..)
 
-roundedSquare : Int -> Int -> Color -> Form
-roundedSquare size radius color = roundedRect size size radius color
+roundedSquare : Float -> Float -> Color -> Form
+roundedSquare size radius color = roundedRect (size, size) radius color
 
 
-roundedRect : Int -> Int -> Int -> Color -> Form
-roundedRect width height radius color =
+roundedRect : Size -> Float -> Color -> Form
+roundedRect (width, height) radius color =
   let
-    width'  = toFloat width
-    height' = toFloat height
-    radius' = toFloat radius
-
-    innerWidth  = width' - radius' * 2
-    innerHeight = height' - radius' * 2
+    innerWidth  = width - radius * 2
+    innerHeight = height - radius * 2
 
     circlePositions = [ ( innerWidth/2,  innerHeight/2)
                       , (-innerWidth/2,  innerHeight/2)
@@ -29,11 +26,11 @@ roundedRect width height radius color =
                       , (-innerWidth/2, 0)
                       ]
 
-    circleShapes = List.repeat 4 (circle radius')
-    borderShapes = [ rect innerWidth (radius' * 2)
-                   , rect innerWidth (radius' * 2)
-                   , rect (radius' * 2) innerHeight
-                   , rect (radius' * 2) innerHeight
+    circleShapes = List.repeat 4 (circle radius)
+    borderShapes = [ rect innerWidth (radius * 2)
+                   , rect innerWidth (radius * 2)
+                   , rect (radius * 2) innerHeight
+                   , rect (radius * 2) innerHeight
                    ]
 
     circleForms = List.map (filled color) circleShapes

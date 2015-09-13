@@ -15,85 +15,89 @@ Elm.Shapes.make = function (_elm) {
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var roundedRect = F4(function (width,
-   height,
+   $Signal = Elm.Signal.make(_elm),
+   $Units = Elm.Units.make(_elm);
+   var roundedRect = F3(function (_v0,
    radius,
    color) {
       return function () {
-         var radius$ = $Basics.toFloat(radius);
-         var circleShapes = A2($List.repeat,
-         4,
-         $Graphics$Collage.circle(radius$));
-         var circleForms = A2($List.map,
-         $Graphics$Collage.filled(color),
-         circleShapes);
-         var height$ = $Basics.toFloat(height);
-         var innerHeight = height$ - radius$ * 2;
-         var width$ = $Basics.toFloat(width);
-         var innerWidth = width$ - radius$ * 2;
-         var circlePositions = _L.fromArray([{ctor: "_Tuple2"
-                                             ,_0: innerWidth / 2
-                                             ,_1: innerHeight / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: (0 - innerWidth) / 2
-                                             ,_1: innerHeight / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: innerWidth / 2
-                                             ,_1: (0 - innerHeight) / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: (0 - innerWidth) / 2
-                                             ,_1: (0 - innerHeight) / 2}]);
-         var circles = A3($List.map2,
-         $Graphics$Collage.move,
-         circlePositions,
-         circleForms);
-         var borderPositions = _L.fromArray([{ctor: "_Tuple2"
-                                             ,_0: 0
-                                             ,_1: innerHeight / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: 0
-                                             ,_1: (0 - innerHeight) / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: innerWidth / 2
-                                             ,_1: 0}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: (0 - innerWidth) / 2
-                                             ,_1: 0}]);
-         var borderShapes = _L.fromArray([A2($Graphics$Collage.rect,
-                                         innerWidth,
-                                         radius$ * 2)
-                                         ,A2($Graphics$Collage.rect,
-                                         innerWidth,
-                                         radius$ * 2)
-                                         ,A2($Graphics$Collage.rect,
-                                         radius$ * 2,
-                                         innerHeight)
-                                         ,A2($Graphics$Collage.rect,
-                                         radius$ * 2,
-                                         innerHeight)]);
-         var borderForms = A2($List.map,
-         $Graphics$Collage.filled(color),
-         borderShapes);
-         var borders = A3($List.map2,
-         $Graphics$Collage.move,
-         borderPositions,
-         borderForms);
-         var innerRect = $Graphics$Collage.filled(color)(A2($Graphics$Collage.rect,
-         innerWidth,
-         innerHeight));
-         return $Graphics$Collage.group(A2($List._op["::"],
-         innerRect,
-         $List.concat(_L.fromArray([circles
-                                   ,borders]))));
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var circleShapes = A2($List.repeat,
+                 4,
+                 $Graphics$Collage.circle(radius));
+                 var circleForms = A2($List.map,
+                 $Graphics$Collage.filled(color),
+                 circleShapes);
+                 var innerHeight = _v0._1 - radius * 2;
+                 var innerWidth = _v0._0 - radius * 2;
+                 var circlePositions = _L.fromArray([{ctor: "_Tuple2"
+                                                     ,_0: innerWidth / 2
+                                                     ,_1: innerHeight / 2}
+                                                    ,{ctor: "_Tuple2"
+                                                     ,_0: (0 - innerWidth) / 2
+                                                     ,_1: innerHeight / 2}
+                                                    ,{ctor: "_Tuple2"
+                                                     ,_0: innerWidth / 2
+                                                     ,_1: (0 - innerHeight) / 2}
+                                                    ,{ctor: "_Tuple2"
+                                                     ,_0: (0 - innerWidth) / 2
+                                                     ,_1: (0 - innerHeight) / 2}]);
+                 var circles = A3($List.map2,
+                 $Graphics$Collage.move,
+                 circlePositions,
+                 circleForms);
+                 var borderPositions = _L.fromArray([{ctor: "_Tuple2"
+                                                     ,_0: 0
+                                                     ,_1: innerHeight / 2}
+                                                    ,{ctor: "_Tuple2"
+                                                     ,_0: 0
+                                                     ,_1: (0 - innerHeight) / 2}
+                                                    ,{ctor: "_Tuple2"
+                                                     ,_0: innerWidth / 2
+                                                     ,_1: 0}
+                                                    ,{ctor: "_Tuple2"
+                                                     ,_0: (0 - innerWidth) / 2
+                                                     ,_1: 0}]);
+                 var borderShapes = _L.fromArray([A2($Graphics$Collage.rect,
+                                                 innerWidth,
+                                                 radius * 2)
+                                                 ,A2($Graphics$Collage.rect,
+                                                 innerWidth,
+                                                 radius * 2)
+                                                 ,A2($Graphics$Collage.rect,
+                                                 radius * 2,
+                                                 innerHeight)
+                                                 ,A2($Graphics$Collage.rect,
+                                                 radius * 2,
+                                                 innerHeight)]);
+                 var borderForms = A2($List.map,
+                 $Graphics$Collage.filled(color),
+                 borderShapes);
+                 var borders = A3($List.map2,
+                 $Graphics$Collage.move,
+                 borderPositions,
+                 borderForms);
+                 var innerRect = $Graphics$Collage.filled(color)(A2($Graphics$Collage.rect,
+                 innerWidth,
+                 innerHeight));
+                 return $Graphics$Collage.group(A2($List._op["::"],
+                 innerRect,
+                 $List.concat(_L.fromArray([circles
+                                           ,borders]))));
+              }();}
+         _U.badCase($moduleName,
+         "between lines 13 and 45");
       }();
    });
    var roundedSquare = F3(function (size,
    radius,
    color) {
-      return A4(roundedRect,
-      size,
-      size,
+      return A3(roundedRect,
+      {ctor: "_Tuple2"
+      ,_0: size
+      ,_1: size},
       radius,
       color);
    });

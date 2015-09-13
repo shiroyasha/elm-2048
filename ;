@@ -7,9 +7,10 @@ import Color
 import Time
 import Animation
 import Easing
-import Units exposing (..)
 
 -- MODEL
+
+type alias Position = (Float, Float)
 
 type State
   = Moving Position Time.Time
@@ -18,13 +19,13 @@ type State
 
 type alias Model =
   { number : Int
-  , position : Position
+  , position : (Float, Float)
   , size: Float
-  , state: State
+  , state: Float
   }
 
 
-init : Position -> Float -> Int -> Model
+init : (Float, Float) -> Float -> Int -> Model
 init position size number =
   { number = number
   , position = position

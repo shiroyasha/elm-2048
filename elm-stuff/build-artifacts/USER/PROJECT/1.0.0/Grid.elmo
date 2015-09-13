@@ -15,35 +15,63 @@ Elm.Grid.make = function (_elm) {
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $List = Elm.List.make(_elm),
    $Matrix = Elm.Matrix.make(_elm),
+   $MatrixLayout = Elm.MatrixLayout.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Shapes = Elm.Shapes.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
+   $Signal = Elm.Signal.make(_elm),
+   $Units = Elm.Units.make(_elm);
    var view = function (model) {
       return function () {
          var cells = $Graphics$Collage.group($Matrix.flatten(A2($Matrix.map,
          $Cell.view,
          model.cells)));
-         var bgHeight = $Basics.round($Basics.snd(model.size));
-         var bgWidth = $Basics.round($Basics.fst(model.size));
-         var bgColor = A3($Color.rgb,
-         187,
-         173,
-         160);
-         var bg = A4($Shapes.roundedRect,
-         bgWidth,
-         bgHeight,
+         var bg = A3($Shapes.roundedRect,
+         $MatrixLayout.gridSize(model.layout),
          3,
-         bgColor);
+         A3($Color.rgb,187,173,160));
          return $Graphics$Collage.group(_L.fromArray([bg
                                                      ,cells]));
       }();
    };
+   var addCell = F3(function (_v0,
+   number,
+   model) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var position = A2($MatrixLayout.cellPosition,
+                 model.layout,
+                 _v0);
+                 var cell = A3($Cell.init,
+                 position,
+                 model.layout.cellSize,
+                 number);
+                 return _U.replace([["cells"
+                                    ,A4($Matrix.set,
+                                    _v0._0,
+                                    _v0._1,
+                                    cell,
+                                    model.cells)]],
+                 model);
+              }();}
+         _U.badCase($moduleName,
+         "between lines 37 and 41");
+      }();
+   });
    var update = F2(function (action,
    model) {
       return function () {
          switch (action.ctor)
-         {case "NewCell": return model;
+         {case "NewCell":
+            switch (action._0.ctor)
+              {case "_Tuple2":
+                 return A3(addCell,
+                   action._0._0,
+                   action._0._1,
+                   model);}
+              break;
             case "Tick":
             return function () {
                  var cells$ = A2($Matrix.map,
@@ -54,7 +82,7 @@ Elm.Grid.make = function (_elm) {
                  model);
               }();}
          _U.badCase($moduleName,
-         "between lines 60 and 68");
+         "between lines 46 and 54");
       }();
    });
    var NewCell = function (a) {
@@ -64,139 +92,45 @@ Elm.Grid.make = function (_elm) {
    var Tick = function (a) {
       return {ctor: "Tick",_0: a};
    };
-   var cellPaddingRatio = 0.96;
-   var cellPadding = F2(function (_v3,
-   _v4) {
-      return function () {
-         switch (_v4.ctor)
-         {case "_Tuple2":
-            return function () {
-                 switch (_v3.ctor)
-                 {case "_Tuple2":
-                    return function () {
-                         var factor = $Basics.toFloat(_v4._0 + 1) + $Basics.toFloat(_v4._1) * (cellPaddingRatio / (1 - cellPaddingRatio));
-                         return _v3._0 / (2 * factor);
-                      }();}
-                 _U.badCase($moduleName,
-                 "between lines 19 and 22");
-              }();}
-         _U.badCase($moduleName,
-         "between lines 19 and 22");
-      }();
-   });
-   var cellSize = F2(function (_v11,
-   _v12) {
-      return function () {
-         switch (_v12.ctor)
-         {case "_Tuple2":
-            return function () {
-                 switch (_v11.ctor)
-                 {case "_Tuple2":
-                    return cellPaddingRatio / (1 - cellPaddingRatio) * 2 * A2(cellPadding,
-                      {ctor: "_Tuple2"
-                      ,_0: _v11._0
-                      ,_1: _v11._1},
-                      {ctor: "_Tuple2"
-                      ,_0: _v12._0
-                      ,_1: _v12._1});}
-                 _U.badCase($moduleName,
-                 "on line 27, column 4 to 93");
-              }();}
-         _U.badCase($moduleName,
-         "on line 27, column 4 to 93");
-      }();
-   });
-   var cellPosition = F3(function (_v19,
-   _v20,
-   _v21) {
-      return function () {
-         switch (_v21.ctor)
-         {case "_Tuple2":
-            return function () {
-                 switch (_v20.ctor)
-                 {case "_Tuple2":
-                    return function () {
-                         switch (_v19.ctor)
-                         {case "_Tuple2":
-                            return function () {
-                                 var cellSize$ = A2(cellSize,
-                                 {ctor: "_Tuple2"
-                                 ,_0: _v19._0
-                                 ,_1: _v19._1},
-                                 {ctor: "_Tuple2"
-                                 ,_0: _v20._0
-                                 ,_1: _v20._1});
-                                 var padding$ = A2(cellPadding,
-                                 {ctor: "_Tuple2"
-                                 ,_0: _v19._0
-                                 ,_1: _v19._1},
-                                 {ctor: "_Tuple2"
-                                 ,_0: _v20._0
-                                 ,_1: _v20._1});
-                                 var cellSizeWithPadding$ = 2 * padding$ + cellSize$;
-                                 var x$ = padding$ + cellSizeWithPadding$ * $Basics.toFloat(_v21._0) - _v19._0 / 2 + cellSizeWithPadding$ / 2;
-                                 var y$ = padding$ + cellSizeWithPadding$ * $Basics.toFloat(_v21._1) - _v19._1 / 2 + cellSizeWithPadding$ / 2;
-                                 return {ctor: "_Tuple2"
-                                        ,_0: x$
-                                        ,_1: y$};
-                              }();}
-                         _U.badCase($moduleName,
-                         "between lines 32 and 41");
-                      }();}
-                 _U.badCase($moduleName,
-                 "between lines 32 and 41");
-              }();}
-         _U.badCase($moduleName,
-         "between lines 32 and 41");
-      }();
-   });
    var init = F2(function (size,
-   _v31) {
+   _v9) {
       return function () {
-         switch (_v31.ctor)
+         switch (_v9.ctor)
          {case "_Tuple2":
             return function () {
-                 var cellSize$ = A2(cellSize,
+                 var layout = A2($MatrixLayout.init,
                  size,
-                 {ctor: "_Tuple2"
-                 ,_0: _v31._0
-                 ,_1: _v31._1}) * 0.95;
+                 _v9);
                  var cell = F2(function (x,y) {
                     return A3($Cell.init,
-                    A3(cellPosition,
-                    size,
-                    {ctor: "_Tuple2"
-                    ,_0: _v31._0
-                    ,_1: _v31._1},
+                    A2($MatrixLayout.cellPosition,
+                    layout,
                     {ctor: "_Tuple2",_0: x,_1: y}),
-                    cellSize$,
-                    2);
+                    layout.cellSize,
+                    0);
                  });
                  return {_: {}
                         ,cells: A3($Matrix.matrix,
-                        _v31._0,
-                        _v31._1,
+                        _v9._0,
+                        _v9._1,
                         cell)
-                        ,size: size};
+                        ,layout: layout};
               }();}
          _U.badCase($moduleName,
-         "between lines 46 and 51");
+         "between lines 20 and 27");
       }();
    });
    var Model = F2(function (a,b) {
       return {_: {}
              ,cells: a
-             ,size: b};
+             ,layout: b};
    });
    _elm.Grid.values = {_op: _op
                       ,Model: Model
-                      ,cellPaddingRatio: cellPaddingRatio
-                      ,cellPadding: cellPadding
-                      ,cellSize: cellSize
-                      ,cellPosition: cellPosition
                       ,init: init
                       ,Tick: Tick
                       ,NewCell: NewCell
+                      ,addCell: addCell
                       ,update: update
                       ,view: view};
    return _elm.Grid.values;

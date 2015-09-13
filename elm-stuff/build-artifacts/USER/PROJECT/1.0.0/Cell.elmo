@@ -20,7 +20,8 @@ Elm.Cell.make = function (_elm) {
    $Shapes = Elm.Shapes.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Text = Elm.Text.make(_elm),
-   $Time = Elm.Time.make(_elm);
+   $Time = Elm.Time.make(_elm),
+   $Units = Elm.Units.make(_elm);
    var labelSize = F2(function (cellSize,
    number) {
       return _U.cmp(number,
@@ -28,7 +29,7 @@ Elm.Cell.make = function (_elm) {
       100) > 0 && _U.cmp(number,
       1000) < 0 ? cellSize / 2.5 : _U.cmp(number,
       1000) > 0 ? cellSize / 3 : _U.badIf($moduleName,
-      "between lines 115 and 117");
+      "between lines 117 and 119");
    });
    var textColor = function (number) {
       return function () {
@@ -103,7 +104,7 @@ Elm.Cell.make = function (_elm) {
               195,
               3);}
          _U.badCase($moduleName,
-         "between lines 79 and 91");
+         "between lines 81 and 93");
       }();
    };
    var Tick = function (a) {
@@ -121,9 +122,8 @@ Elm.Cell.make = function (_elm) {
          var fg = A2(label,
          fgSize,
          model.number);
-         var bgSize = $Basics.round(model.size);
          var bg = A3($Shapes.roundedSquare,
-         bgSize,
+         model.size,
          3,
          backgroungColor(model.number));
          var cell = $Graphics$Collage.move(model.position)($Graphics$Collage.group(_L.fromArray([bg
@@ -140,7 +140,7 @@ Elm.Cell.make = function (_elm) {
                case "Moving": return cell;
                case "Stationary": return cell;}
             _U.badCase($moduleName,
-            "between lines 130 and 138");
+            "between lines 131 and 139");
          }();
       }();
    };
@@ -213,10 +213,10 @@ Elm.Cell.make = function (_elm) {
                     case "Stationary":
                     return model;}
                  _U.badCase($moduleName,
-                 "between lines 54 and 72");
+                 "between lines 56 and 74");
               }();}
          _U.badCase($moduleName,
-         "between lines 49 and 72");
+         "between lines 51 and 74");
       }();
    });
    _elm.Cell.values = {_op: _op

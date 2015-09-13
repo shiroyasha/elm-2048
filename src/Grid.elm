@@ -4,56 +4,42 @@ import Cell
 import Matrix
 import Shapes
 import Color
+import MatrixLayout
 
 import Graphics.Collage exposing (..)
+import Units exposing (..)
 
 type alias Model =
   { cells: Matrix.Matrix Cell.Model
-  , size: (Float, Float)
+  , layout : MatrixLayout.Model
   }
 
-cellPaddingRatio = 0.96
 
-cellPadding : (Float, Float) -> (Int, Int) -> Float
-cellPadding (width, height) (rows, cols) =
+init : Size -> MatrixSize -> Model
+init size ((rows, cols) as matrixSize) =
   let
-      factor = (rows+1|> toFloat) + (cols |> toFloat) * (cellPaddingRatio / (1 - cellPaddingRatio))
+    layout = MatrixLayout.init size matrixSize
+
+    cell x y = Cell.init (MatrixLayout.cellPosition layout (x, y)) layout.cellSize 0
   in
-    width / (2 * factor)
-
-
-cellSize : (Float, Float) -> (Int, Int) -> Float
-cellSize (width, height) (rows, cols) =
-  (cellPaddingRatio / (1 - cellPaddingRatio)) * 2 * (cellPadding (width, height) (rows, cols))
-
-
-cellPosition : (Float, Float) -> (Int, Int) -> (Int, Int) -> (Float, Float)
-cellPosition (width, height) (rows, cols) (x, y) =
-  let
-      padding' = cellPadding (width, height) (rows, cols)
-      cellSize' = cellSize (width, height) (rows, cols)
-
-      cellSizeWithPadding' = 2*padding' + cellSize'
-
-      x' = padding' + (cellSizeWithPadding' * (x |> toFloat)) - width/2 + cellSizeWithPadding'/2
-      y' = padding' + (cellSizeWithPadding' * (y |> toFloat)) - height/2 + cellSizeWithPadding'/2
-  in
-     (x', y')
-
-
-init : (Float, Float) -> (Int, Int) -> Model
-init size (rows, cols) =
-  let
-    cellSize' = (cellSize size (rows, cols)) * 0.95
-
-    cell x y = Cell.init (cellPosition size (rows, cols) (x, y)) cellSize' 2
-  in
-    { cells = Matrix.matrix rows cols cell, size = size }
+    { cells = Matrix.matrix rows cols cell
+    , layout = layout
+    }
 
 
 -- UPDATE
 
-type Action = Tick Float | NewCell Int
+type Action = Tick Float | NewCell (MatrixPosition, Int)
+
+
+addCell : MatrixPosition -> Int -> Model -> Model
+addCell ((x, y) as matrixPosition) number model =
+  let
+    position = MatrixLayout.cellPosition model.layout matrixPosition
+    cell = Cell.init position model.layout.cellSize number
+  in
+    { model | cells <- Matrix.set x y cell model.cells }
+
 
 update : Action -> Model -> Model
 update action model =
@@ -64,19 +50,15 @@ update action model =
       in
         { model | cells <- cells' }
 
-    NewCell randomNumber ->
-      model
-
+    NewCell (position, number) ->
+      addCell position number model
 
 -- VIEW
 
+view : Model -> Form
 view model =
   let
-      bgColor = Color.rgb 187 173 160
-      bgWidth = fst model.size |> round
-      bgHeight = snd model.size |> round
-
-      bg = Shapes.roundedRect bgWidth bgHeight 3 bgColor
+      bg = Shapes.roundedRect (MatrixLayout.gridSize model.layout) 3 (Color.rgb 187 173 160)
 
       cells = group (Matrix.map Cell.view model.cells |> Matrix.flatten)
   in

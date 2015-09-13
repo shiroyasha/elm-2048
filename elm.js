@@ -1205,7 +1205,8 @@ Elm.Cell.make = function (_elm) {
    $Shapes = Elm.Shapes.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Text = Elm.Text.make(_elm),
-   $Time = Elm.Time.make(_elm);
+   $Time = Elm.Time.make(_elm),
+   $Units = Elm.Units.make(_elm);
    var labelSize = F2(function (cellSize,
    number) {
       return _U.cmp(number,
@@ -1213,7 +1214,7 @@ Elm.Cell.make = function (_elm) {
       100) > 0 && _U.cmp(number,
       1000) < 0 ? cellSize / 2.5 : _U.cmp(number,
       1000) > 0 ? cellSize / 3 : _U.badIf($moduleName,
-      "between lines 115 and 117");
+      "between lines 117 and 119");
    });
    var textColor = function (number) {
       return function () {
@@ -1288,7 +1289,7 @@ Elm.Cell.make = function (_elm) {
               195,
               3);}
          _U.badCase($moduleName,
-         "between lines 79 and 91");
+         "between lines 81 and 93");
       }();
    };
    var Tick = function (a) {
@@ -1306,9 +1307,8 @@ Elm.Cell.make = function (_elm) {
          var fg = A2(label,
          fgSize,
          model.number);
-         var bgSize = $Basics.round(model.size);
          var bg = A3($Shapes.roundedSquare,
-         bgSize,
+         model.size,
          3,
          backgroungColor(model.number));
          var cell = $Graphics$Collage.move(model.position)($Graphics$Collage.group(_L.fromArray([bg
@@ -1325,7 +1325,7 @@ Elm.Cell.make = function (_elm) {
                case "Moving": return cell;
                case "Stationary": return cell;}
             _U.badCase($moduleName,
-            "between lines 130 and 138");
+            "between lines 131 and 139");
          }();
       }();
    };
@@ -1398,10 +1398,10 @@ Elm.Cell.make = function (_elm) {
                     case "Stationary":
                     return model;}
                  _U.badCase($moduleName,
-                 "between lines 54 and 72");
+                 "between lines 56 and 74");
               }();}
          _U.badCase($moduleName,
-         "between lines 49 and 72");
+         "between lines 51 and 74");
       }();
    });
    _elm.Cell.values = {_op: _op
@@ -4174,35 +4174,63 @@ Elm.Grid.make = function (_elm) {
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $List = Elm.List.make(_elm),
    $Matrix = Elm.Matrix.make(_elm),
+   $MatrixLayout = Elm.MatrixLayout.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Shapes = Elm.Shapes.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
+   $Signal = Elm.Signal.make(_elm),
+   $Units = Elm.Units.make(_elm);
    var view = function (model) {
       return function () {
          var cells = $Graphics$Collage.group($Matrix.flatten(A2($Matrix.map,
          $Cell.view,
          model.cells)));
-         var bgHeight = $Basics.round($Basics.snd(model.size));
-         var bgWidth = $Basics.round($Basics.fst(model.size));
-         var bgColor = A3($Color.rgb,
-         187,
-         173,
-         160);
-         var bg = A4($Shapes.roundedRect,
-         bgWidth,
-         bgHeight,
+         var bg = A3($Shapes.roundedRect,
+         $MatrixLayout.gridSize(model.layout),
          3,
-         bgColor);
+         A3($Color.rgb,187,173,160));
          return $Graphics$Collage.group(_L.fromArray([bg
                                                      ,cells]));
       }();
    };
+   var addCell = F3(function (_v0,
+   number,
+   model) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var position = A2($MatrixLayout.cellPosition,
+                 model.layout,
+                 _v0);
+                 var cell = A3($Cell.init,
+                 position,
+                 model.layout.cellSize,
+                 number);
+                 return _U.replace([["cells"
+                                    ,A4($Matrix.set,
+                                    _v0._0,
+                                    _v0._1,
+                                    cell,
+                                    model.cells)]],
+                 model);
+              }();}
+         _U.badCase($moduleName,
+         "between lines 37 and 41");
+      }();
+   });
    var update = F2(function (action,
    model) {
       return function () {
          switch (action.ctor)
-         {case "NewCell": return model;
+         {case "NewCell":
+            switch (action._0.ctor)
+              {case "_Tuple2":
+                 return A3(addCell,
+                   action._0._0,
+                   action._0._1,
+                   model);}
+              break;
             case "Tick":
             return function () {
                  var cells$ = A2($Matrix.map,
@@ -4213,7 +4241,7 @@ Elm.Grid.make = function (_elm) {
                  model);
               }();}
          _U.badCase($moduleName,
-         "between lines 60 and 68");
+         "between lines 46 and 54");
       }();
    });
    var NewCell = function (a) {
@@ -4223,139 +4251,45 @@ Elm.Grid.make = function (_elm) {
    var Tick = function (a) {
       return {ctor: "Tick",_0: a};
    };
-   var cellPaddingRatio = 0.96;
-   var cellPadding = F2(function (_v3,
-   _v4) {
-      return function () {
-         switch (_v4.ctor)
-         {case "_Tuple2":
-            return function () {
-                 switch (_v3.ctor)
-                 {case "_Tuple2":
-                    return function () {
-                         var factor = $Basics.toFloat(_v4._0 + 1) + $Basics.toFloat(_v4._1) * (cellPaddingRatio / (1 - cellPaddingRatio));
-                         return _v3._0 / (2 * factor);
-                      }();}
-                 _U.badCase($moduleName,
-                 "between lines 19 and 22");
-              }();}
-         _U.badCase($moduleName,
-         "between lines 19 and 22");
-      }();
-   });
-   var cellSize = F2(function (_v11,
-   _v12) {
-      return function () {
-         switch (_v12.ctor)
-         {case "_Tuple2":
-            return function () {
-                 switch (_v11.ctor)
-                 {case "_Tuple2":
-                    return cellPaddingRatio / (1 - cellPaddingRatio) * 2 * A2(cellPadding,
-                      {ctor: "_Tuple2"
-                      ,_0: _v11._0
-                      ,_1: _v11._1},
-                      {ctor: "_Tuple2"
-                      ,_0: _v12._0
-                      ,_1: _v12._1});}
-                 _U.badCase($moduleName,
-                 "on line 27, column 4 to 93");
-              }();}
-         _U.badCase($moduleName,
-         "on line 27, column 4 to 93");
-      }();
-   });
-   var cellPosition = F3(function (_v19,
-   _v20,
-   _v21) {
-      return function () {
-         switch (_v21.ctor)
-         {case "_Tuple2":
-            return function () {
-                 switch (_v20.ctor)
-                 {case "_Tuple2":
-                    return function () {
-                         switch (_v19.ctor)
-                         {case "_Tuple2":
-                            return function () {
-                                 var cellSize$ = A2(cellSize,
-                                 {ctor: "_Tuple2"
-                                 ,_0: _v19._0
-                                 ,_1: _v19._1},
-                                 {ctor: "_Tuple2"
-                                 ,_0: _v20._0
-                                 ,_1: _v20._1});
-                                 var padding$ = A2(cellPadding,
-                                 {ctor: "_Tuple2"
-                                 ,_0: _v19._0
-                                 ,_1: _v19._1},
-                                 {ctor: "_Tuple2"
-                                 ,_0: _v20._0
-                                 ,_1: _v20._1});
-                                 var cellSizeWithPadding$ = 2 * padding$ + cellSize$;
-                                 var x$ = padding$ + cellSizeWithPadding$ * $Basics.toFloat(_v21._0) - _v19._0 / 2 + cellSizeWithPadding$ / 2;
-                                 var y$ = padding$ + cellSizeWithPadding$ * $Basics.toFloat(_v21._1) - _v19._1 / 2 + cellSizeWithPadding$ / 2;
-                                 return {ctor: "_Tuple2"
-                                        ,_0: x$
-                                        ,_1: y$};
-                              }();}
-                         _U.badCase($moduleName,
-                         "between lines 32 and 41");
-                      }();}
-                 _U.badCase($moduleName,
-                 "between lines 32 and 41");
-              }();}
-         _U.badCase($moduleName,
-         "between lines 32 and 41");
-      }();
-   });
    var init = F2(function (size,
-   _v31) {
+   _v9) {
       return function () {
-         switch (_v31.ctor)
+         switch (_v9.ctor)
          {case "_Tuple2":
             return function () {
-                 var cellSize$ = A2(cellSize,
+                 var layout = A2($MatrixLayout.init,
                  size,
-                 {ctor: "_Tuple2"
-                 ,_0: _v31._0
-                 ,_1: _v31._1}) * 0.95;
+                 _v9);
                  var cell = F2(function (x,y) {
                     return A3($Cell.init,
-                    A3(cellPosition,
-                    size,
-                    {ctor: "_Tuple2"
-                    ,_0: _v31._0
-                    ,_1: _v31._1},
+                    A2($MatrixLayout.cellPosition,
+                    layout,
                     {ctor: "_Tuple2",_0: x,_1: y}),
-                    cellSize$,
-                    2);
+                    layout.cellSize,
+                    0);
                  });
                  return {_: {}
                         ,cells: A3($Matrix.matrix,
-                        _v31._0,
-                        _v31._1,
+                        _v9._0,
+                        _v9._1,
                         cell)
-                        ,size: size};
+                        ,layout: layout};
               }();}
          _U.badCase($moduleName,
-         "between lines 46 and 51");
+         "between lines 20 and 27");
       }();
    });
    var Model = F2(function (a,b) {
       return {_: {}
              ,cells: a
-             ,size: b};
+             ,layout: b};
    });
    _elm.Grid.values = {_op: _op
                       ,Model: Model
-                      ,cellPaddingRatio: cellPaddingRatio
-                      ,cellPadding: cellPadding
-                      ,cellSize: cellSize
-                      ,cellPosition: cellPosition
                       ,init: init
                       ,Tick: Tick
                       ,NewCell: NewCell
+                      ,addCell: addCell
                       ,update: update
                       ,view: view};
    return _elm.Grid.values;
@@ -5706,11 +5640,19 @@ Elm.Main.make = function (_elm) {
       $Grid.Tick(dt),
       game);
    });
-   var initial = A2($Grid.init,
+   var initial = A2($Grid.addCell,
+   {ctor: "_Tuple2",_0: 1,_1: 2},
+   2)(A2($Grid.addCell,
+   {ctor: "_Tuple2",_0: 2,_1: 2},
+   2)(A2($Grid.addCell,
+   {ctor: "_Tuple2",_0: 1,_1: 1},
+   2)(A2($Grid.init,
    {ctor: "_Tuple2"
    ,_0: 500
    ,_1: 500},
-   {ctor: "_Tuple2",_0: 4,_1: 4});
+   {ctor: "_Tuple2"
+   ,_0: 4
+   ,_1: 4}))));
    var gameState = A3($Signal.foldp,
    update,
    initial,
@@ -6230,6 +6172,126 @@ Elm.Matrix.make = function (_elm) {
                         ,compareCells: compareCells
                         ,combineCells: combineCells};
    return _elm.Matrix.values;
+};
+Elm.MatrixLayout = Elm.MatrixLayout || {};
+Elm.MatrixLayout.make = function (_elm) {
+   "use strict";
+   _elm.MatrixLayout = _elm.MatrixLayout || {};
+   if (_elm.MatrixLayout.values)
+   return _elm.MatrixLayout.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "MatrixLayout",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Units = Elm.Units.make(_elm);
+   var gridSize = function (model) {
+      return {ctor: "_Tuple2"
+             ,_0: model.width
+             ,_1: model.height};
+   };
+   var cellSizeWithPadding = function (model) {
+      return 2 * model.cellPadding + model.cellSize;
+   };
+   var cellPosition = F2(function (model,
+   _v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var y$ = $Basics.toFloat(_v0._1);
+                 var y$$ = model.cellPadding + cellSizeWithPadding(model) * (y$ + 1 / 2) - model.height / 2;
+                 var x$ = $Basics.toFloat(_v0._0);
+                 var x$$ = model.cellPadding + cellSizeWithPadding(model) * (x$ + 1 / 2) - model.width / 2;
+                 return {ctor: "_Tuple2"
+                        ,_0: x$$
+                        ,_1: y$$};
+              }();}
+         _U.badCase($moduleName,
+         "between lines 32 and 39");
+      }();
+   });
+   var cellPaddingRatio = 10;
+   var cellPadding = F2(function (_v4,
+   _v5) {
+      return function () {
+         switch (_v5.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v4.ctor)
+                 {case "_Tuple2":
+                    return _v4._0 / (2 * ($Basics.toFloat(_v5._1) * (cellPaddingRatio + 1) + 1));}
+                 _U.badCase($moduleName,
+                 "on line 20, column 3 to 61");
+              }();}
+         _U.badCase($moduleName,
+         "on line 20, column 3 to 61");
+      }();
+   });
+   var cellSize = function (padding) {
+      return cellPaddingRatio * 2 * padding;
+   };
+   var init = F2(function (_v12,
+   _v13) {
+      return function () {
+         switch (_v13.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v12.ctor)
+                 {case "_Tuple2":
+                    return function () {
+                         var padding = A2(cellPadding,
+                         {ctor: "_Tuple2"
+                         ,_0: _v12._0
+                         ,_1: _v12._1},
+                         {ctor: "_Tuple2"
+                         ,_0: _v13._0
+                         ,_1: _v13._1});
+                         var cell = cellSize(padding);
+                         return {_: {}
+                                ,cellPadding: padding
+                                ,cellSize: cell
+                                ,cols: _v13._1
+                                ,height: _v12._1
+                                ,rows: _v13._0
+                                ,width: _v12._0};
+                      }();}
+                 _U.badCase($moduleName,
+                 "between lines 48 and 58");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 48 and 58");
+      }();
+   });
+   var Model = F6(function (a,
+   b,
+   c,
+   d,
+   e,
+   f) {
+      return {_: {}
+             ,cellPadding: b
+             ,cellSize: a
+             ,cols: c
+             ,height: f
+             ,rows: d
+             ,width: e};
+   });
+   _elm.MatrixLayout.values = {_op: _op
+                              ,Model: Model
+                              ,cellPaddingRatio: cellPaddingRatio
+                              ,cellPadding: cellPadding
+                              ,cellSize: cellSize
+                              ,cellSizeWithPadding: cellSizeWithPadding
+                              ,cellPosition: cellPosition
+                              ,gridSize: gridSize
+                              ,init: init};
+   return _elm.MatrixLayout.values;
 };
 Elm.Maybe = Elm.Maybe || {};
 Elm.Maybe.make = function (_elm) {
@@ -12606,85 +12668,89 @@ Elm.Shapes.make = function (_elm) {
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var roundedRect = F4(function (width,
-   height,
+   $Signal = Elm.Signal.make(_elm),
+   $Units = Elm.Units.make(_elm);
+   var roundedRect = F3(function (_v0,
    radius,
    color) {
       return function () {
-         var radius$ = $Basics.toFloat(radius);
-         var circleShapes = A2($List.repeat,
-         4,
-         $Graphics$Collage.circle(radius$));
-         var circleForms = A2($List.map,
-         $Graphics$Collage.filled(color),
-         circleShapes);
-         var height$ = $Basics.toFloat(height);
-         var innerHeight = height$ - radius$ * 2;
-         var width$ = $Basics.toFloat(width);
-         var innerWidth = width$ - radius$ * 2;
-         var circlePositions = _L.fromArray([{ctor: "_Tuple2"
-                                             ,_0: innerWidth / 2
-                                             ,_1: innerHeight / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: (0 - innerWidth) / 2
-                                             ,_1: innerHeight / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: innerWidth / 2
-                                             ,_1: (0 - innerHeight) / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: (0 - innerWidth) / 2
-                                             ,_1: (0 - innerHeight) / 2}]);
-         var circles = A3($List.map2,
-         $Graphics$Collage.move,
-         circlePositions,
-         circleForms);
-         var borderPositions = _L.fromArray([{ctor: "_Tuple2"
-                                             ,_0: 0
-                                             ,_1: innerHeight / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: 0
-                                             ,_1: (0 - innerHeight) / 2}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: innerWidth / 2
-                                             ,_1: 0}
-                                            ,{ctor: "_Tuple2"
-                                             ,_0: (0 - innerWidth) / 2
-                                             ,_1: 0}]);
-         var borderShapes = _L.fromArray([A2($Graphics$Collage.rect,
-                                         innerWidth,
-                                         radius$ * 2)
-                                         ,A2($Graphics$Collage.rect,
-                                         innerWidth,
-                                         radius$ * 2)
-                                         ,A2($Graphics$Collage.rect,
-                                         radius$ * 2,
-                                         innerHeight)
-                                         ,A2($Graphics$Collage.rect,
-                                         radius$ * 2,
-                                         innerHeight)]);
-         var borderForms = A2($List.map,
-         $Graphics$Collage.filled(color),
-         borderShapes);
-         var borders = A3($List.map2,
-         $Graphics$Collage.move,
-         borderPositions,
-         borderForms);
-         var innerRect = $Graphics$Collage.filled(color)(A2($Graphics$Collage.rect,
-         innerWidth,
-         innerHeight));
-         return $Graphics$Collage.group(A2($List._op["::"],
-         innerRect,
-         $List.concat(_L.fromArray([circles
-                                   ,borders]))));
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var circleShapes = A2($List.repeat,
+                 4,
+                 $Graphics$Collage.circle(radius));
+                 var circleForms = A2($List.map,
+                 $Graphics$Collage.filled(color),
+                 circleShapes);
+                 var innerHeight = _v0._1 - radius * 2;
+                 var innerWidth = _v0._0 - radius * 2;
+                 var circlePositions = _L.fromArray([{ctor: "_Tuple2"
+                                                     ,_0: innerWidth / 2
+                                                     ,_1: innerHeight / 2}
+                                                    ,{ctor: "_Tuple2"
+                                                     ,_0: (0 - innerWidth) / 2
+                                                     ,_1: innerHeight / 2}
+                                                    ,{ctor: "_Tuple2"
+                                                     ,_0: innerWidth / 2
+                                                     ,_1: (0 - innerHeight) / 2}
+                                                    ,{ctor: "_Tuple2"
+                                                     ,_0: (0 - innerWidth) / 2
+                                                     ,_1: (0 - innerHeight) / 2}]);
+                 var circles = A3($List.map2,
+                 $Graphics$Collage.move,
+                 circlePositions,
+                 circleForms);
+                 var borderPositions = _L.fromArray([{ctor: "_Tuple2"
+                                                     ,_0: 0
+                                                     ,_1: innerHeight / 2}
+                                                    ,{ctor: "_Tuple2"
+                                                     ,_0: 0
+                                                     ,_1: (0 - innerHeight) / 2}
+                                                    ,{ctor: "_Tuple2"
+                                                     ,_0: innerWidth / 2
+                                                     ,_1: 0}
+                                                    ,{ctor: "_Tuple2"
+                                                     ,_0: (0 - innerWidth) / 2
+                                                     ,_1: 0}]);
+                 var borderShapes = _L.fromArray([A2($Graphics$Collage.rect,
+                                                 innerWidth,
+                                                 radius * 2)
+                                                 ,A2($Graphics$Collage.rect,
+                                                 innerWidth,
+                                                 radius * 2)
+                                                 ,A2($Graphics$Collage.rect,
+                                                 radius * 2,
+                                                 innerHeight)
+                                                 ,A2($Graphics$Collage.rect,
+                                                 radius * 2,
+                                                 innerHeight)]);
+                 var borderForms = A2($List.map,
+                 $Graphics$Collage.filled(color),
+                 borderShapes);
+                 var borders = A3($List.map2,
+                 $Graphics$Collage.move,
+                 borderPositions,
+                 borderForms);
+                 var innerRect = $Graphics$Collage.filled(color)(A2($Graphics$Collage.rect,
+                 innerWidth,
+                 innerHeight));
+                 return $Graphics$Collage.group(A2($List._op["::"],
+                 innerRect,
+                 $List.concat(_L.fromArray([circles
+                                           ,borders]))));
+              }();}
+         _U.badCase($moduleName,
+         "between lines 13 and 45");
       }();
    });
    var roundedSquare = F3(function (size,
    radius,
    color) {
-      return A4(roundedRect,
-      size,
-      size,
+      return A3(roundedRect,
+      {ctor: "_Tuple2"
+      ,_0: size
+      ,_1: size},
       radius,
       color);
    });
@@ -13392,4 +13458,23 @@ Elm.Transform2D.make = function (_elm) {
                              ,scaleX: scaleX
                              ,scaleY: scaleY};
    return _elm.Transform2D.values;
+};
+Elm.Units = Elm.Units || {};
+Elm.Units.make = function (_elm) {
+   "use strict";
+   _elm.Units = _elm.Units || {};
+   if (_elm.Units.values)
+   return _elm.Units.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Units",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   _elm.Units.values = {_op: _op};
+   return _elm.Units.values;
 };
