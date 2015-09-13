@@ -52,6 +52,38 @@ move dir model =
     Up ->
       model
 
+mergeOne : MatrixPosition -> Cell.Model -> Model -> Model
+mergeOne fromPosition cell model =
+  case cell.state of
+    Cell.WaitingForMerge toPosition ->
+      let
+        xNew = fst toPosition
+        yNew = snd toPosition
+
+        xOld = fst fromPosition
+        yOld = snd fromPosition
+
+        cells' = model.cells
+          |> Matrix.update xNew yNew (Cell.update (Cell.Merge cell.number))
+          |> Matrix.update xOld yOld (Cell.update (Cell.Empty))
+      in
+        { model | cells <- cells' }
+    _ ->
+      model
+
+mergeAll : Model -> List (Int, Int, Cell.Model) -> Model
+mergeAll model indexedCells =
+  case indexedCells of
+    [] -> model
+    (x, y, cell)::xs -> mergeOne (x, y) cell (mergeAll model xs)
+
+
+merge : Model -> Model
+merge model =
+  mergeAll model (model.cells |> Matrix.toIndexedList)
+
+
+
 isGridStationary model =
   model.cells |> Matrix.flatten |> List.all (\cell -> cell.state == Cell.Stationary)
 
@@ -60,14 +92,7 @@ update : Action -> Model -> Model
 update action model =
   case action of
     Tick dt ->
-      let
-          cells' = Matrix.map (Cell.update (Cell.Tick dt)) model.cells
-
-          cells'' = Matrix.map (\cell -> case cell.state of
-                                           Cell.Merging position -> Cell.update Cell.Empty cell
-                                           _ -> cell) cells'
-      in
-        { model | cells <- cells'' }
+      { model | cells <- Matrix.map (Cell.update (Cell.Tick dt)) model.cells } |> merge
 
     NewCell (position, number) ->
       addCell position number model

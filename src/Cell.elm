@@ -15,7 +15,7 @@ type State
   = Moving MatrixPosition Position Time.Time
   | Appearing Time.Time
   | Stationary
-  | Merging MatrixPosition
+  | WaitingForMerge MatrixPosition
 
 type alias Model =
   { number : Int
@@ -51,14 +51,12 @@ moveAnimation
 
 -- UPDATE
 
-type Action = Move MatrixPosition Position | Tick Float | Empty
-
 moveTick matrixPosition toPosition time dt model =
   let
      time' = time + dt
   in
      if Animation.isDone time' appearingAnimation
-        then { model | state <- Merging matrixPosition }
+        then { model | state <- WaitingForMerge matrixPosition }
         else { model | state <- Moving matrixPosition toPosition time' }
 
 appeatTick time dt model =
@@ -70,17 +68,14 @@ appeatTick time dt model =
         else { model | state <- Appearing time' }
 
 tick dt model = case model.state of
-  Stationary ->
-    model
-
-  Merging position ->
-    model
-
   Appearing time ->
     appeatTick time dt model
 
   Moving matrixPosition toPosition time ->
     moveTick matrixPosition toPosition time dt model
+
+  _ ->
+    model
 
 
 move matrixPosition position model =
@@ -91,6 +86,8 @@ empty model =
   { model | state <- Stationary, number <- 0 }
 
 
+type Action = Move MatrixPosition Position | Tick Float | Empty | Merge Int
+
 update : Action -> Model -> Model
 update action model = case action of
   Move matrixPosition position ->
@@ -98,6 +95,11 @@ update action model = case action of
 
   Empty ->
     empty model
+
+  Merge number ->
+    if model.number == 0
+      then { model | state <- Stationary, number <- number }
+      else { model | state <- Appearing 200, number <- model.number + number }
 
   Tick dt ->
     tick dt model
@@ -161,7 +163,7 @@ view model =
        Stationary ->
          cell
 
-       Merging matrixPosition ->
+       WaitingForMerge matrixPosition ->
          cell
 
        Moving matrixPosition toPosition time ->

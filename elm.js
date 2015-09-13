@@ -1239,7 +1239,7 @@ Elm.Cell.make = function (_elm) {
       100) > 0 && _U.cmp(number,
       1000) < 0 ? cellSize / 2.5 : _U.cmp(number,
       1000) > 0 ? cellSize / 3 : _U.badIf($moduleName,
-      "between lines 146 and 148");
+      "between lines 148 and 150");
    });
    var textColor = function (number) {
       return function () {
@@ -1314,8 +1314,11 @@ Elm.Cell.make = function (_elm) {
               195,
               3);}
          _U.badCase($moduleName,
-         "between lines 110 and 122");
+         "between lines 112 and 124");
       }();
+   };
+   var Merge = function (a) {
+      return {ctor: "Merge",_0: a};
    };
    var Empty = {ctor: "Empty"};
    var Tick = function (a) {
@@ -1351,7 +1354,6 @@ Elm.Cell.make = function (_elm) {
                  _v2._0,
                  appearingAnimation),
                  cell);
-               case "Merging": return cell;
                case "Moving":
                return function () {
                     var base = $Graphics$Collage.move(model.position)(A3($Shapes.roundedSquare,
@@ -1368,9 +1370,11 @@ Elm.Cell.make = function (_elm) {
                                                                                         ,_0: diffX
                                                                                         ,_1: diffY})(cell)]));
                  }();
-               case "Stationary": return cell;}
+               case "Stationary": return cell;
+               case "WaitingForMerge":
+               return cell;}
             _U.badCase($moduleName,
-            "between lines 160 and 179");
+            "between lines 162 and 181");
          }();
       }();
    };
@@ -1384,8 +1388,8 @@ Elm.Cell.make = function (_elm) {
              ,size: c
              ,state: d};
    });
-   var Merging = function (a) {
-      return {ctor: "Merging"
+   var WaitingForMerge = function (a) {
+      return {ctor: "WaitingForMerge"
              ,_0: a};
    };
    var Stationary = {ctor: "Stationary"};
@@ -1441,7 +1445,7 @@ Elm.Cell.make = function (_elm) {
          return A2($Animation.isDone,
          time$,
          appearingAnimation) ? _U.replace([["state"
-                                           ,Merging(matrixPosition)]],
+                                           ,WaitingForMerge(matrixPosition)]],
          model) : _U.replace([["state"
                               ,A3(Moving,
                               matrixPosition,
@@ -1460,18 +1464,14 @@ Elm.Cell.make = function (_elm) {
               _v8._0,
               dt,
               model);
-            case "Merging": return model;
             case "Moving":
             return A5(moveTick,
               _v8._0,
               _v8._1,
               _v8._2,
               dt,
-              model);
-            case "Stationary":
-            return model;}
-         _U.badCase($moduleName,
-         "between lines 72 and 83");
+              model);}
+         return model;
       }();
    });
    var move = F3(function (matrixPosition,
@@ -1490,6 +1490,16 @@ Elm.Cell.make = function (_elm) {
          switch (action.ctor)
          {case "Empty":
             return empty(model);
+            case "Merge":
+            return _U.eq(model.number,
+              0) ? _U.replace([["state"
+                               ,Stationary]
+                              ,["number",action._0]],
+              model) : _U.replace([["state"
+                                   ,Appearing(200)]
+                                  ,["number"
+                                   ,model.number + action._0]],
+              model);
             case "Move": return A3(move,
               action._0,
               action._1,
@@ -1498,26 +1508,27 @@ Elm.Cell.make = function (_elm) {
               action._0,
               model);}
          _U.badCase($moduleName,
-         "between lines 95 and 103");
+         "between lines 92 and 105");
       }();
    });
    _elm.Cell.values = {_op: _op
                       ,Moving: Moving
                       ,Appearing: Appearing
                       ,Stationary: Stationary
-                      ,Merging: Merging
+                      ,WaitingForMerge: WaitingForMerge
                       ,Model: Model
                       ,init: init
                       ,appearingAnimation: appearingAnimation
                       ,moveAnimation: moveAnimation
-                      ,Move: Move
-                      ,Tick: Tick
-                      ,Empty: Empty
                       ,moveTick: moveTick
                       ,appeatTick: appeatTick
                       ,tick: tick
                       ,move: move
                       ,empty: empty
+                      ,Move: Move
+                      ,Tick: Tick
+                      ,Empty: Empty
+                      ,Merge: Merge
                       ,update: update
                       ,backgroungColor: backgroungColor
                       ,textColor: textColor
@@ -4335,6 +4346,58 @@ Elm.Grid.make = function (_elm) {
          $Cell.Stationary);
       })($Matrix.flatten(model.cells));
    };
+   var mergeOne = F3(function (fromPosition,
+   cell,
+   model) {
+      return function () {
+         var _v0 = cell.state;
+         switch (_v0.ctor)
+         {case "WaitingForMerge":
+            return function () {
+                 var yOld = $Basics.snd(fromPosition);
+                 var xOld = $Basics.fst(fromPosition);
+                 var yNew = $Basics.snd(_v0._0);
+                 var xNew = $Basics.fst(_v0._0);
+                 var cells$ = A3($Matrix.update,
+                 xOld,
+                 yOld,
+                 $Cell.update($Cell.Empty))(A3($Matrix.update,
+                 xNew,
+                 yNew,
+                 $Cell.update($Cell.Merge(cell.number)))(model.cells));
+                 return _U.replace([["cells"
+                                    ,cells$]],
+                 model);
+              }();}
+         return model;
+      }();
+   });
+   var mergeAll = F2(function (model,
+   indexedCells) {
+      return function () {
+         switch (indexedCells.ctor)
+         {case "::":
+            switch (indexedCells._0.ctor)
+              {case "_Tuple3":
+                 return A3(mergeOne,
+                   {ctor: "_Tuple2"
+                   ,_0: indexedCells._0._0
+                   ,_1: indexedCells._0._1},
+                   indexedCells._0._2,
+                   A2(mergeAll,
+                   model,
+                   indexedCells._1));}
+              break;
+            case "[]": return model;}
+         _U.badCase($moduleName,
+         "between lines 76 and 78");
+      }();
+   });
+   var merge = function (model) {
+      return A2(mergeAll,
+      model,
+      $Matrix.toIndexedList(model.cells));
+   };
    var move = F2(function (dir,
    model) {
       return function () {
@@ -4362,24 +4425,24 @@ Elm.Grid.make = function (_elm) {
          "between lines 45 and 53");
       }();
    });
-   var addCell = F3(function (_v1,
+   var addCell = F3(function (_v9,
    number,
    model) {
       return function () {
-         switch (_v1.ctor)
+         switch (_v9.ctor)
          {case "_Tuple2":
             return function () {
                  var position = A2($MatrixLayout.cellPosition,
                  model.layout,
-                 _v1);
+                 _v9);
                  var cell = A3($Cell.init,
                  position,
                  model.layout.cellSize,
                  number);
                  return _U.replace([["cells"
                                     ,A4($Matrix.set,
-                                    _v1._0,
-                                    _v1._1,
+                                    _v9._0,
+                                    _v9._1,
                                     cell,
                                     model.cells)]],
                  model);
@@ -4405,29 +4468,13 @@ Elm.Grid.make = function (_elm) {
                    model);}
               break;
             case "Tick":
-            return function () {
-                 var cells$ = A2($Matrix.map,
-                 $Cell.update($Cell.Tick(action._0)),
-                 model.cells);
-                 var cells$$ = A2($Matrix.map,
-                 function (cell) {
-                    return function () {
-                       var _v11 = cell.state;
-                       switch (_v11.ctor)
-                       {case "Merging":
-                          return A2($Cell.update,
-                            $Cell.Empty,
-                            cell);}
-                       return cell;
-                    }();
-                 },
-                 cells$);
-                 return _U.replace([["cells"
-                                    ,cells$$]],
-                 model);
-              }();}
+            return merge(_U.replace([["cells"
+                                     ,A2($Matrix.map,
+                                     $Cell.update($Cell.Tick(action._0)),
+                                     model.cells)]],
+              model));}
          _U.badCase($moduleName,
-         "between lines 61 and 78");
+         "between lines 93 and 103");
       }();
    });
    var Move = function (a) {
@@ -4441,14 +4488,14 @@ Elm.Grid.make = function (_elm) {
       return {ctor: "Tick",_0: a};
    };
    var init = F2(function (size,
-   _v13) {
+   _v19) {
       return function () {
-         switch (_v13.ctor)
+         switch (_v19.ctor)
          {case "_Tuple2":
             return function () {
                  var layout = A2($MatrixLayout.init,
                  size,
-                 _v13);
+                 _v19);
                  var cell = F2(function (x,y) {
                     return A3($Cell.init,
                     A2($MatrixLayout.cellPosition,
@@ -4459,8 +4506,8 @@ Elm.Grid.make = function (_elm) {
                  });
                  return {_: {}
                         ,cells: A3($Matrix.matrix,
-                        _v13._0,
-                        _v13._1,
+                        _v19._0,
+                        _v19._1,
                         cell)
                         ,layout: layout};
               }();}
@@ -4481,6 +4528,9 @@ Elm.Grid.make = function (_elm) {
                       ,Move: Move
                       ,addCell: addCell
                       ,move: move
+                      ,mergeOne: mergeOne
+                      ,mergeAll: mergeAll
+                      ,merge: merge
                       ,isGridStationary: isGridStationary
                       ,update: update
                       ,view: view};

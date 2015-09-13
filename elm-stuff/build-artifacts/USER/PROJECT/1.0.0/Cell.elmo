@@ -29,7 +29,7 @@ Elm.Cell.make = function (_elm) {
       100) > 0 && _U.cmp(number,
       1000) < 0 ? cellSize / 2.5 : _U.cmp(number,
       1000) > 0 ? cellSize / 3 : _U.badIf($moduleName,
-      "between lines 146 and 148");
+      "between lines 148 and 150");
    });
    var textColor = function (number) {
       return function () {
@@ -104,8 +104,11 @@ Elm.Cell.make = function (_elm) {
               195,
               3);}
          _U.badCase($moduleName,
-         "between lines 110 and 122");
+         "between lines 112 and 124");
       }();
+   };
+   var Merge = function (a) {
+      return {ctor: "Merge",_0: a};
    };
    var Empty = {ctor: "Empty"};
    var Tick = function (a) {
@@ -141,7 +144,6 @@ Elm.Cell.make = function (_elm) {
                  _v2._0,
                  appearingAnimation),
                  cell);
-               case "Merging": return cell;
                case "Moving":
                return function () {
                     var base = $Graphics$Collage.move(model.position)(A3($Shapes.roundedSquare,
@@ -158,9 +160,11 @@ Elm.Cell.make = function (_elm) {
                                                                                         ,_0: diffX
                                                                                         ,_1: diffY})(cell)]));
                  }();
-               case "Stationary": return cell;}
+               case "Stationary": return cell;
+               case "WaitingForMerge":
+               return cell;}
             _U.badCase($moduleName,
-            "between lines 160 and 179");
+            "between lines 162 and 181");
          }();
       }();
    };
@@ -174,8 +178,8 @@ Elm.Cell.make = function (_elm) {
              ,size: c
              ,state: d};
    });
-   var Merging = function (a) {
-      return {ctor: "Merging"
+   var WaitingForMerge = function (a) {
+      return {ctor: "WaitingForMerge"
              ,_0: a};
    };
    var Stationary = {ctor: "Stationary"};
@@ -231,7 +235,7 @@ Elm.Cell.make = function (_elm) {
          return A2($Animation.isDone,
          time$,
          appearingAnimation) ? _U.replace([["state"
-                                           ,Merging(matrixPosition)]],
+                                           ,WaitingForMerge(matrixPosition)]],
          model) : _U.replace([["state"
                               ,A3(Moving,
                               matrixPosition,
@@ -250,18 +254,14 @@ Elm.Cell.make = function (_elm) {
               _v8._0,
               dt,
               model);
-            case "Merging": return model;
             case "Moving":
             return A5(moveTick,
               _v8._0,
               _v8._1,
               _v8._2,
               dt,
-              model);
-            case "Stationary":
-            return model;}
-         _U.badCase($moduleName,
-         "between lines 72 and 83");
+              model);}
+         return model;
       }();
    });
    var move = F3(function (matrixPosition,
@@ -280,6 +280,16 @@ Elm.Cell.make = function (_elm) {
          switch (action.ctor)
          {case "Empty":
             return empty(model);
+            case "Merge":
+            return _U.eq(model.number,
+              0) ? _U.replace([["state"
+                               ,Stationary]
+                              ,["number",action._0]],
+              model) : _U.replace([["state"
+                                   ,Appearing(200)]
+                                  ,["number"
+                                   ,model.number + action._0]],
+              model);
             case "Move": return A3(move,
               action._0,
               action._1,
@@ -288,26 +298,27 @@ Elm.Cell.make = function (_elm) {
               action._0,
               model);}
          _U.badCase($moduleName,
-         "between lines 95 and 103");
+         "between lines 92 and 105");
       }();
    });
    _elm.Cell.values = {_op: _op
                       ,Moving: Moving
                       ,Appearing: Appearing
                       ,Stationary: Stationary
-                      ,Merging: Merging
+                      ,WaitingForMerge: WaitingForMerge
                       ,Model: Model
                       ,init: init
                       ,appearingAnimation: appearingAnimation
                       ,moveAnimation: moveAnimation
-                      ,Move: Move
-                      ,Tick: Tick
-                      ,Empty: Empty
                       ,moveTick: moveTick
                       ,appeatTick: appeatTick
                       ,tick: tick
                       ,move: move
                       ,empty: empty
+                      ,Move: Move
+                      ,Tick: Tick
+                      ,Empty: Empty
+                      ,Merge: Merge
                       ,update: update
                       ,backgroungColor: backgroungColor
                       ,textColor: textColor
