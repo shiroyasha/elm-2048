@@ -12,7 +12,7 @@ type alias Model =
   , size: (Float, Float)
   }
 
-cellPaddingRatio = 0.95
+cellPaddingRatio = 0.96
 
 cellPadding : (Float, Float) -> (Int, Int) -> Float
 cellPadding (width, height) (rows, cols) =
@@ -53,7 +53,7 @@ init size (rows, cols) =
 
 -- UPDATE
 
-type Action = Tick Float
+type Action = Tick Float | NewCell Int
 
 update : Action -> Model -> Model
 update action model =
@@ -63,6 +63,9 @@ update action model =
           cells' = Matrix.map (Cell.update (Cell.Tick dt)) model.cells
       in
         { model | cells <- cells' }
+
+    NewCell randomNumber ->
+      model
 
 
 -- VIEW
