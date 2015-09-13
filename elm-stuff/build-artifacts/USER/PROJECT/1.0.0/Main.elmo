@@ -13,23 +13,31 @@ Elm.Main.make = function (_elm) {
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $Grid = Elm.Grid.make(_elm),
+   $Input = Elm.Input.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
-   $Time = Elm.Time.make(_elm);
+   $Views$NewGame = Elm.Views.NewGame.make(_elm),
+   $Views$Objective = Elm.Views.Objective.make(_elm),
+   $Views$Score = Elm.Views.Score.make(_elm),
+   $Views$Title = Elm.Views.Title.make(_elm);
    var view = function (game) {
-      return A3($Graphics$Collage.collage,
-      500,
-      500,
-      _L.fromArray([$Grid.view(game)]));
+      return A2($Graphics$Element.flow,
+      $Graphics$Element.down,
+      _L.fromArray([A2($Graphics$Element.flow,
+                   $Graphics$Element.right,
+                   _L.fromArray([$Views$Title.render
+                                ,$Views$Score.render(0)]))
+                   ,A2($Graphics$Element.flow,
+                   $Graphics$Element.right,
+                   _L.fromArray([$Views$Objective.render
+                                ,$Views$NewGame.render($Input.newGame)]))
+                   ,A3($Graphics$Collage.collage,
+                   500,
+                   500,
+                   _L.fromArray([$Grid.view(game)]))]));
    };
-   var update = F2(function (dt,
-   game) {
-      return A2($Grid.update,
-      $Grid.Tick(dt),
-      game);
-   });
    var initial = A2($Grid.addCell,
    {ctor: "_Tuple2",_0: 1,_1: 2},
    2)(A2($Grid.addCell,
@@ -43,10 +51,31 @@ Elm.Main.make = function (_elm) {
    {ctor: "_Tuple2"
    ,_0: 4
    ,_1: 4}))));
+   var update = F2(function (input,
+   game) {
+      return function () {
+         switch (input.ctor)
+         {case "Movement":
+            return A2($Grid.update,
+              $Grid.Move(input._0),
+              game);
+            case "NewGame":
+            switch (input._0.ctor)
+              {case "_Tuple0":
+                 return initial;}
+              break;
+            case "Tick":
+            return A2($Grid.update,
+              $Grid.Tick(input._0),
+              game);}
+         _U.badCase($moduleName,
+         "between lines 51 and 57");
+      }();
+   });
    var gameState = A3($Signal.foldp,
    update,
    initial,
-   $Time.fps(60));
+   $Input.input);
    var main = A2($Signal.map,
    view,
    gameState);

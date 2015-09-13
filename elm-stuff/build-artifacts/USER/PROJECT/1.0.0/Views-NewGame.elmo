@@ -1,0 +1,63 @@
+Elm.Views = Elm.Views || {};
+Elm.Views.NewGame = Elm.Views.NewGame || {};
+Elm.Views.NewGame.make = function (_elm) {
+   "use strict";
+   _elm.Views = _elm.Views || {};
+   _elm.Views.NewGame = _elm.Views.NewGame || {};
+   if (_elm.Views.NewGame.values)
+   return _elm.Views.NewGame.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Views.NewGame",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Graphics$Input = Elm.Graphics.Input.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Shapes = Elm.Shapes.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var title = $Graphics$Collage.move({ctor: "_Tuple2"
+                                      ,_0: 0
+                                      ,_1: 2})($Graphics$Collage.text($Text.bold($Text.height(18)($Text.color($Color.white)($Text.fromString("New Game"))))));
+   var basicButton = function (color) {
+      return A3($Graphics$Collage.collage,
+      140,
+      50,
+      _L.fromArray([A3($Shapes.roundedRect,
+                   {ctor: "_Tuple2"
+                   ,_0: 140
+                   ,_1: 40},
+                   3,
+                   color)
+                   ,title]));
+   };
+   var render = function (mailbox) {
+      return A4($Graphics$Input.customButton,
+      A2($Signal.message,
+      mailbox.address,
+      {ctor: "_Tuple0"}),
+      basicButton(A3($Color.rgb,
+      120,
+      110,
+      101)),
+      basicButton(A3($Color.rgb,
+      130,
+      120,
+      111)),
+      basicButton(A3($Color.rgb,
+      120,
+      110,
+      101)));
+   };
+   _elm.Views.NewGame.values = {_op: _op
+                               ,title: title
+                               ,basicButton: basicButton
+                               ,render: render};
+   return _elm.Views.NewGame.values;
+};

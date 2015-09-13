@@ -1,0 +1,79 @@
+Elm.Input = Elm.Input || {};
+Elm.Input.make = function (_elm) {
+   "use strict";
+   _elm.Input = _elm.Input || {};
+   if (_elm.Input.values)
+   return _elm.Input.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Input",
+   $Basics = Elm.Basics.make(_elm),
+   $Keyboard = Elm.Keyboard.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm),
+   $Units = Elm.Units.make(_elm);
+   var Tick = function (a) {
+      return {ctor: "Tick",_0: a};
+   };
+   var Movement = function (a) {
+      return {ctor: "Movement"
+             ,_0: a};
+   };
+   var NewGame = function (a) {
+      return {ctor: "NewGame"
+             ,_0: a};
+   };
+   var keyboard = function () {
+      var toDirection = function (_v0) {
+         return function () {
+            return function () {
+               var _v2 = {ctor: "_Tuple2"
+                         ,_0: _v0.x
+                         ,_1: _v0.y};
+               switch (_v2.ctor)
+               {case "_Tuple2": switch (_v2._0)
+                    {case -1: switch (_v2._1)
+                         {case 0: return $Units.Left;}
+                         break;
+                       case 0: switch (_v2._1)
+                         {case -1: return $Units.Up;
+                            case 1: return $Units.Down;}
+                         break;
+                       case 1: switch (_v2._1)
+                         {case 0: return $Units.Right;}
+                         break;}
+                    break;}
+               return $Units.Up;
+            }();
+         }();
+      };
+      return A2($Signal.map,
+      toDirection,
+      $Keyboard.arrows);
+   }();
+   var newGame = $Signal.mailbox({ctor: "_Tuple0"});
+   var delta = $Time.fps(30);
+   var input = $Signal.mergeMany(_L.fromArray([A2($Signal._op["<~"],
+                                              NewGame,
+                                              newGame.signal)
+                                              ,A2($Signal._op["<~"],
+                                              Movement,
+                                              keyboard)
+                                              ,A2($Signal._op["<~"],
+                                              Tick,
+                                              delta)]));
+   _elm.Input.values = {_op: _op
+                       ,delta: delta
+                       ,newGame: newGame
+                       ,keyboard: keyboard
+                       ,NewGame: NewGame
+                       ,Movement: Movement
+                       ,Tick: Tick
+                       ,input: input};
+   return _elm.Input.values;
+};

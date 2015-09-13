@@ -4,10 +4,6 @@
 -- import Input exposing (keyboard)
 
 -- import Views.Grid
--- import Views.Score
--- import Views.Title
--- import Views.Objective
--- import Views.NewGame
 
 -- import Models.GameState exposing (GameState, update, initial)
 
@@ -23,22 +19,20 @@
 -- gameState : Signal GameState
 -- gameState = Signal.foldp update (initial startTimeSeed) Input.input
 
-
--- view game = flow down
---   [ flow right [Views.Title.render, Views.Score.render game.score]
---   , flow right [Views.Objective.render, Views.NewGame.render Input.newGame]
---   , Views.Grid.render Config.defaultConfig game
---   ]
-
-
 -- main = Signal.map view gameState
 
 
 import Graphics.Element exposing (..)
 import Graphics.Collage exposing (..)
-import Time exposing (..)
+import Units exposing (..)
 
+import Input
 import Grid
+
+import Views.Score
+import Views.Title
+import Views.Objective
+import Views.NewGame
 
 initial : Grid.Model
 initial
@@ -49,12 +43,25 @@ initial
 
 
 gameState : Signal Grid.Model
-gameState = Signal.foldp update initial (Time.fps 60)
+gameState = Signal.foldp update initial Input.input
 
-update : Float -> Grid.Model -> Grid.Model
-update dt game = Grid.update (Grid.Tick dt) game
+
+update : Input.Input -> Grid.Model -> Grid.Model
+update input game =
+  case input of
+    Input.NewGame () ->
+      initial
+    Input.Movement dir ->
+      Grid.update (Grid.Move dir) game
+    Input.Tick dt ->
+      Grid.update (Grid.Tick dt) game
+
 
 view : Grid.Model -> Element
-view game = collage 500 500 [Grid.view game]
+view game = flow down
+  [ flow right [Views.Title.render, Views.Score.render 0]
+  , flow right [Views.Objective.render, Views.NewGame.render Input.newGame]
+  , collage 500 500 [Grid.view game]
+  ]
 
 main = Signal.map view gameState
