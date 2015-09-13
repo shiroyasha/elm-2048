@@ -64,7 +64,30 @@ Elm.Grid.make = function (_elm) {
    model) {
       return function () {
          switch (action.ctor)
-         {case "NewCell":
+         {case "Move":
+            return function () {
+                 switch (action._0.ctor)
+                 {case "Left":
+                    return function () {
+                         var cells = A2($Matrix.indexedMap,
+                         F3(function (x,y,cell) {
+                            return _U.eq(cell.number,
+                            0) ? cell : A2($Cell.update,
+                            $Cell.Move(A2($MatrixLayout.cellPosition,
+                            model.layout,
+                            {ctor: "_Tuple2",_0: 0,_1: y})),
+                            cell);
+                         }),
+                         model.cells);
+                         return _U.replace([["cells"
+                                            ,cells]],
+                         model);
+                      }();
+                    case "Up": return model;}
+                 _U.badCase($moduleName,
+                 "between lines 57 and 65");
+              }();
+            case "NewCell":
             switch (action._0.ctor)
               {case "_Tuple2":
                  return A3(addCell,
@@ -82,7 +105,7 @@ Elm.Grid.make = function (_elm) {
                  model);
               }();}
          _U.badCase($moduleName,
-         "between lines 46 and 54");
+         "between lines 46 and 65");
       }();
    });
    var Move = function (a) {
@@ -96,14 +119,14 @@ Elm.Grid.make = function (_elm) {
       return {ctor: "Tick",_0: a};
    };
    var init = F2(function (size,
-   _v9) {
+   _v11) {
       return function () {
-         switch (_v9.ctor)
+         switch (_v11.ctor)
          {case "_Tuple2":
             return function () {
                  var layout = A2($MatrixLayout.init,
                  size,
-                 _v9);
+                 _v11);
                  var cell = F2(function (x,y) {
                     return A3($Cell.init,
                     A2($MatrixLayout.cellPosition,
@@ -114,8 +137,8 @@ Elm.Grid.make = function (_elm) {
                  });
                  return {_: {}
                         ,cells: A3($Matrix.matrix,
-                        _v9._0,
-                        _v9._1,
+                        _v11._0,
+                        _v11._1,
                         cell)
                         ,layout: layout};
               }();}

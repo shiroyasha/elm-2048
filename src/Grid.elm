@@ -53,6 +53,17 @@ update action model =
     NewCell (position, number) ->
       addCell position number model
 
+    Move dir ->
+      case dir of
+        Left ->
+          let
+              cells = Matrix.indexedMap (\x y cell ->
+                if cell.number == 0 then cell else Cell.update (Cell.Move (MatrixLayout.cellPosition model.layout (0, y))) cell) model.cells
+          in
+            { model | cells <- cells }
+        Up ->
+          model
+
 -- VIEW
 
 view : Model -> Form

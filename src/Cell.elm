@@ -15,6 +15,7 @@ type State
   = Moving Position Time.Time
   | Appearing Time.Time
   | Stationary
+  | Merging
 
 type alias Model =
   { number : Int
@@ -40,6 +41,13 @@ appearingAnimation
   |> Animation.duration (Time.second/2)
   |> Animation.ease (Easing.easeOutBack)
 
+moveAnimation
+   = Animation.animation 0
+  |> Animation.from 0
+  |> Animation.to 1
+  |> Animation.duration (Time.second/2)
+  |> Animation.ease (Easing.easeOutBack)
+
 
 -- UPDATE
 
@@ -57,6 +65,9 @@ update action model =
         Stationary ->
           model
 
+        Merging ->
+          model
+
         Appearing time ->
           let
              time' = time + dt
@@ -71,7 +82,11 @@ update action model =
           let
              time' = time + dt
           in
-            { model | state <- Moving toPosition time' }
+             if Animation.isDone time' appearingAnimation
+                then
+                  { model | state <- Merging }
+                else
+                  { model | state <- Moving toPosition time' }
 
 
 -- VIEW
@@ -121,20 +136,30 @@ labelSize cellSize number =
 view : Model -> Form
 view model =
   let
-      base = Shapes.roundedSquare model.size 3 (backgroungColor 0)
       bg = Shapes.roundedSquare model.size 3 (backgroungColor model.number)
 
       fgSize = labelSize model.size model.number
       fg = label fgSize model.number
 
-      cell = group [base, bg, fg] |> move model.position
+      cell = group [bg, fg] |> move model.position
   in
      case model.state of
        Stationary ->
          cell
 
-       Moving toPosition time ->
+       Merging ->
          cell
+
+       Moving toPosition time ->
+         let
+           progress = Animation.animate time moveAnimation
+
+           diffX = ((fst toPosition) - (fst model.position)) * progress
+           diffY = ((snd toPosition) - (snd model.position)) * progress
+
+           base = Shapes.roundedSquare model.size 3 (backgroungColor 0) |> move model.position
+         in
+           group [base, cell |> move (diffX, diffY)]
 
        Appearing time ->
          scale (Animation.animate time appearingAnimation) cell
