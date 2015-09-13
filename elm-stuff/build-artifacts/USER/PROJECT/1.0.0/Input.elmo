@@ -9,6 +9,7 @@ Elm.Input.make = function (_elm) {
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
    $moduleName = "Input",
+   $AnimationFrame = Elm.AnimationFrame.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Keyboard = Elm.Keyboard.make(_elm),
    $List = Elm.List.make(_elm),
@@ -57,7 +58,7 @@ Elm.Input.make = function (_elm) {
       $Keyboard.arrows);
    }();
    var newGame = $Signal.mailbox({ctor: "_Tuple0"});
-   var delta = $Time.fps(30);
+   var delta = $AnimationFrame.frame;
    var input = $Signal.mergeMany(_L.fromArray([A2($Signal._op["<~"],
                                               NewGame,
                                               newGame.signal)

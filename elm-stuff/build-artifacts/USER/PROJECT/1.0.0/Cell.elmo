@@ -29,7 +29,7 @@ Elm.Cell.make = function (_elm) {
       100) > 0 && _U.cmp(number,
       1000) < 0 ? cellSize / 2.5 : _U.cmp(number,
       1000) > 0 ? cellSize / 3 : _U.badIf($moduleName,
-      "between lines 132 and 134");
+      "between lines 146 and 148");
    });
    var textColor = function (number) {
       return function () {
@@ -104,15 +104,18 @@ Elm.Cell.make = function (_elm) {
               195,
               3);}
          _U.badCase($moduleName,
-         "between lines 96 and 108");
+         "between lines 110 and 122");
       }();
    };
+   var Empty = {ctor: "Empty"};
    var Tick = function (a) {
       return {ctor: "Tick",_0: a};
    };
-   var Move = function (a) {
-      return {ctor: "Move",_0: a};
-   };
+   var Move = F2(function (a,b) {
+      return {ctor: "Move"
+             ,_0: a
+             ,_1: b};
+   });
    var moveAnimation = $Animation.ease($Easing.easeOutBack)($Animation.duration($Time.second / 2)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
    var appearingAnimation = $Animation.ease($Easing.easeOutBack)($Animation.duration($Time.second / 2)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
    var view = function (model) {
@@ -146,10 +149,10 @@ Elm.Cell.make = function (_elm) {
                     3,
                     backgroungColor(0)));
                     var progress = A2($Animation.animate,
-                    _v2._1,
+                    _v2._2,
                     moveAnimation);
-                    var diffX = ($Basics.fst(_v2._0) - $Basics.fst(model.position)) * progress;
-                    var diffY = ($Basics.snd(_v2._0) - $Basics.snd(model.position)) * progress;
+                    var diffX = ($Basics.fst(_v2._1) - $Basics.fst(model.position)) * progress;
+                    var diffY = ($Basics.snd(_v2._1) - $Basics.snd(model.position)) * progress;
                     return $Graphics$Collage.group(_L.fromArray([base
                                                                 ,$Graphics$Collage.move({ctor: "_Tuple2"
                                                                                         ,_0: diffX
@@ -157,7 +160,7 @@ Elm.Cell.make = function (_elm) {
                  }();
                case "Stationary": return cell;}
             _U.badCase($moduleName,
-            "between lines 146 and 165");
+            "between lines 160 and 179");
          }();
       }();
    };
@@ -171,8 +174,17 @@ Elm.Cell.make = function (_elm) {
              ,size: c
              ,state: d};
    });
-   var Merging = {ctor: "Merging"};
+   var Merging = function (a) {
+      return {ctor: "Merging"
+             ,_0: a};
+   };
    var Stationary = {ctor: "Stationary"};
+   var empty = function (model) {
+      return _U.replace([["state"
+                         ,Stationary]
+                        ,["number",0]],
+      model);
+   };
    var Appearing = function (a) {
       return {ctor: "Appearing"
              ,_0: a};
@@ -187,60 +199,96 @@ Elm.Cell.make = function (_elm) {
              ,state: _U.eq(number,
              0) ? Stationary : Appearing(0.0)};
    });
-   var Moving = F2(function (a,b) {
+   var appeatTick = F3(function (time,
+   dt,
+   model) {
+      return function () {
+         var time$ = time + dt;
+         return A2($Animation.isDone,
+         time$,
+         appearingAnimation) ? _U.replace([["state"
+                                           ,Stationary]],
+         model) : _U.replace([["state"
+                              ,Appearing(time$)]],
+         model);
+      }();
+   });
+   var Moving = F3(function (a,
+   b,
+   c) {
       return {ctor: "Moving"
              ,_0: a
-             ,_1: b};
+             ,_1: b
+             ,_2: c};
+   });
+   var moveTick = F5(function (matrixPosition,
+   toPosition,
+   time,
+   dt,
+   model) {
+      return function () {
+         var time$ = time + dt;
+         return A2($Animation.isDone,
+         time$,
+         appearingAnimation) ? _U.replace([["state"
+                                           ,Merging(matrixPosition)]],
+         model) : _U.replace([["state"
+                              ,A3(Moving,
+                              matrixPosition,
+                              toPosition,
+                              time$)]],
+         model);
+      }();
+   });
+   var tick = F2(function (dt,
+   model) {
+      return function () {
+         var _v8 = model.state;
+         switch (_v8.ctor)
+         {case "Appearing":
+            return A3(appeatTick,
+              _v8._0,
+              dt,
+              model);
+            case "Merging": return model;
+            case "Moving":
+            return A5(moveTick,
+              _v8._0,
+              _v8._1,
+              _v8._2,
+              dt,
+              model);
+            case "Stationary":
+            return model;}
+         _U.badCase($moduleName,
+         "between lines 72 and 83");
+      }();
+   });
+   var move = F3(function (matrixPosition,
+   position,
+   model) {
+      return _U.replace([["state"
+                         ,A3(Moving,
+                         matrixPosition,
+                         position,
+                         0.0)]],
+      model);
    });
    var update = F2(function (action,
    model) {
       return function () {
          switch (action.ctor)
-         {case "Move":
-            switch (action._0.ctor)
-              {case "_Tuple2":
-                 return _U.replace([["state"
-                                    ,A2(Moving,
-                                    {ctor: "_Tuple2"
-                                    ,_0: action._0._0
-                                    ,_1: action._0._1},
-                                    0.0)]],
-                   model);}
-              break;
-            case "Tick":
-            return function () {
-                 var _v11 = model.state;
-                 switch (_v11.ctor)
-                 {case "Appearing":
-                    return function () {
-                         var time$ = _v11._0 + action._0;
-                         return A2($Animation.isDone,
-                         time$,
-                         appearingAnimation) ? _U.replace([["state"
-                                                           ,Stationary]],
-                         model) : _U.replace([["state"
-                                              ,Appearing(time$)]],
-                         model);
-                      }();
-                    case "Merging": return model;
-                    case "Moving":
-                    return function () {
-                         var time$ = _v11._1 + action._0;
-                         return A2($Animation.isDone,
-                         time$,
-                         appearingAnimation) ? _U.replace([["state"
-                                                           ,Merging]],
-                         model) : _U.replace([["state"
-                                              ,A2(Moving,_v11._0,time$)]],
-                         model);
-                      }();
-                    case "Stationary":
-                    return model;}
-                 _U.badCase($moduleName,
-                 "between lines 64 and 89");
-              }();}
+         {case "Empty":
+            return empty(model);
+            case "Move": return A3(move,
+              action._0,
+              action._1,
+              model);
+            case "Tick": return A2(tick,
+              action._0,
+              model);}
          _U.badCase($moduleName,
-         "between lines 59 and 89");
+         "between lines 95 and 103");
       }();
    });
    _elm.Cell.values = {_op: _op
@@ -254,6 +302,12 @@ Elm.Cell.make = function (_elm) {
                       ,moveAnimation: moveAnimation
                       ,Move: Move
                       ,Tick: Tick
+                      ,Empty: Empty
+                      ,moveTick: moveTick
+                      ,appeatTick: appeatTick
+                      ,tick: tick
+                      ,move: move
+                      ,empty: empty
                       ,update: update
                       ,backgroungColor: backgroungColor
                       ,textColor: textColor

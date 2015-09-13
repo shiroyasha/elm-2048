@@ -4,9 +4,10 @@ import Keyboard
 import Signal exposing ((<~))
 import Units exposing (..)
 import Time exposing (..)
+import AnimationFrame
 
 delta: Signal Time
-delta = Time.fps 30
+delta = AnimationFrame.frame
 
 newGame: Signal.Mailbox ()
 newGame = Signal.mailbox ()

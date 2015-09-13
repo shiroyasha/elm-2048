@@ -1,7 +1,7 @@
 module Cell where
 
 import Shapes
-import Graphics.Collage exposing (..)
+import Graphics.Collage as Collage exposing (..)
 import Text
 import Color
 import Time
@@ -12,10 +12,10 @@ import Units exposing (..)
 -- MODEL
 
 type State
-  = Moving Position Time.Time
+  = Moving MatrixPosition Position Time.Time
   | Appearing Time.Time
   | Stationary
-  | Merging
+  | Merging MatrixPosition
 
 type alias Model =
   { number : Int
@@ -51,42 +51,56 @@ moveAnimation
 
 -- UPDATE
 
-type Action = Move (Float, Float) | Tick Float
+type Action = Move MatrixPosition Position | Tick Float | Empty
+
+moveTick matrixPosition toPosition time dt model =
+  let
+     time' = time + dt
+  in
+     if Animation.isDone time' appearingAnimation
+        then { model | state <- Merging matrixPosition }
+        else { model | state <- Moving matrixPosition toPosition time' }
+
+appeatTick time dt model =
+  let
+     time' = time + dt
+  in
+     if Animation.isDone time' appearingAnimation
+        then { model | state <- Stationary }
+        else { model | state <- Appearing time' }
+
+tick dt model = case model.state of
+  Stationary ->
+    model
+
+  Merging position ->
+    model
+
+  Appearing time ->
+    appeatTick time dt model
+
+  Moving matrixPosition toPosition time ->
+    moveTick matrixPosition toPosition time dt model
+
+
+move matrixPosition position model =
+  { model | state <- Moving matrixPosition position 0.0 }
+
+
+empty model =
+  { model | state <- Stationary, number <- 0 }
 
 
 update : Action -> Model -> Model
-update action model =
-  case action of
-    Move (x, y) ->
-      { model | state <- Moving (x, y) 0.0 }
+update action model = case action of
+  Move matrixPosition position ->
+    move matrixPosition position model
 
-    Tick dt ->
-      case model.state of
-        Stationary ->
-          model
+  Empty ->
+    empty model
 
-        Merging ->
-          model
-
-        Appearing time ->
-          let
-             time' = time + dt
-          in
-             if Animation.isDone time' appearingAnimation
-                then
-                  { model | state <- Stationary }
-                else
-                  { model | state <- Appearing time' }
-
-        Moving toPosition time ->
-          let
-             time' = time + dt
-          in
-             if Animation.isDone time' appearingAnimation
-                then
-                  { model | state <- Merging }
-                else
-                  { model | state <- Moving toPosition time' }
+  Tick dt ->
+    tick dt model
 
 
 -- VIEW
@@ -124,7 +138,7 @@ label size number =
    |> Text.height size
    |> Text.bold
    |> text
-   |> move (0, 7)
+   |> Collage.move (0, 7)
 
 
 labelSize : Float -> Int -> Float
@@ -141,25 +155,25 @@ view model =
       fgSize = labelSize model.size model.number
       fg = label fgSize model.number
 
-      cell = group [bg, fg] |> move model.position
+      cell = group [bg, fg] |> Collage.move model.position
   in
      case model.state of
        Stationary ->
          cell
 
-       Merging ->
+       Merging matrixPosition ->
          cell
 
-       Moving toPosition time ->
+       Moving matrixPosition toPosition time ->
          let
            progress = Animation.animate time moveAnimation
 
            diffX = ((fst toPosition) - (fst model.position)) * progress
            diffY = ((snd toPosition) - (snd model.position)) * progress
 
-           base = Shapes.roundedSquare model.size 3 (backgroungColor 0) |> move model.position
+           base = Shapes.roundedSquare model.size 3 (backgroungColor 0) |> Collage.move model.position
          in
-           group [base, cell |> move (diffX, diffY)]
+           group [base, cell |> Collage.move (diffX, diffY)]
 
        Appearing time ->
          scale (Animation.animate time appearingAnimation) cell

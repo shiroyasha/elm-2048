@@ -34,24 +34,57 @@ Elm.Grid.make = function (_elm) {
                                                      ,cells]));
       }();
    };
-   var addCell = F3(function (_v0,
+   var isGridStationary = function (model) {
+      return $List.all(function (cell) {
+         return _U.eq(cell.state,
+         $Cell.Stationary);
+      })($Matrix.flatten(model.cells));
+   };
+   var move = F2(function (dir,
+   model) {
+      return function () {
+         switch (dir.ctor)
+         {case "Left":
+            return function () {
+                 var cells = A2($Matrix.indexedMap,
+                 F3(function (x,y,cell) {
+                    return _U.eq(cell.number,
+                    0) ? cell : A2($Cell.update,
+                    A2($Cell.Move,
+                    {ctor: "_Tuple2",_0: 0,_1: y},
+                    A2($MatrixLayout.cellPosition,
+                    model.layout,
+                    {ctor: "_Tuple2",_0: 0,_1: y})),
+                    cell);
+                 }),
+                 model.cells);
+                 return _U.replace([["cells"
+                                    ,cells]],
+                 model);
+              }();
+            case "Up": return model;}
+         _U.badCase($moduleName,
+         "between lines 45 and 53");
+      }();
+   });
+   var addCell = F3(function (_v1,
    number,
    model) {
       return function () {
-         switch (_v0.ctor)
+         switch (_v1.ctor)
          {case "_Tuple2":
             return function () {
                  var position = A2($MatrixLayout.cellPosition,
                  model.layout,
-                 _v0);
+                 _v1);
                  var cell = A3($Cell.init,
                  position,
                  model.layout.cellSize,
                  number);
                  return _U.replace([["cells"
                                     ,A4($Matrix.set,
-                                    _v0._0,
-                                    _v0._1,
+                                    _v1._0,
+                                    _v1._1,
                                     cell,
                                     model.cells)]],
                  model);
@@ -65,28 +98,9 @@ Elm.Grid.make = function (_elm) {
       return function () {
          switch (action.ctor)
          {case "Move":
-            return function () {
-                 switch (action._0.ctor)
-                 {case "Left":
-                    return function () {
-                         var cells = A2($Matrix.indexedMap,
-                         F3(function (x,y,cell) {
-                            return _U.eq(cell.number,
-                            0) ? cell : A2($Cell.update,
-                            $Cell.Move(A2($MatrixLayout.cellPosition,
-                            model.layout,
-                            {ctor: "_Tuple2",_0: 0,_1: y})),
-                            cell);
-                         }),
-                         model.cells);
-                         return _U.replace([["cells"
-                                            ,cells]],
-                         model);
-                      }();
-                    case "Up": return model;}
-                 _U.badCase($moduleName,
-                 "between lines 57 and 65");
-              }();
+            return isGridStationary(model) ? A2(move,
+              action._0,
+              model) : model;
             case "NewCell":
             switch (action._0.ctor)
               {case "_Tuple2":
@@ -100,12 +114,25 @@ Elm.Grid.make = function (_elm) {
                  var cells$ = A2($Matrix.map,
                  $Cell.update($Cell.Tick(action._0)),
                  model.cells);
+                 var cells$$ = A2($Matrix.map,
+                 function (cell) {
+                    return function () {
+                       var _v11 = cell.state;
+                       switch (_v11.ctor)
+                       {case "Merging":
+                          return A2($Cell.update,
+                            $Cell.Empty,
+                            cell);}
+                       return cell;
+                    }();
+                 },
+                 cells$);
                  return _U.replace([["cells"
-                                    ,cells$]],
+                                    ,cells$$]],
                  model);
               }();}
          _U.badCase($moduleName,
-         "between lines 46 and 65");
+         "between lines 61 and 78");
       }();
    });
    var Move = function (a) {
@@ -119,14 +146,14 @@ Elm.Grid.make = function (_elm) {
       return {ctor: "Tick",_0: a};
    };
    var init = F2(function (size,
-   _v11) {
+   _v13) {
       return function () {
-         switch (_v11.ctor)
+         switch (_v13.ctor)
          {case "_Tuple2":
             return function () {
                  var layout = A2($MatrixLayout.init,
                  size,
-                 _v11);
+                 _v13);
                  var cell = F2(function (x,y) {
                     return A3($Cell.init,
                     A2($MatrixLayout.cellPosition,
@@ -137,8 +164,8 @@ Elm.Grid.make = function (_elm) {
                  });
                  return {_: {}
                         ,cells: A3($Matrix.matrix,
-                        _v11._0,
-                        _v11._1,
+                        _v13._0,
+                        _v13._1,
                         cell)
                         ,layout: layout};
               }();}
@@ -158,6 +185,8 @@ Elm.Grid.make = function (_elm) {
                       ,NewCell: NewCell
                       ,Move: Move
                       ,addCell: addCell
+                      ,move: move
+                      ,isGridStationary: isGridStationary
                       ,update: update
                       ,view: view};
    return _elm.Grid.values;

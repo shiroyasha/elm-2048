@@ -460,6 +460,31 @@ Elm.Animation.make = function (_elm) {
                            ,isDone: isDone};
    return _elm.Animation.values;
 };
+Elm.AnimationFrame = Elm.AnimationFrame || {};
+Elm.AnimationFrame.make = function (_elm) {
+   "use strict";
+   _elm.AnimationFrame = _elm.AnimationFrame || {};
+   if (_elm.AnimationFrame.values)
+   return _elm.AnimationFrame.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "AnimationFrame",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Native$AnimationFrame = Elm.Native.AnimationFrame.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var frameWhen = $Native$AnimationFrame.frameWhen;
+   var frame = frameWhen($Signal.constant(true));
+   _elm.AnimationFrame.values = {_op: _op
+                                ,frameWhen: frameWhen
+                                ,frame: frame};
+   return _elm.AnimationFrame.values;
+};
 Elm.Array = Elm.Array || {};
 Elm.Array.make = function (_elm) {
    "use strict";
@@ -1214,7 +1239,7 @@ Elm.Cell.make = function (_elm) {
       100) > 0 && _U.cmp(number,
       1000) < 0 ? cellSize / 2.5 : _U.cmp(number,
       1000) > 0 ? cellSize / 3 : _U.badIf($moduleName,
-      "between lines 132 and 134");
+      "between lines 146 and 148");
    });
    var textColor = function (number) {
       return function () {
@@ -1289,15 +1314,18 @@ Elm.Cell.make = function (_elm) {
               195,
               3);}
          _U.badCase($moduleName,
-         "between lines 96 and 108");
+         "between lines 110 and 122");
       }();
    };
+   var Empty = {ctor: "Empty"};
    var Tick = function (a) {
       return {ctor: "Tick",_0: a};
    };
-   var Move = function (a) {
-      return {ctor: "Move",_0: a};
-   };
+   var Move = F2(function (a,b) {
+      return {ctor: "Move"
+             ,_0: a
+             ,_1: b};
+   });
    var moveAnimation = $Animation.ease($Easing.easeOutBack)($Animation.duration($Time.second / 2)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
    var appearingAnimation = $Animation.ease($Easing.easeOutBack)($Animation.duration($Time.second / 2)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
    var view = function (model) {
@@ -1331,10 +1359,10 @@ Elm.Cell.make = function (_elm) {
                     3,
                     backgroungColor(0)));
                     var progress = A2($Animation.animate,
-                    _v2._1,
+                    _v2._2,
                     moveAnimation);
-                    var diffX = ($Basics.fst(_v2._0) - $Basics.fst(model.position)) * progress;
-                    var diffY = ($Basics.snd(_v2._0) - $Basics.snd(model.position)) * progress;
+                    var diffX = ($Basics.fst(_v2._1) - $Basics.fst(model.position)) * progress;
+                    var diffY = ($Basics.snd(_v2._1) - $Basics.snd(model.position)) * progress;
                     return $Graphics$Collage.group(_L.fromArray([base
                                                                 ,$Graphics$Collage.move({ctor: "_Tuple2"
                                                                                         ,_0: diffX
@@ -1342,7 +1370,7 @@ Elm.Cell.make = function (_elm) {
                  }();
                case "Stationary": return cell;}
             _U.badCase($moduleName,
-            "between lines 146 and 165");
+            "between lines 160 and 179");
          }();
       }();
    };
@@ -1356,8 +1384,17 @@ Elm.Cell.make = function (_elm) {
              ,size: c
              ,state: d};
    });
-   var Merging = {ctor: "Merging"};
+   var Merging = function (a) {
+      return {ctor: "Merging"
+             ,_0: a};
+   };
    var Stationary = {ctor: "Stationary"};
+   var empty = function (model) {
+      return _U.replace([["state"
+                         ,Stationary]
+                        ,["number",0]],
+      model);
+   };
    var Appearing = function (a) {
       return {ctor: "Appearing"
              ,_0: a};
@@ -1372,60 +1409,96 @@ Elm.Cell.make = function (_elm) {
              ,state: _U.eq(number,
              0) ? Stationary : Appearing(0.0)};
    });
-   var Moving = F2(function (a,b) {
+   var appeatTick = F3(function (time,
+   dt,
+   model) {
+      return function () {
+         var time$ = time + dt;
+         return A2($Animation.isDone,
+         time$,
+         appearingAnimation) ? _U.replace([["state"
+                                           ,Stationary]],
+         model) : _U.replace([["state"
+                              ,Appearing(time$)]],
+         model);
+      }();
+   });
+   var Moving = F3(function (a,
+   b,
+   c) {
       return {ctor: "Moving"
              ,_0: a
-             ,_1: b};
+             ,_1: b
+             ,_2: c};
+   });
+   var moveTick = F5(function (matrixPosition,
+   toPosition,
+   time,
+   dt,
+   model) {
+      return function () {
+         var time$ = time + dt;
+         return A2($Animation.isDone,
+         time$,
+         appearingAnimation) ? _U.replace([["state"
+                                           ,Merging(matrixPosition)]],
+         model) : _U.replace([["state"
+                              ,A3(Moving,
+                              matrixPosition,
+                              toPosition,
+                              time$)]],
+         model);
+      }();
+   });
+   var tick = F2(function (dt,
+   model) {
+      return function () {
+         var _v8 = model.state;
+         switch (_v8.ctor)
+         {case "Appearing":
+            return A3(appeatTick,
+              _v8._0,
+              dt,
+              model);
+            case "Merging": return model;
+            case "Moving":
+            return A5(moveTick,
+              _v8._0,
+              _v8._1,
+              _v8._2,
+              dt,
+              model);
+            case "Stationary":
+            return model;}
+         _U.badCase($moduleName,
+         "between lines 72 and 83");
+      }();
+   });
+   var move = F3(function (matrixPosition,
+   position,
+   model) {
+      return _U.replace([["state"
+                         ,A3(Moving,
+                         matrixPosition,
+                         position,
+                         0.0)]],
+      model);
    });
    var update = F2(function (action,
    model) {
       return function () {
          switch (action.ctor)
-         {case "Move":
-            switch (action._0.ctor)
-              {case "_Tuple2":
-                 return _U.replace([["state"
-                                    ,A2(Moving,
-                                    {ctor: "_Tuple2"
-                                    ,_0: action._0._0
-                                    ,_1: action._0._1},
-                                    0.0)]],
-                   model);}
-              break;
-            case "Tick":
-            return function () {
-                 var _v11 = model.state;
-                 switch (_v11.ctor)
-                 {case "Appearing":
-                    return function () {
-                         var time$ = _v11._0 + action._0;
-                         return A2($Animation.isDone,
-                         time$,
-                         appearingAnimation) ? _U.replace([["state"
-                                                           ,Stationary]],
-                         model) : _U.replace([["state"
-                                              ,Appearing(time$)]],
-                         model);
-                      }();
-                    case "Merging": return model;
-                    case "Moving":
-                    return function () {
-                         var time$ = _v11._1 + action._0;
-                         return A2($Animation.isDone,
-                         time$,
-                         appearingAnimation) ? _U.replace([["state"
-                                                           ,Merging]],
-                         model) : _U.replace([["state"
-                                              ,A2(Moving,_v11._0,time$)]],
-                         model);
-                      }();
-                    case "Stationary":
-                    return model;}
-                 _U.badCase($moduleName,
-                 "between lines 64 and 89");
-              }();}
+         {case "Empty":
+            return empty(model);
+            case "Move": return A3(move,
+              action._0,
+              action._1,
+              model);
+            case "Tick": return A2(tick,
+              action._0,
+              model);}
          _U.badCase($moduleName,
-         "between lines 59 and 89");
+         "between lines 95 and 103");
       }();
    });
    _elm.Cell.values = {_op: _op
@@ -1439,6 +1512,12 @@ Elm.Cell.make = function (_elm) {
                       ,moveAnimation: moveAnimation
                       ,Move: Move
                       ,Tick: Tick
+                      ,Empty: Empty
+                      ,moveTick: moveTick
+                      ,appeatTick: appeatTick
+                      ,tick: tick
+                      ,move: move
+                      ,empty: empty
                       ,update: update
                       ,backgroungColor: backgroungColor
                       ,textColor: textColor
@@ -4250,24 +4329,57 @@ Elm.Grid.make = function (_elm) {
                                                      ,cells]));
       }();
    };
-   var addCell = F3(function (_v0,
+   var isGridStationary = function (model) {
+      return $List.all(function (cell) {
+         return _U.eq(cell.state,
+         $Cell.Stationary);
+      })($Matrix.flatten(model.cells));
+   };
+   var move = F2(function (dir,
+   model) {
+      return function () {
+         switch (dir.ctor)
+         {case "Left":
+            return function () {
+                 var cells = A2($Matrix.indexedMap,
+                 F3(function (x,y,cell) {
+                    return _U.eq(cell.number,
+                    0) ? cell : A2($Cell.update,
+                    A2($Cell.Move,
+                    {ctor: "_Tuple2",_0: 0,_1: y},
+                    A2($MatrixLayout.cellPosition,
+                    model.layout,
+                    {ctor: "_Tuple2",_0: 0,_1: y})),
+                    cell);
+                 }),
+                 model.cells);
+                 return _U.replace([["cells"
+                                    ,cells]],
+                 model);
+              }();
+            case "Up": return model;}
+         _U.badCase($moduleName,
+         "between lines 45 and 53");
+      }();
+   });
+   var addCell = F3(function (_v1,
    number,
    model) {
       return function () {
-         switch (_v0.ctor)
+         switch (_v1.ctor)
          {case "_Tuple2":
             return function () {
                  var position = A2($MatrixLayout.cellPosition,
                  model.layout,
-                 _v0);
+                 _v1);
                  var cell = A3($Cell.init,
                  position,
                  model.layout.cellSize,
                  number);
                  return _U.replace([["cells"
                                     ,A4($Matrix.set,
-                                    _v0._0,
-                                    _v0._1,
+                                    _v1._0,
+                                    _v1._1,
                                     cell,
                                     model.cells)]],
                  model);
@@ -4281,28 +4393,9 @@ Elm.Grid.make = function (_elm) {
       return function () {
          switch (action.ctor)
          {case "Move":
-            return function () {
-                 switch (action._0.ctor)
-                 {case "Left":
-                    return function () {
-                         var cells = A2($Matrix.indexedMap,
-                         F3(function (x,y,cell) {
-                            return _U.eq(cell.number,
-                            0) ? cell : A2($Cell.update,
-                            $Cell.Move(A2($MatrixLayout.cellPosition,
-                            model.layout,
-                            {ctor: "_Tuple2",_0: 0,_1: y})),
-                            cell);
-                         }),
-                         model.cells);
-                         return _U.replace([["cells"
-                                            ,cells]],
-                         model);
-                      }();
-                    case "Up": return model;}
-                 _U.badCase($moduleName,
-                 "between lines 57 and 65");
-              }();
+            return isGridStationary(model) ? A2(move,
+              action._0,
+              model) : model;
             case "NewCell":
             switch (action._0.ctor)
               {case "_Tuple2":
@@ -4316,12 +4409,25 @@ Elm.Grid.make = function (_elm) {
                  var cells$ = A2($Matrix.map,
                  $Cell.update($Cell.Tick(action._0)),
                  model.cells);
+                 var cells$$ = A2($Matrix.map,
+                 function (cell) {
+                    return function () {
+                       var _v11 = cell.state;
+                       switch (_v11.ctor)
+                       {case "Merging":
+                          return A2($Cell.update,
+                            $Cell.Empty,
+                            cell);}
+                       return cell;
+                    }();
+                 },
+                 cells$);
                  return _U.replace([["cells"
-                                    ,cells$]],
+                                    ,cells$$]],
                  model);
               }();}
          _U.badCase($moduleName,
-         "between lines 46 and 65");
+         "between lines 61 and 78");
       }();
    });
    var Move = function (a) {
@@ -4335,14 +4441,14 @@ Elm.Grid.make = function (_elm) {
       return {ctor: "Tick",_0: a};
    };
    var init = F2(function (size,
-   _v11) {
+   _v13) {
       return function () {
-         switch (_v11.ctor)
+         switch (_v13.ctor)
          {case "_Tuple2":
             return function () {
                  var layout = A2($MatrixLayout.init,
                  size,
-                 _v11);
+                 _v13);
                  var cell = F2(function (x,y) {
                     return A3($Cell.init,
                     A2($MatrixLayout.cellPosition,
@@ -4353,8 +4459,8 @@ Elm.Grid.make = function (_elm) {
                  });
                  return {_: {}
                         ,cells: A3($Matrix.matrix,
-                        _v11._0,
-                        _v11._1,
+                        _v13._0,
+                        _v13._1,
                         cell)
                         ,layout: layout};
               }();}
@@ -4374,6 +4480,8 @@ Elm.Grid.make = function (_elm) {
                       ,NewCell: NewCell
                       ,Move: Move
                       ,addCell: addCell
+                      ,move: move
+                      ,isGridStationary: isGridStationary
                       ,update: update
                       ,view: view};
    return _elm.Grid.values;
@@ -4616,6 +4724,7 @@ Elm.Input.make = function (_elm) {
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
    $moduleName = "Input",
+   $AnimationFrame = Elm.AnimationFrame.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Keyboard = Elm.Keyboard.make(_elm),
    $List = Elm.List.make(_elm),
@@ -4664,7 +4773,7 @@ Elm.Input.make = function (_elm) {
       $Keyboard.arrows);
    }();
    var newGame = $Signal.mailbox({ctor: "_Tuple0"});
-   var delta = $Time.fps(30);
+   var delta = $AnimationFrame.frame;
    var input = $Signal.mergeMany(_L.fromArray([A2($Signal._op["<~"],
                                               NewGame,
                                               newGame.signal)
@@ -7301,6 +7410,53 @@ Elm.Maybe.Extra.make = function (_elm) {
                              ,combineArray: combineArray};
    return _elm.Maybe.Extra.values;
 };
+Elm.Native.AnimationFrame = {};
+Elm.Native.AnimationFrame.make = function(localRuntime) {
+
+  localRuntime.Native = localRuntime.Native || {};
+  localRuntime.Native.AnimationFrame = localRuntime.Native.AnimationFrame || {};
+  if (localRuntime.Native.AnimationFrame.values) return localRuntime.Native.AnimationFrame.values;
+
+  var Signal = Elm.Signal.make(localRuntime);
+  var NS = Elm.Native.Signal.make(localRuntime);
+
+  // TODO Should be localRuntime.requestAnimationFrame, and should be shimmed if we care
+  // about IE9. Do we care about IE9?
+  var requestAnimationFrame = window.requestAnimationFrame || function () {};
+  var cancelAnimationFrame = window.cancelAnimationFrame || function () {};
+
+  function frameWhen(isOn) {
+    var prev = 0, curr = 0, wasOn = true;
+    var ticker = NS.input(curr);
+    function tick(curr) {
+      var diff = (curr > prev) ? curr - prev : 0;
+      prev = curr;
+      localRuntime.notify(ticker.id, diff);
+    }
+    // When we transition from off to on, reset prev so that the first tick will be 0.
+    function zeroThenTick(curr) {
+      prev = curr;
+      tick(curr);
+    }
+    var rafID = 0;
+    function f(isOn, t) {
+      if (isOn) {
+        rafID = requestAnimationFrame(wasOn ? tick : zeroThenTick);
+      } else if (wasOn) {
+        cancelAnimationFrame(rafID);
+      }
+      wasOn = isOn;
+      return t;
+    }
+    return A3(Signal.map2, F2(f), isOn, ticker);
+  }
+
+  return localRuntime.Native.AnimationFrame.values = {
+    frameWhen : frameWhen
+  };
+
+};
+
 Elm.Native.Array = {};
 Elm.Native.Array.make = function(localRuntime) {
 

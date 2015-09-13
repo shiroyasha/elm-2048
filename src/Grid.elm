@@ -41,28 +41,42 @@ addCell ((x, y) as matrixPosition) number model =
     { model | cells <- Matrix.set x y cell model.cells }
 
 
+move dir model =
+  case dir of
+    Left ->
+      let
+        cells = Matrix.indexedMap (\x y cell ->
+          if cell.number == 0 then cell else Cell.update (Cell.Move (0, y) (MatrixLayout.cellPosition model.layout (0, y))) cell) model.cells
+      in
+        { model | cells <- cells }
+    Up ->
+      model
+
+isGridStationary model =
+  model.cells |> Matrix.flatten |> List.all (\cell -> cell.state == Cell.Stationary)
+
+
 update : Action -> Model -> Model
 update action model =
   case action of
     Tick dt ->
       let
           cells' = Matrix.map (Cell.update (Cell.Tick dt)) model.cells
+
+          cells'' = Matrix.map (\cell -> case cell.state of
+                                           Cell.Merging position -> Cell.update Cell.Empty cell
+                                           _ -> cell) cells'
       in
-        { model | cells <- cells' }
+        { model | cells <- cells'' }
 
     NewCell (position, number) ->
       addCell position number model
 
     Move dir ->
-      case dir of
-        Left ->
-          let
-              cells = Matrix.indexedMap (\x y cell ->
-                if cell.number == 0 then cell else Cell.update (Cell.Move (MatrixLayout.cellPosition model.layout (0, y))) cell) model.cells
-          in
-            { model | cells <- cells }
-        Up ->
-          model
+      if isGridStationary model
+         then move dir model
+         else model
+
 
 -- VIEW
 
