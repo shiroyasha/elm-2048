@@ -20,15 +20,17 @@ type State
 type alias Model =
   { number : Int
   , position : Position
+  , matrixPosition : MatrixPosition
   , size: Float
   , state: State
   }
 
 
-init : Position -> Float -> Int -> Model
-init position size number =
+init : Position -> MatrixPosition -> Float -> Int -> Model
+init position matrixPosition size number =
   { number = number
   , position = position
+  , matrixPosition = matrixPosition
   , size = size
   , state = if number == 0 then Stationary else Appearing 0.0
   }
@@ -45,8 +47,8 @@ moveAnimation
    = Animation.animation 0
   |> Animation.from 0
   |> Animation.to 1
-  |> Animation.duration (Time.second/2)
-  |> Animation.ease (Easing.easeOutBack)
+  |> Animation.duration (Time.second/4)
+  |> Animation.ease (Easing.easeOutCirc)
 
 
 -- UPDATE
@@ -77,26 +79,21 @@ tick dt model = case model.state of
   _ ->
     model
 
-
-move matrixPosition position model =
-  { model | state <- Moving matrixPosition position 0.0 }
-
-
-empty model =
-  { model | state <- Stationary, number <- 0 }
-
-
-type Action = Move MatrixPosition Position | Tick Float | Empty | Merge Int
+type Action = Move MatrixPosition Position | Tick Float | Empty | Add Int | Substract Int
 
 update : Action -> Model -> Model
 update action model = case action of
   Move matrixPosition position ->
-    move matrixPosition position model
+    if model.number == 0 || matrixPosition == model.matrixPosition
+      then model
+      else { model | state <- Moving matrixPosition position 0.0 }
 
-  Empty ->
-    empty model
+  Substract number ->
+    case model.state of
+      Appearing progress -> { model | number <- model.number - number }
+      _ -> { model | state <- Stationary, number <- model.number - number }
 
-  Merge number ->
+  Add number ->
     if model.number == 0
       then { model | state <- Stationary, number <- number }
       else { model | state <- Appearing 200, number <- model.number + number }
@@ -149,15 +146,24 @@ labelSize cellSize number =
      | number > 100 && number < 1000 -> cellSize / 2.5
      | number > 1000  -> cellSize / 3
 
+viewBase : Model -> Form
+viewBase model =
+  Shapes.roundedSquare model.size 3 (backgroungColor 0) |> Collage.move model.position
+
 view : Model -> Form
 view model =
   let
-      bg = Shapes.roundedSquare model.size 3 (backgroungColor model.number)
+      cell = if model.number /= 0
+                then
+                  let
+                    bg = Shapes.roundedSquare model.size 3 (backgroungColor model.number)
 
-      fgSize = labelSize model.size model.number
-      fg = label fgSize model.number
-
-      cell = group [bg, fg] |> Collage.move model.position
+                    fgSize = labelSize model.size model.number
+                    fg = label fgSize model.number
+                  in
+                    group [bg, fg] |> Collage.move model.position
+                else
+                  rect 100 100 |> filled (Color.rgba 0 0 0 0)
   in
      case model.state of
        Stationary ->
@@ -173,9 +179,8 @@ view model =
            diffX = ((fst toPosition) - (fst model.position)) * progress
            diffY = ((snd toPosition) - (snd model.position)) * progress
 
-           base = Shapes.roundedSquare model.size 3 (backgroungColor 0) |> Collage.move model.position
          in
-           group [base, cell |> Collage.move (diffX, diffY)]
+           cell |> Collage.move (diffX, diffY)
 
        Appearing time ->
          scale (Animation.animate time appearingAnimation) cell

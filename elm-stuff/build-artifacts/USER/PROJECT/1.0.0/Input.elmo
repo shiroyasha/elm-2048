@@ -29,34 +29,32 @@ Elm.Input.make = function (_elm) {
       return {ctor: "NewGame"
              ,_0: a};
    };
-   var keyboard = function () {
-      var toDirection = function (_v0) {
+   var toDirection = function (_v0) {
+      return function () {
          return function () {
-            return function () {
-               var _v2 = {ctor: "_Tuple2"
-                         ,_0: _v0.x
-                         ,_1: _v0.y};
-               switch (_v2.ctor)
-               {case "_Tuple2": switch (_v2._0)
-                    {case -1: switch (_v2._1)
-                         {case 0: return $Units.Left;}
-                         break;
-                       case 0: switch (_v2._1)
-                         {case -1: return $Units.Up;
-                            case 1: return $Units.Down;}
-                         break;
-                       case 1: switch (_v2._1)
-                         {case 0: return $Units.Right;}
-                         break;}
-                    break;}
-               return $Units.Up;
-            }();
+            var _v2 = {ctor: "_Tuple2"
+                      ,_0: _v0.x
+                      ,_1: _v0.y};
+            switch (_v2.ctor)
+            {case "_Tuple2": switch (_v2._0)
+                 {case -1: switch (_v2._1)
+                      {case 0: return $Units.Left;}
+                      break;
+                    case 0: switch (_v2._1)
+                      {case -1: return $Units.Up;
+                         case 1: return $Units.Down;}
+                      break;
+                    case 1: switch (_v2._1)
+                      {case 0: return $Units.Right;}
+                      break;}
+                 break;}
+            return $Units.Nowhere;
          }();
-      };
-      return A2($Signal.map,
-      toDirection,
-      $Keyboard.arrows);
-   }();
+      }();
+   };
+   var keyboard = A2($Signal.map,
+   toDirection,
+   $Keyboard.arrows);
    var newGame = $Signal.mailbox({ctor: "_Tuple0"});
    var delta = $AnimationFrame.frame;
    var input = $Signal.mergeMany(_L.fromArray([A2($Signal._op["<~"],
@@ -71,6 +69,7 @@ Elm.Input.make = function (_elm) {
    _elm.Input.values = {_op: _op
                        ,delta: delta
                        ,newGame: newGame
+                       ,toDirection: toDirection
                        ,keyboard: keyboard
                        ,NewGame: NewGame
                        ,Movement: Movement

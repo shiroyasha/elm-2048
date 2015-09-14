@@ -29,7 +29,7 @@ Elm.Cell.make = function (_elm) {
       100) > 0 && _U.cmp(number,
       1000) < 0 ? cellSize / 2.5 : _U.cmp(number,
       1000) > 0 ? cellSize / 3 : _U.badIf($moduleName,
-      "between lines 148 and 150");
+      "between lines 145 and 147");
    });
    var textColor = function (number) {
       return function () {
@@ -104,11 +104,21 @@ Elm.Cell.make = function (_elm) {
               195,
               3);}
          _U.badCase($moduleName,
-         "between lines 112 and 124");
+         "between lines 109 and 121");
       }();
    };
-   var Merge = function (a) {
-      return {ctor: "Merge",_0: a};
+   var viewBase = function (model) {
+      return $Graphics$Collage.move(model.position)(A3($Shapes.roundedSquare,
+      model.size,
+      3,
+      backgroungColor(0)));
+   };
+   var Substract = function (a) {
+      return {ctor: "Substract"
+             ,_0: a};
+   };
+   var Add = function (a) {
+      return {ctor: "Add",_0: a};
    };
    var Empty = {ctor: "Empty"};
    var Tick = function (a) {
@@ -119,22 +129,31 @@ Elm.Cell.make = function (_elm) {
              ,_0: a
              ,_1: b};
    });
-   var moveAnimation = $Animation.ease($Easing.easeOutBack)($Animation.duration($Time.second / 2)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
+   var moveAnimation = $Animation.ease($Easing.easeOutCirc)($Animation.duration($Time.second / 4)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
    var appearingAnimation = $Animation.ease($Easing.easeOutBack)($Animation.duration($Time.second / 2)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
    var view = function (model) {
       return function () {
-         var fgSize = A2(labelSize,
-         model.size,
-         model.number);
-         var fg = A2(label,
-         fgSize,
-         model.number);
-         var bg = A3($Shapes.roundedSquare,
-         model.size,
-         3,
-         backgroungColor(model.number));
-         var cell = $Graphics$Collage.move(model.position)($Graphics$Collage.group(_L.fromArray([bg
-                                                                                                ,fg])));
+         var cell = !_U.eq(model.number,
+         0) ? function () {
+            var fgSize = A2(labelSize,
+            model.size,
+            model.number);
+            var fg = A2(label,
+            fgSize,
+            model.number);
+            var bg = A3($Shapes.roundedSquare,
+            model.size,
+            3,
+            backgroungColor(model.number));
+            return $Graphics$Collage.move(model.position)($Graphics$Collage.group(_L.fromArray([bg
+                                                                                               ,fg])));
+         }() : $Graphics$Collage.filled(A4($Color.rgba,
+         0,
+         0,
+         0,
+         0))(A2($Graphics$Collage.rect,
+         100,
+         100));
          return function () {
             var _v2 = model.state;
             switch (_v2.ctor)
@@ -146,57 +165,50 @@ Elm.Cell.make = function (_elm) {
                  cell);
                case "Moving":
                return function () {
-                    var base = $Graphics$Collage.move(model.position)(A3($Shapes.roundedSquare,
-                    model.size,
-                    3,
-                    backgroungColor(0)));
                     var progress = A2($Animation.animate,
                     _v2._2,
                     moveAnimation);
                     var diffX = ($Basics.fst(_v2._1) - $Basics.fst(model.position)) * progress;
                     var diffY = ($Basics.snd(_v2._1) - $Basics.snd(model.position)) * progress;
-                    return $Graphics$Collage.group(_L.fromArray([base
-                                                                ,$Graphics$Collage.move({ctor: "_Tuple2"
-                                                                                        ,_0: diffX
-                                                                                        ,_1: diffY})(cell)]));
+                    return $Graphics$Collage.move({ctor: "_Tuple2"
+                                                  ,_0: diffX
+                                                  ,_1: diffY})(cell);
                  }();
                case "Stationary": return cell;
                case "WaitingForMerge":
                return cell;}
             _U.badCase($moduleName,
-            "between lines 162 and 181");
+            "between lines 168 and 186");
          }();
       }();
    };
-   var Model = F4(function (a,
+   var Model = F5(function (a,
    b,
    c,
-   d) {
+   d,
+   e) {
       return {_: {}
+             ,matrixPosition: c
              ,number: a
              ,position: b
-             ,size: c
-             ,state: d};
+             ,size: d
+             ,state: e};
    });
    var WaitingForMerge = function (a) {
       return {ctor: "WaitingForMerge"
              ,_0: a};
    };
    var Stationary = {ctor: "Stationary"};
-   var empty = function (model) {
-      return _U.replace([["state"
-                         ,Stationary]
-                        ,["number",0]],
-      model);
-   };
    var Appearing = function (a) {
       return {ctor: "Appearing"
              ,_0: a};
    };
-   var init = F3(function (position,
+   var init = F4(function (position,
+   matrixPosition,
    size,
    number) {
       return {_: {}
+             ,matrixPosition: matrixPosition
              ,number: number
              ,position: position
              ,size: size
@@ -264,23 +276,11 @@ Elm.Cell.make = function (_elm) {
          return model;
       }();
    });
-   var move = F3(function (matrixPosition,
-   position,
-   model) {
-      return _U.replace([["state"
-                         ,A3(Moving,
-                         matrixPosition,
-                         position,
-                         0.0)]],
-      model);
-   });
    var update = F2(function (action,
    model) {
       return function () {
          switch (action.ctor)
-         {case "Empty":
-            return empty(model);
-            case "Merge":
+         {case "Add":
             return _U.eq(model.number,
               0) ? _U.replace([["state"
                                ,Stationary]
@@ -290,15 +290,34 @@ Elm.Cell.make = function (_elm) {
                                   ,["number"
                                    ,model.number + action._0]],
               model);
-            case "Move": return A3(move,
-              action._0,
-              action._1,
+            case "Move":
+            return _U.eq(model.number,
+              0) || _U.eq(action._0,
+              model.matrixPosition) ? model : _U.replace([["state"
+                                                          ,A3(Moving,
+                                                          action._0,
+                                                          action._1,
+                                                          0.0)]],
               model);
+            case "Substract":
+            return function () {
+                 var _v19 = model.state;
+                 switch (_v19.ctor)
+                 {case "Appearing":
+                    return _U.replace([["number"
+                                       ,model.number - action._0]],
+                      model);}
+                 return _U.replace([["state"
+                                    ,Stationary]
+                                   ,["number"
+                                    ,model.number - action._0]],
+                 model);
+              }();
             case "Tick": return A2(tick,
               action._0,
               model);}
          _U.badCase($moduleName,
-         "between lines 92 and 105");
+         "between lines 85 and 102");
       }();
    });
    _elm.Cell.values = {_op: _op
@@ -313,17 +332,17 @@ Elm.Cell.make = function (_elm) {
                       ,moveTick: moveTick
                       ,appeatTick: appeatTick
                       ,tick: tick
-                      ,move: move
-                      ,empty: empty
                       ,Move: Move
                       ,Tick: Tick
                       ,Empty: Empty
-                      ,Merge: Merge
+                      ,Add: Add
+                      ,Substract: Substract
                       ,update: update
                       ,backgroungColor: backgroungColor
                       ,textColor: textColor
                       ,label: label
                       ,labelSize: labelSize
+                      ,viewBase: viewBase
                       ,view: view};
    return _elm.Cell.values;
 };
