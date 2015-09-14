@@ -6,4 +6,4 @@ type alias Size = (Float, Float)
 type alias MatrixSize = (Int, Int)
 type alias MatrixPosition = (Int, Int)
 
-type Direction = Left | Right | Up | Down
+type Direction = Left | Right | Up | Down | Nowhere

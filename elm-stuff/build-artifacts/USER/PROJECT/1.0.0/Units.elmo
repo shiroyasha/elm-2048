@@ -14,6 +14,7 @@ Elm.Units.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var Nowhere = {ctor: "Nowhere"};
    var Down = {ctor: "Down"};
    var Up = {ctor: "Up"};
    var Right = {ctor: "Right"};
@@ -22,6 +23,7 @@ Elm.Units.make = function (_elm) {
                        ,Left: Left
                        ,Right: Right
                        ,Up: Up
-                       ,Down: Down};
+                       ,Down: Down
+                       ,Nowhere: Nowhere};
    return _elm.Units.values;
 };
