@@ -1339,8 +1339,8 @@ Elm.Cell.make = function (_elm) {
              ,_0: a
              ,_1: b};
    });
-   var moveAnimation = $Animation.ease($Easing.easeOutCirc)($Animation.duration($Time.second / 4)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
-   var appearingAnimation = $Animation.ease($Easing.easeOutBack)($Animation.duration($Time.second / 2)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
+   var moveAnimation = $Animation.ease($Easing.easeOutCirc)($Animation.duration($Time.second / 5)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
+   var appearingAnimation = $Animation.ease($Easing.easeOutCirc)($Animation.duration($Time.second / 10)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
    var view = function (model) {
       return function () {
          var cell = !_U.eq(model.number,
@@ -1456,8 +1456,8 @@ Elm.Cell.make = function (_elm) {
          var time$ = time + dt;
          return A2($Animation.isDone,
          time$,
-         appearingAnimation) ? _U.replace([["state"
-                                           ,WaitingForMerge(matrixPosition)]],
+         moveAnimation) ? _U.replace([["state"
+                                      ,WaitingForMerge(matrixPosition)]],
          model) : _U.replace([["state"
                               ,A3(Moving,
                               matrixPosition,

@@ -40,14 +40,14 @@ appearingAnimation
    = Animation.animation 0
   |> Animation.from 0
   |> Animation.to 1
-  |> Animation.duration (Time.second/2)
-  |> Animation.ease (Easing.easeOutBack)
+  |> Animation.duration (Time.second/10)
+  |> Animation.ease (Easing.easeOutCirc)
 
 moveAnimation
    = Animation.animation 0
   |> Animation.from 0
   |> Animation.to 1
-  |> Animation.duration (Time.second/4)
+  |> Animation.duration (Time.second/5)
   |> Animation.ease (Easing.easeOutCirc)
 
 
@@ -57,7 +57,7 @@ moveTick matrixPosition toPosition time dt model =
   let
      time' = time + dt
   in
-     if Animation.isDone time' appearingAnimation
+     if Animation.isDone time' moveAnimation
         then { model | state <- WaitingForMerge matrixPosition }
         else { model | state <- Moving matrixPosition toPosition time' }
 
