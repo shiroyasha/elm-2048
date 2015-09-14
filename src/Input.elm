@@ -1,29 +1,37 @@
 module Input where
 
 import Keyboard
-import Models.Grid exposing (Grid)
-
 import Signal exposing ((<~))
+import Units exposing (..)
+import Time exposing (..)
+import AnimationFrame
 
-keyboard: Signal Models.Grid.Action
-keyboard =
-  let
-      toAction {x, y} = case (x, y) of
-        ( 1,  0) -> Models.Grid.SquashRight
-        (-1,  0) -> Models.Grid.SquashLeft
-        ( 0, -1) -> Models.Grid.SquashUp
-        ( 0,  1) -> Models.Grid.SquashDown
-        _ -> Models.Grid.NoAction
-  in
-     Signal.map toAction Keyboard.arrows
-
+delta: Signal Time
+delta = AnimationFrame.frame
 
 newGame: Signal.Mailbox ()
 newGame = Signal.mailbox ()
 
+keyboard: Signal Direction
+keyboard =
+  let
+    toDirection {x, y} = case (x, y) of
+      ( 1,  0) -> Right
+      (-1,  0) -> Left
+      ( 0, -1) -> Up
+      ( 0,  1) -> Down
+      _ -> Up
+  in
+     Signal.map toDirection Keyboard.arrows
 
-type Input = NewGame () | Movement Models.Grid.Action
-
+type Input
+  = NewGame ()
+  | Movement Direction
+  | Tick Time
 
 input: Signal Input
-input = Signal.merge (NewGame <~ newGame.signal) (Movement <~ keyboard)
+input =
+  Signal.mergeMany [ NewGame <~ newGame.signal
+                   , Movement <~ keyboard
+                   , Tick <~ delta
+                   ]

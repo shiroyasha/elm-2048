@@ -10,16 +10,14 @@ Elm.Main.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
-   $Config = Elm.Config.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Grid = Elm.Grid.make(_elm),
    $Input = Elm.Input.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
-   $Models$GameState = Elm.Models.GameState.make(_elm),
-   $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
-   $Views$Grid = Elm.Views.Grid.make(_elm),
    $Views$NewGame = Elm.Views.NewGame.make(_elm),
    $Views$Objective = Elm.Views.Objective.make(_elm),
    $Views$Score = Elm.Views.Score.make(_elm),
@@ -30,28 +28,61 @@ Elm.Main.make = function (_elm) {
       _L.fromArray([A2($Graphics$Element.flow,
                    $Graphics$Element.right,
                    _L.fromArray([$Views$Title.render
-                                ,$Views$Score.render(game.score)]))
+                                ,$Views$Score.render(0)]))
                    ,A2($Graphics$Element.flow,
                    $Graphics$Element.right,
                    _L.fromArray([$Views$Objective.render
                                 ,$Views$NewGame.render($Input.newGame)]))
-                   ,A2($Views$Grid.render,
-                   $Config.defaultConfig,
-                   game)]));
+                   ,A3($Graphics$Collage.collage,
+                   500,
+                   500,
+                   _L.fromArray([$Grid.view(game)]))]));
    };
-   var startTime = 5;
-   var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
+   var initial = A2($Grid.addCell,
+   {ctor: "_Tuple2",_0: 1,_1: 2},
+   2)(A2($Grid.addCell,
+   {ctor: "_Tuple2",_0: 2,_1: 2},
+   2)(A2($Grid.addCell,
+   {ctor: "_Tuple2",_0: 1,_1: 1},
+   2)(A2($Grid.init,
+   {ctor: "_Tuple2"
+   ,_0: 500
+   ,_1: 500},
+   {ctor: "_Tuple2"
+   ,_0: 4
+   ,_1: 4}))));
+   var update = F2(function (input,
+   game) {
+      return function () {
+         switch (input.ctor)
+         {case "Movement":
+            return A2($Grid.update,
+              $Grid.Move(input._0),
+              game);
+            case "NewGame":
+            switch (input._0.ctor)
+              {case "_Tuple0":
+                 return initial;}
+              break;
+            case "Tick":
+            return A2($Grid.update,
+              $Grid.Tick(input._0),
+              game);}
+         _U.badCase($moduleName,
+         "between lines 51 and 57");
+      }();
+   });
    var gameState = A3($Signal.foldp,
-   $Models$GameState.update,
-   $Models$GameState.initial(startTimeSeed),
+   update,
+   initial,
    $Input.input);
    var main = A2($Signal.map,
    view,
    gameState);
    _elm.Main.values = {_op: _op
-                      ,startTime: startTime
-                      ,startTimeSeed: startTimeSeed
+                      ,initial: initial
                       ,gameState: gameState
+                      ,update: update
                       ,view: view
                       ,main: main};
    return _elm.Main.values;

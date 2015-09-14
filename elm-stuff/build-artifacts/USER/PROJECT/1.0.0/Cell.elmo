@@ -1,0 +1,329 @@
+Elm.Cell = Elm.Cell || {};
+Elm.Cell.make = function (_elm) {
+   "use strict";
+   _elm.Cell = _elm.Cell || {};
+   if (_elm.Cell.values)
+   return _elm.Cell.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Cell",
+   $Animation = Elm.Animation.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Easing = Elm.Easing.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Shapes = Elm.Shapes.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm),
+   $Time = Elm.Time.make(_elm),
+   $Units = Elm.Units.make(_elm);
+   var labelSize = F2(function (cellSize,
+   number) {
+      return _U.cmp(number,
+      100) < 0 ? cellSize / 2 : _U.cmp(number,
+      100) > 0 && _U.cmp(number,
+      1000) < 0 ? cellSize / 2.5 : _U.cmp(number,
+      1000) > 0 ? cellSize / 3 : _U.badIf($moduleName,
+      "between lines 148 and 150");
+   });
+   var textColor = function (number) {
+      return function () {
+         switch (number)
+         {case 2: return A3($Color.rgb,
+              120,
+              110,
+              101);
+            case 4: return A3($Color.rgb,
+              120,
+              110,
+              101);}
+         return $Color.white;
+      }();
+   };
+   var label = F2(function (size,
+   number) {
+      return $Graphics$Collage.move({ctor: "_Tuple2"
+                                    ,_0: 0
+                                    ,_1: 7})($Graphics$Collage.text($Text.bold($Text.height(size)($Text.color(textColor(number))($Text.fromString(_U.cmp(number,
+      0) > 0 ? $Basics.toString(number) : ""))))));
+   });
+   var backgroungColor = function (number) {
+      return function () {
+         switch (number)
+         {case 0: return A3($Color.rgb,
+              204,
+              192,
+              179);
+            case 2: return A3($Color.rgb,
+              238,
+              228,
+              218);
+            case 4: return A3($Color.rgb,
+              236,
+              224,
+              200);
+            case 8: return A3($Color.rgb,
+              241,
+              176,
+              120);
+            case 16: return A3($Color.rgb,
+              235,
+              140,
+              82);
+            case 32: return A3($Color.rgb,
+              243,
+              123,
+              96);
+            case 64: return A3($Color.rgb,
+              233,
+              89,
+              55);
+            case 128: return A3($Color.rgb,
+              242,
+              216,
+              106);
+            case 256: return A3($Color.rgb,
+              231,
+              191,
+              41);
+            case 512: return A3($Color.rgb,
+              231,
+              191,
+              41);
+            case 1024: return A3($Color.rgb,
+              228,
+              183,
+              19);
+            case 2048: return A3($Color.rgb,
+              238,
+              195,
+              3);}
+         _U.badCase($moduleName,
+         "between lines 112 and 124");
+      }();
+   };
+   var Merge = function (a) {
+      return {ctor: "Merge",_0: a};
+   };
+   var Empty = {ctor: "Empty"};
+   var Tick = function (a) {
+      return {ctor: "Tick",_0: a};
+   };
+   var Move = F2(function (a,b) {
+      return {ctor: "Move"
+             ,_0: a
+             ,_1: b};
+   });
+   var moveAnimation = $Animation.ease($Easing.easeOutBack)($Animation.duration($Time.second / 2)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
+   var appearingAnimation = $Animation.ease($Easing.easeOutBack)($Animation.duration($Time.second / 2)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
+   var view = function (model) {
+      return function () {
+         var fgSize = A2(labelSize,
+         model.size,
+         model.number);
+         var fg = A2(label,
+         fgSize,
+         model.number);
+         var bg = A3($Shapes.roundedSquare,
+         model.size,
+         3,
+         backgroungColor(model.number));
+         var cell = $Graphics$Collage.move(model.position)($Graphics$Collage.group(_L.fromArray([bg
+                                                                                                ,fg])));
+         return function () {
+            var _v2 = model.state;
+            switch (_v2.ctor)
+            {case "Appearing":
+               return A2($Graphics$Collage.scale,
+                 A2($Animation.animate,
+                 _v2._0,
+                 appearingAnimation),
+                 cell);
+               case "Moving":
+               return function () {
+                    var base = $Graphics$Collage.move(model.position)(A3($Shapes.roundedSquare,
+                    model.size,
+                    3,
+                    backgroungColor(0)));
+                    var progress = A2($Animation.animate,
+                    _v2._2,
+                    moveAnimation);
+                    var diffX = ($Basics.fst(_v2._1) - $Basics.fst(model.position)) * progress;
+                    var diffY = ($Basics.snd(_v2._1) - $Basics.snd(model.position)) * progress;
+                    return $Graphics$Collage.group(_L.fromArray([base
+                                                                ,$Graphics$Collage.move({ctor: "_Tuple2"
+                                                                                        ,_0: diffX
+                                                                                        ,_1: diffY})(cell)]));
+                 }();
+               case "Stationary": return cell;
+               case "WaitingForMerge":
+               return cell;}
+            _U.badCase($moduleName,
+            "between lines 162 and 181");
+         }();
+      }();
+   };
+   var Model = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,number: a
+             ,position: b
+             ,size: c
+             ,state: d};
+   });
+   var WaitingForMerge = function (a) {
+      return {ctor: "WaitingForMerge"
+             ,_0: a};
+   };
+   var Stationary = {ctor: "Stationary"};
+   var empty = function (model) {
+      return _U.replace([["state"
+                         ,Stationary]
+                        ,["number",0]],
+      model);
+   };
+   var Appearing = function (a) {
+      return {ctor: "Appearing"
+             ,_0: a};
+   };
+   var init = F3(function (position,
+   size,
+   number) {
+      return {_: {}
+             ,number: number
+             ,position: position
+             ,size: size
+             ,state: _U.eq(number,
+             0) ? Stationary : Appearing(0.0)};
+   });
+   var appeatTick = F3(function (time,
+   dt,
+   model) {
+      return function () {
+         var time$ = time + dt;
+         return A2($Animation.isDone,
+         time$,
+         appearingAnimation) ? _U.replace([["state"
+                                           ,Stationary]],
+         model) : _U.replace([["state"
+                              ,Appearing(time$)]],
+         model);
+      }();
+   });
+   var Moving = F3(function (a,
+   b,
+   c) {
+      return {ctor: "Moving"
+             ,_0: a
+             ,_1: b
+             ,_2: c};
+   });
+   var moveTick = F5(function (matrixPosition,
+   toPosition,
+   time,
+   dt,
+   model) {
+      return function () {
+         var time$ = time + dt;
+         return A2($Animation.isDone,
+         time$,
+         appearingAnimation) ? _U.replace([["state"
+                                           ,WaitingForMerge(matrixPosition)]],
+         model) : _U.replace([["state"
+                              ,A3(Moving,
+                              matrixPosition,
+                              toPosition,
+                              time$)]],
+         model);
+      }();
+   });
+   var tick = F2(function (dt,
+   model) {
+      return function () {
+         var _v8 = model.state;
+         switch (_v8.ctor)
+         {case "Appearing":
+            return A3(appeatTick,
+              _v8._0,
+              dt,
+              model);
+            case "Moving":
+            return A5(moveTick,
+              _v8._0,
+              _v8._1,
+              _v8._2,
+              dt,
+              model);}
+         return model;
+      }();
+   });
+   var move = F3(function (matrixPosition,
+   position,
+   model) {
+      return _U.replace([["state"
+                         ,A3(Moving,
+                         matrixPosition,
+                         position,
+                         0.0)]],
+      model);
+   });
+   var update = F2(function (action,
+   model) {
+      return function () {
+         switch (action.ctor)
+         {case "Empty":
+            return empty(model);
+            case "Merge":
+            return _U.eq(model.number,
+              0) ? _U.replace([["state"
+                               ,Stationary]
+                              ,["number",action._0]],
+              model) : _U.replace([["state"
+                                   ,Appearing(200)]
+                                  ,["number"
+                                   ,model.number + action._0]],
+              model);
+            case "Move": return A3(move,
+              action._0,
+              action._1,
+              model);
+            case "Tick": return A2(tick,
+              action._0,
+              model);}
+         _U.badCase($moduleName,
+         "between lines 92 and 105");
+      }();
+   });
+   _elm.Cell.values = {_op: _op
+                      ,Moving: Moving
+                      ,Appearing: Appearing
+                      ,Stationary: Stationary
+                      ,WaitingForMerge: WaitingForMerge
+                      ,Model: Model
+                      ,init: init
+                      ,appearingAnimation: appearingAnimation
+                      ,moveAnimation: moveAnimation
+                      ,moveTick: moveTick
+                      ,appeatTick: appeatTick
+                      ,tick: tick
+                      ,move: move
+                      ,empty: empty
+                      ,Move: Move
+                      ,Tick: Tick
+                      ,Empty: Empty
+                      ,Merge: Merge
+                      ,update: update
+                      ,backgroungColor: backgroungColor
+                      ,textColor: textColor
+                      ,label: label
+                      ,labelSize: labelSize
+                      ,view: view};
+   return _elm.Cell.values;
+};

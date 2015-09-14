@@ -7,7 +7,7 @@ import Shapes exposing (..)
 import Graphics.Element exposing (..)
 import Graphics.Collage exposing (..)
 
-backgroung w h = Shapes.roundedRect (w - 15) (h - 40) 3 (rgb 187 173 160)
+backgroung w h = Shapes.roundedRect (w - 15, h - 40) 3 (rgb 187 173 160)
 
 
 title =

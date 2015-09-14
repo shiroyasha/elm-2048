@@ -34,9 +34,10 @@ Elm.Views.Score.make = function (_elm) {
    218))($Text.fromString("SCORE"))))));
    var backgroung = F2(function (w,
    h) {
-      return A4($Shapes.roundedRect,
-      w - 15,
-      h - 40,
+      return A3($Shapes.roundedRect,
+      {ctor: "_Tuple2"
+      ,_0: w - 15
+      ,_1: h - 40},
       3,
       A3($Color.rgb,187,173,160));
    });

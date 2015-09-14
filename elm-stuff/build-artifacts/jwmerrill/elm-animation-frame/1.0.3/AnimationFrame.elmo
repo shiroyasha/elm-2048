@@ -1,0 +1,25 @@
+Elm.AnimationFrame = Elm.AnimationFrame || {};
+Elm.AnimationFrame.make = function (_elm) {
+   "use strict";
+   _elm.AnimationFrame = _elm.AnimationFrame || {};
+   if (_elm.AnimationFrame.values)
+   return _elm.AnimationFrame.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "AnimationFrame",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Native$AnimationFrame = Elm.Native.AnimationFrame.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var frameWhen = $Native$AnimationFrame.frameWhen;
+   var frame = frameWhen($Signal.constant(true));
+   _elm.AnimationFrame.values = {_op: _op
+                                ,frameWhen: frameWhen
+                                ,frame: frame};
+   return _elm.AnimationFrame.values;
+};

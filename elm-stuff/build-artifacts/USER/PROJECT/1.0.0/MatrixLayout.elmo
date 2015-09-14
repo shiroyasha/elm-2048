@@ -1,0 +1,120 @@
+Elm.MatrixLayout = Elm.MatrixLayout || {};
+Elm.MatrixLayout.make = function (_elm) {
+   "use strict";
+   _elm.MatrixLayout = _elm.MatrixLayout || {};
+   if (_elm.MatrixLayout.values)
+   return _elm.MatrixLayout.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "MatrixLayout",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Units = Elm.Units.make(_elm);
+   var gridSize = function (model) {
+      return {ctor: "_Tuple2"
+             ,_0: model.width
+             ,_1: model.height};
+   };
+   var cellSizeWithPadding = function (model) {
+      return 2 * model.cellPadding + model.cellSize;
+   };
+   var cellPosition = F2(function (model,
+   _v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var y$ = $Basics.toFloat(_v0._1);
+                 var y$$ = model.cellPadding + cellSizeWithPadding(model) * (y$ + 1 / 2) - model.height / 2;
+                 var x$ = $Basics.toFloat(_v0._0);
+                 var x$$ = model.cellPadding + cellSizeWithPadding(model) * (x$ + 1 / 2) - model.width / 2;
+                 return {ctor: "_Tuple2"
+                        ,_0: x$$
+                        ,_1: y$$};
+              }();}
+         _U.badCase($moduleName,
+         "between lines 30 and 37");
+      }();
+   });
+   var cellPaddingRatio = 10;
+   var cellPadding = F2(function (_v4,
+   _v5) {
+      return function () {
+         switch (_v5.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v4.ctor)
+                 {case "_Tuple2":
+                    return _v4._0 / (2 * ($Basics.toFloat(_v5._1) * (cellPaddingRatio + 1) + 1));}
+                 _U.badCase($moduleName,
+                 "on line 18, column 3 to 61");
+              }();}
+         _U.badCase($moduleName,
+         "on line 18, column 3 to 61");
+      }();
+   });
+   var cellSize = function (padding) {
+      return cellPaddingRatio * 2 * padding;
+   };
+   var init = F2(function (_v12,
+   _v13) {
+      return function () {
+         switch (_v13.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v12.ctor)
+                 {case "_Tuple2":
+                    return function () {
+                         var padding = A2(cellPadding,
+                         {ctor: "_Tuple2"
+                         ,_0: _v12._0
+                         ,_1: _v12._1},
+                         {ctor: "_Tuple2"
+                         ,_0: _v13._0
+                         ,_1: _v13._1});
+                         var cell = cellSize(padding);
+                         return {_: {}
+                                ,cellPadding: padding
+                                ,cellSize: cell
+                                ,cols: _v13._1
+                                ,height: _v12._1
+                                ,rows: _v13._0
+                                ,width: _v12._0};
+                      }();}
+                 _U.badCase($moduleName,
+                 "between lines 46 and 56");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 46 and 56");
+      }();
+   });
+   var Model = F6(function (a,
+   b,
+   c,
+   d,
+   e,
+   f) {
+      return {_: {}
+             ,cellPadding: b
+             ,cellSize: a
+             ,cols: c
+             ,height: f
+             ,rows: d
+             ,width: e};
+   });
+   _elm.MatrixLayout.values = {_op: _op
+                              ,Model: Model
+                              ,cellPaddingRatio: cellPaddingRatio
+                              ,cellPadding: cellPadding
+                              ,cellSize: cellSize
+                              ,cellSizeWithPadding: cellSizeWithPadding
+                              ,cellPosition: cellPosition
+                              ,gridSize: gridSize
+                              ,init: init};
+   return _elm.MatrixLayout.values;
+};

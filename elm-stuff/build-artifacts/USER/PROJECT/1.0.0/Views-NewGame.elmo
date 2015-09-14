@@ -29,9 +29,10 @@ Elm.Views.NewGame.make = function (_elm) {
       return A3($Graphics$Collage.collage,
       140,
       50,
-      _L.fromArray([A4($Shapes.roundedRect,
-                   140,
-                   40,
+      _L.fromArray([A3($Shapes.roundedRect,
+                   {ctor: "_Tuple2"
+                   ,_0: 140
+                   ,_1: 40},
                    3,
                    color)
                    ,title]));

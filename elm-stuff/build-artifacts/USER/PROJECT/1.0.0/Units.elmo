@@ -1,0 +1,27 @@
+Elm.Units = Elm.Units || {};
+Elm.Units.make = function (_elm) {
+   "use strict";
+   _elm.Units = _elm.Units || {};
+   if (_elm.Units.values)
+   return _elm.Units.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Units",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var Down = {ctor: "Down"};
+   var Up = {ctor: "Up"};
+   var Right = {ctor: "Right"};
+   var Left = {ctor: "Left"};
+   _elm.Units.values = {_op: _op
+                       ,Left: Left
+                       ,Right: Right
+                       ,Up: Up
+                       ,Down: Down};
+   return _elm.Units.values;
+};

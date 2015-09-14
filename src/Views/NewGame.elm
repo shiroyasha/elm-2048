@@ -19,7 +19,7 @@ title =
 
 
 basicButton color =
-  collage 140 50 [Shapes.roundedRect 140 40 3 color, title]
+  collage 140 50 [Shapes.roundedRect (140, 40) 3 color, title]
 
 
 render: Signal.Mailbox () -> Element
