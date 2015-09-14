@@ -12,6 +12,7 @@ import Units exposing (..)
 type alias Model =
   { cells: Matrix.Matrix Cell.Model
   , layout : MatrixLayout.Model
+  , cellsToAdd: Int
   }
 
 
@@ -30,6 +31,7 @@ init size ((rows, cols) as matrixSize) =
   in
     { cells = Matrix.matrix rows cols cell
     , layout = layout
+    , cellsToAdd = 0
     }
 
 
@@ -46,6 +48,13 @@ addCell ((x, y) as matrixPosition) number model =
   in
     { model | cells <- Matrix.set x y cell model.cells }
 
+
+addCellToRandomPosition: Int -> Model -> Model
+addCellToRandomPosition number model =
+  let
+      model' = addCell (1, 1) number model
+  in
+    { model' | cellsToAdd <- model'.cellsToAdd - 1 }
 
 
 takeMergable : List Cell.Model -> List Cell.Model
@@ -143,19 +152,30 @@ isStationaty cell =
 isNotStationaty cell =
   cell.state /= Cell.Stationary
 
+scheduleCell model =
+  { model | cellsToAdd <- model.cellsToAdd + 1 }
+
 
 update : Action -> Model -> Model
 update action model =
   case action of
     Tick dt ->
-      { model | cells <- Matrix.map (Cell.update (Cell.Tick dt)) model.cells } |> merge
+      let
+        model' = { model | cells <- Matrix.map (Cell.update (Cell.Tick dt)) model.cells }
+        model'' = merge model'
+
+        model''' = if (isGridStationary model) && (model.cellsToAdd > 0)
+                      then addCellToRandomPosition 2 model''
+                      else model''
+      in
+         model'''
 
     NewCell (position, number) ->
       addCell position number model
 
     Move dir ->
       if isGridStationary model
-         then move dir model
+         then model |> move dir |> if dir /= Nowhere then scheduleCell else identity
          else model
 
 

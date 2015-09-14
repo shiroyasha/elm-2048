@@ -34,6 +34,11 @@ Elm.Grid.make = function (_elm) {
                                                      ,cells]));
       }();
    };
+   var scheduleCell = function (model) {
+      return _U.replace([["cellsToAdd"
+                         ,model.cellsToAdd + 1]],
+      model);
+   };
    var isNotStationaty = function (cell) {
       return !_U.eq(cell.state,
       $Cell.Stationary);
@@ -79,7 +84,7 @@ Elm.Grid.make = function (_elm) {
               A2(mergeAll,model,cells._1));
             case "[]": return model;}
          _U.badCase($moduleName,
-         "between lines 126 and 128");
+         "between lines 135 and 137");
       }();
    });
    var merge = function (model) {
@@ -117,7 +122,7 @@ Elm.Grid.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 63 and 68");
+         "between lines 72 and 77");
       }();
    };
    var takeMergable = function (list) {
@@ -140,7 +145,7 @@ Elm.Grid.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 53 and 58");
+         "between lines 62 and 67");
       }();
    };
    var groupCells = function (list) {
@@ -157,7 +162,7 @@ Elm.Grid.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 73 and 75");
+         "between lines 82 and 84");
       }();
    };
    var moveList = function (cells) {
@@ -213,7 +218,19 @@ Elm.Grid.make = function (_elm) {
                  model);
               }();}
          _U.badCase($moduleName,
-         "between lines 43 and 47");
+         "between lines 45 and 49");
+      }();
+   });
+   var addCellToRandomPosition = F2(function (number,
+   model) {
+      return function () {
+         var model$ = A3(addCell,
+         {ctor: "_Tuple2",_0: 1,_1: 1},
+         number,
+         model);
+         return _U.replace([["cellsToAdd"
+                            ,model$.cellsToAdd - 1]],
+         model$);
       }();
    });
    var update = F2(function (action,
@@ -221,9 +238,8 @@ Elm.Grid.make = function (_elm) {
       return function () {
          switch (action.ctor)
          {case "Move":
-            return isGridStationary(model) ? A2(move,
-              action._0,
-              model) : model;
+            return isGridStationary(model) ? (!_U.eq(action._0,
+              $Units.Nowhere) ? scheduleCell : $Basics.identity)(move(action._0)(model)) : model;
             case "NewCell":
             switch (action._0.ctor)
               {case "_Tuple2":
@@ -233,13 +249,21 @@ Elm.Grid.make = function (_elm) {
                    model);}
               break;
             case "Tick":
-            return merge(_U.replace([["cells"
-                                     ,A2($Matrix.map,
-                                     $Cell.update($Cell.Tick(action._0)),
-                                     model.cells)]],
-              model));}
+            return function () {
+                 var model$ = _U.replace([["cells"
+                                          ,A2($Matrix.map,
+                                          $Cell.update($Cell.Tick(action._0)),
+                                          model.cells)]],
+                 model);
+                 var model$$ = merge(model$);
+                 var model$$$ = isGridStationary(model) && _U.cmp(model.cellsToAdd,
+                 0) > 0 ? A2(addCellToRandomPosition,
+                 2,
+                 model$$) : model$$;
+                 return model$$$;
+              }();}
          _U.badCase($moduleName,
-         "between lines 149 and 159");
+         "between lines 161 and 179");
       }();
    });
    var Move = function (a) {
@@ -281,15 +305,19 @@ Elm.Grid.make = function (_elm) {
                         _v29._0,
                         _v29._1,
                         cell)
+                        ,cellsToAdd: 0
                         ,layout: layout};
               }();}
          _U.badCase($moduleName,
-         "between lines 20 and 33");
+         "between lines 21 and 35");
       }();
    });
-   var Model = F2(function (a,b) {
+   var Model = F3(function (a,
+   b,
+   c) {
       return {_: {}
              ,cells: a
+             ,cellsToAdd: c
              ,layout: b};
    });
    _elm.Grid.values = {_op: _op
@@ -299,6 +327,7 @@ Elm.Grid.make = function (_elm) {
                       ,NewCell: NewCell
                       ,Move: Move
                       ,addCell: addCell
+                      ,addCellToRandomPosition: addCellToRandomPosition
                       ,takeMergable: takeMergable
                       ,dropMergable: dropMergable
                       ,groupCells: groupCells
@@ -311,6 +340,7 @@ Elm.Grid.make = function (_elm) {
                       ,isGridStationary: isGridStationary
                       ,isStationaty: isStationaty
                       ,isNotStationaty: isNotStationaty
+                      ,scheduleCell: scheduleCell
                       ,update: update
                       ,view: view};
    return _elm.Grid.values;
