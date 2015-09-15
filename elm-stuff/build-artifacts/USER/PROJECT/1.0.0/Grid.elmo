@@ -11,7 +11,6 @@ Elm.Grid.make = function (_elm) {
    $moduleName = "Grid",
    $Basics = Elm.Basics.make(_elm),
    $Cell = Elm.Cell.make(_elm),
-   $Color = Elm.Color.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $List = Elm.List.make(_elm),
    $Matrix = Elm.Matrix.make(_elm),
@@ -26,18 +25,12 @@ Elm.Grid.make = function (_elm) {
       return $Graphics$Collage.group($List.map($Cell.view)($Matrix.flatten(model.cells)));
    };
    var viewBg = function (model) {
-      return A3($Shapes.roundedRect,
-      $MatrixLayout.gridSize(model.layout),
-      3,
-      A3($Color.rgb,187,173,160));
+      return $Shapes.gridBackground($MatrixLayout.gridSize(model.layout));
    };
    var viewCellBases = function (model) {
       return function () {
          var base = function (position) {
-            return $Graphics$Collage.move(position)(A3($Shapes.roundedSquare,
-            model.layout.cellSize,
-            3,
-            A3($Color.rgb,204,192,179)));
+            return $Graphics$Collage.move(position)($Shapes.cellBase(model.layout.cellSize));
          };
          var positions = $MatrixLayout.cellPositions(model.layout);
          return $Graphics$Collage.group(A2($List.map,

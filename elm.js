@@ -1229,94 +1229,8 @@ Elm.Cell.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Shapes = Elm.Shapes.make(_elm),
    $Signal = Elm.Signal.make(_elm),
-   $Text = Elm.Text.make(_elm),
    $Time = Elm.Time.make(_elm),
    $Units = Elm.Units.make(_elm);
-   var labelSize = F2(function (cellSize,
-   number) {
-      return _U.cmp(number,
-      100) < 0 ? cellSize / 2 : _U.cmp(number,
-      100) > 0 && _U.cmp(number,
-      1000) < 0 ? cellSize / 2.5 : _U.cmp(number,
-      1000) > 0 ? cellSize / 3 : _U.badIf($moduleName,
-      "between lines 145 and 147");
-   });
-   var textColor = function (number) {
-      return function () {
-         switch (number)
-         {case 2: return A3($Color.rgb,
-              120,
-              110,
-              101);
-            case 4: return A3($Color.rgb,
-              120,
-              110,
-              101);}
-         return $Color.white;
-      }();
-   };
-   var label = F2(function (size,
-   number) {
-      return $Graphics$Collage.move({ctor: "_Tuple2"
-                                    ,_0: 0
-                                    ,_1: 7})($Graphics$Collage.text($Text.bold($Text.height(size)($Text.color(textColor(number))($Text.fromString(_U.cmp(number,
-      0) > 0 ? $Basics.toString(number) : ""))))));
-   });
-   var backgroungColor = function (number) {
-      return function () {
-         switch (number)
-         {case 0: return A3($Color.rgb,
-              204,
-              192,
-              179);
-            case 2: return A3($Color.rgb,
-              238,
-              228,
-              218);
-            case 4: return A3($Color.rgb,
-              236,
-              224,
-              200);
-            case 8: return A3($Color.rgb,
-              241,
-              176,
-              120);
-            case 16: return A3($Color.rgb,
-              235,
-              140,
-              82);
-            case 32: return A3($Color.rgb,
-              243,
-              123,
-              96);
-            case 64: return A3($Color.rgb,
-              233,
-              89,
-              55);
-            case 128: return A3($Color.rgb,
-              242,
-              216,
-              106);
-            case 256: return A3($Color.rgb,
-              231,
-              191,
-              41);
-            case 512: return A3($Color.rgb,
-              231,
-              191,
-              41);
-            case 1024: return A3($Color.rgb,
-              228,
-              183,
-              19);
-            case 2048: return A3($Color.rgb,
-              238,
-              195,
-              3);}
-         _U.badCase($moduleName,
-         "between lines 109 and 121");
-      }();
-   };
    var Substract = function (a) {
       return {ctor: "Substract"
              ,_0: a};
@@ -1338,20 +1252,9 @@ Elm.Cell.make = function (_elm) {
    var view = function (model) {
       return function () {
          var cell = !_U.eq(model.number,
-         0) ? function () {
-            var fgSize = A2(labelSize,
-            model.size,
-            model.number);
-            var fg = A2(label,
-            fgSize,
-            model.number);
-            var bg = A3($Shapes.roundedSquare,
-            model.size,
-            3,
-            backgroungColor(model.number));
-            return $Graphics$Collage.move(model.position)($Graphics$Collage.group(_L.fromArray([bg
-                                                                                               ,fg])));
-         }() : $Graphics$Collage.filled(A4($Color.rgba,
+         0) ? $Graphics$Collage.move(model.position)(A2($Shapes.cell,
+         model.size,
+         model.number)) : $Graphics$Collage.filled(A4($Color.rgba,
          0,
          0,
          0,
@@ -1359,21 +1262,21 @@ Elm.Cell.make = function (_elm) {
          100,
          100));
          return function () {
-            var _v2 = model.state;
-            switch (_v2.ctor)
+            var _v0 = model.state;
+            switch (_v0.ctor)
             {case "Appearing":
                return A2($Graphics$Collage.scale,
                  A2($Animation.animate,
-                 _v2._0,
+                 _v0._0,
                  appearingAnimation),
                  cell);
                case "Moving":
                return function () {
                     var progress = A2($Animation.animate,
-                    _v2._2,
+                    _v0._2,
                     moveAnimation);
-                    var diffX = ($Basics.fst(_v2._1) - $Basics.fst(model.position)) * progress;
-                    var diffY = ($Basics.snd(_v2._1) - $Basics.snd(model.position)) * progress;
+                    var diffX = ($Basics.fst(_v0._1) - $Basics.fst(model.position)) * progress;
+                    var diffY = ($Basics.snd(_v0._1) - $Basics.snd(model.position)) * progress;
                     return $Graphics$Collage.move({ctor: "_Tuple2"
                                                   ,_0: diffX
                                                   ,_1: diffY})(cell);
@@ -1382,7 +1285,7 @@ Elm.Cell.make = function (_elm) {
                case "WaitingForMerge":
                return cell;}
             _U.badCase($moduleName,
-            "between lines 164 and 182");
+            "between lines 114 and 132");
          }();
       }();
    };
@@ -1463,18 +1366,18 @@ Elm.Cell.make = function (_elm) {
    var tick = F2(function (dt,
    model) {
       return function () {
-         var _v8 = model.state;
-         switch (_v8.ctor)
+         var _v6 = model.state;
+         switch (_v6.ctor)
          {case "Appearing":
             return A3(appeatTick,
-              _v8._0,
+              _v6._0,
               dt,
               model);
             case "Moving":
             return A5(moveTick,
-              _v8._0,
-              _v8._1,
-              _v8._2,
+              _v6._0,
+              _v6._1,
+              _v6._2,
               dt,
               model);}
          return model;
@@ -1505,8 +1408,8 @@ Elm.Cell.make = function (_elm) {
               model);
             case "Substract":
             return function () {
-                 var _v19 = model.state;
-                 switch (_v19.ctor)
+                 var _v17 = model.state;
+                 switch (_v17.ctor)
                  {case "Appearing":
                     return _U.replace([["number"
                                        ,model.number - action._0]],
@@ -1521,7 +1424,7 @@ Elm.Cell.make = function (_elm) {
               action._0,
               model);}
          _U.badCase($moduleName,
-         "between lines 85 and 102");
+         "between lines 84 and 101");
       }();
    });
    _elm.Cell.values = {_op: _op
@@ -1542,10 +1445,6 @@ Elm.Cell.make = function (_elm) {
                       ,Add: Add
                       ,Substract: Substract
                       ,update: update
-                      ,backgroungColor: backgroungColor
-                      ,textColor: textColor
-                      ,label: label
-                      ,labelSize: labelSize
                       ,view: view};
    return _elm.Cell.values;
 };
@@ -4329,7 +4228,6 @@ Elm.Grid.make = function (_elm) {
    $moduleName = "Grid",
    $Basics = Elm.Basics.make(_elm),
    $Cell = Elm.Cell.make(_elm),
-   $Color = Elm.Color.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $List = Elm.List.make(_elm),
    $Matrix = Elm.Matrix.make(_elm),
@@ -4344,18 +4242,12 @@ Elm.Grid.make = function (_elm) {
       return $Graphics$Collage.group($List.map($Cell.view)($Matrix.flatten(model.cells)));
    };
    var viewBg = function (model) {
-      return A3($Shapes.roundedRect,
-      $MatrixLayout.gridSize(model.layout),
-      3,
-      A3($Color.rgb,187,173,160));
+      return $Shapes.gridBackground($MatrixLayout.gridSize(model.layout));
    };
    var viewCellBases = function (model) {
       return function () {
          var base = function (position) {
-            return $Graphics$Collage.move(position)(A3($Shapes.roundedSquare,
-            model.layout.cellSize,
-            3,
-            A3($Color.rgb,204,192,179)));
+            return $Graphics$Collage.move(position)($Shapes.cellBase(model.layout.cellSize));
          };
          var positions = $MatrixLayout.cellPositions(model.layout);
          return $Graphics$Collage.group(A2($List.map,
@@ -16630,6 +16522,7 @@ Elm.Shapes.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm),
    $Units = Elm.Units.make(_elm);
    var roundedRect = F3(function (_v0,
    radius,
@@ -16702,7 +16595,7 @@ Elm.Shapes.make = function (_elm) {
                                            ,borders]))));
               }();}
          _U.badCase($moduleName,
-         "between lines 13 and 45");
+         "between lines 79 and 111");
       }();
    });
    var roundedSquare = F3(function (size,
@@ -16715,7 +16608,125 @@ Elm.Shapes.make = function (_elm) {
       radius,
       color);
    });
+   var labelSize = F2(function (cellSize,
+   number) {
+      return _U.cmp(number,
+      100) < 0 ? cellSize / 2 : _U.cmp(number,
+      100) > 0 && _U.cmp(number,
+      1000) < 0 ? cellSize / 2.5 : _U.cmp(number,
+      1000) > 0 ? cellSize / 3 : _U.badIf($moduleName,
+      "between lines 68 and 70");
+   });
+   var textColor = function (number) {
+      return function () {
+         switch (number)
+         {case 2: return A3($Color.rgb,
+              120,
+              110,
+              101);
+            case 4: return A3($Color.rgb,
+              120,
+              110,
+              101);}
+         return $Color.white;
+      }();
+   };
+   var label = F2(function (size,
+   number) {
+      return $Graphics$Collage.move({ctor: "_Tuple2"
+                                    ,_0: 0
+                                    ,_1: 7})($Graphics$Collage.text($Text.bold($Text.height(size)($Text.color(textColor(number))($Text.fromString(_U.cmp(number,
+      0) > 0 ? $Basics.toString(number) : ""))))));
+   });
+   var backgroungColor = function (number) {
+      return function () {
+         switch (number)
+         {case 0: return A3($Color.rgb,
+              204,
+              192,
+              179);
+            case 2: return A3($Color.rgb,
+              238,
+              228,
+              218);
+            case 4: return A3($Color.rgb,
+              236,
+              224,
+              200);
+            case 8: return A3($Color.rgb,
+              241,
+              176,
+              120);
+            case 16: return A3($Color.rgb,
+              235,
+              140,
+              82);
+            case 32: return A3($Color.rgb,
+              243,
+              123,
+              96);
+            case 64: return A3($Color.rgb,
+              233,
+              89,
+              55);
+            case 128: return A3($Color.rgb,
+              242,
+              216,
+              106);
+            case 256: return A3($Color.rgb,
+              231,
+              191,
+              41);
+            case 512: return A3($Color.rgb,
+              231,
+              191,
+              41);
+            case 1024: return A3($Color.rgb,
+              228,
+              183,
+              19);
+            case 2048: return A3($Color.rgb,
+              238,
+              195,
+              3);}
+         _U.badCase($moduleName,
+         "between lines 32 and 44");
+      }();
+   };
+   var cell = F2(function (size,
+   number) {
+      return function () {
+         var fg = A2(label,
+         A2(labelSize,size,number),
+         number);
+         var bg = A3(roundedSquare,
+         size,
+         3,
+         backgroungColor(number));
+         return $Graphics$Collage.group(_L.fromArray([bg
+                                                     ,fg]));
+      }();
+   });
+   var cellBase = function (size) {
+      return A3(roundedSquare,
+      size,
+      3,
+      backgroungColor(0));
+   };
+   var gridBackground = function (size) {
+      return A3(roundedRect,
+      size,
+      3,
+      A3($Color.rgb,187,173,160));
+   };
    _elm.Shapes.values = {_op: _op
+                        ,gridBackground: gridBackground
+                        ,cellBase: cellBase
+                        ,cell: cell
+                        ,backgroungColor: backgroungColor
+                        ,textColor: textColor
+                        ,label: label
+                        ,labelSize: labelSize
                         ,roundedSquare: roundedSquare
                         ,roundedRect: roundedRect};
    return _elm.Shapes.values;

@@ -218,16 +218,13 @@ viewCellBases model =
   let
     positions = model.layout |> MatrixLayout.cellPositions
 
-    base position =
-      Shapes.roundedSquare model.layout.cellSize 3 (Color.rgb 204 192 179)
-      |> Graphics.Collage.move position
+    base position = Shapes.cellBase model.layout.cellSize |> Graphics.Collage.move position
   in
     group (List.map base positions)
 
 
 viewBg : Model -> Form
-viewBg model =
-  Shapes.roundedRect (MatrixLayout.gridSize model.layout) 3 (Color.rgb 187 173 160)
+viewBg model = Shapes.gridBackground (MatrixLayout.gridSize model.layout)
 
 
 viewCells : Model -> Form
