@@ -56,32 +56,42 @@ addCellToRandomPosition number model =
   in
     { model' | cellsToAdd <- model'.cellsToAdd - 1 }
 
+-- Grouping
 
-takeMergable : List Cell.Model -> List Cell.Model
-takeMergable list =
+takeWithZeroes: List Cell.Model -> List Cell.Model
+takeWithZeroes list =
+  case list of
+    [] -> []
+    x::xs -> if x.number == 0
+                then x :: (takeWithZeroes xs)
+                else [x]
+
+dropWithZeroes: List Cell.Model -> List Cell.Model
+dropWithZeroes list =
+  case list of
+    [] -> []
+    x::xs -> if x.number == 0
+                then dropWithZeroes xs
+                else xs
+
+
+groupWithZeroes: List Cell.Model -> List (List Cell.Model)
+groupWithZeroes list =
+  case list of
+    [] -> []
+    _ -> (takeWithZeroes list) :: (groupWithZeroes (dropWithZeroes list))
+
+
+groupPairs: List (List Cell.Model) -> List (List Cell.Model)
+groupPairs list =
   case list of
     [] -> []
     [x] -> [x]
-    x::y::xs -> if | x.number == 0        -> x :: takeMergable (y::xs)
-                   | x.number == y.number -> [x, y]
-                   | otherwise -> [x]
+    x::y::xs -> if (x |> List.map .number |> List.sum) == (y |> List.map .number |> List.sum)
+                   then (List.concat [x, y]) :: (groupPairs xs)
+                   else x :: (groupPairs (y::xs))
 
-
-dropMergable : List Cell.Model -> List Cell.Model
-dropMergable list =
-  case list of
-    [] -> []
-    [x] -> []
-    x::y::xs -> if | x.number == 0        -> dropMergable (y::xs)
-                   | x.number == y.number -> xs
-                   | otherwise            -> y::xs
-
-
-groupCells : List Cell.Model -> List (List Cell.Model)
-groupCells list =
-  case list of
-   [] -> []
-   x::xs -> (takeMergable (x::xs)) :: (groupCells (dropMergable (x::xs)))
+-- Grouping
 
 
 moveCellsToCell : List Cell.Model -> Cell.Model -> List Cell.Model
@@ -94,7 +104,7 @@ moveCellsToCell cells cell =
 
 moveList : List Cell.Model -> List Cell.Model
 moveList cells =
-  List.map2 moveCellsToCell (groupCells cells) cells |> List.concat
+  List.map2 moveCellsToCell (cells |> groupWithZeroes |> groupPairs) cells |> List.concat
 
 
 move dir model =
