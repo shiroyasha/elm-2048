@@ -24,6 +24,8 @@ cell size number =
   in
      group [bg, fg]
 
+emptyCell : Form
+emptyCell = rect 100 100 |> filled (Color.rgba 0 0 0 0)
 
 -- Private
 

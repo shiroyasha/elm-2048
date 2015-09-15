@@ -89,7 +89,7 @@ Elm.Shapes.make = function (_elm) {
                                            ,borders]))));
               }();}
          _U.badCase($moduleName,
-         "between lines 79 and 111");
+         "between lines 81 and 113");
       }();
    });
    var roundedSquare = F3(function (size,
@@ -109,7 +109,7 @@ Elm.Shapes.make = function (_elm) {
       100) > 0 && _U.cmp(number,
       1000) < 0 ? cellSize / 2.5 : _U.cmp(number,
       1000) > 0 ? cellSize / 3 : _U.badIf($moduleName,
-      "between lines 68 and 70");
+      "between lines 70 and 72");
    });
    var textColor = function (number) {
       return function () {
@@ -184,9 +184,16 @@ Elm.Shapes.make = function (_elm) {
               195,
               3);}
          _U.badCase($moduleName,
-         "between lines 32 and 44");
+         "between lines 34 and 46");
       }();
    };
+   var emptyCell = $Graphics$Collage.filled(A4($Color.rgba,
+   0,
+   0,
+   0,
+   0))(A2($Graphics$Collage.rect,
+   100,
+   100));
    var cell = F2(function (size,
    number) {
       return function () {
@@ -217,6 +224,7 @@ Elm.Shapes.make = function (_elm) {
                         ,gridBackground: gridBackground
                         ,cellBase: cellBase
                         ,cell: cell
+                        ,emptyCell: emptyCell
                         ,backgroungColor: backgroungColor
                         ,textColor: textColor
                         ,label: label

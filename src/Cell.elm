@@ -1,12 +1,11 @@
 module Cell where
 
-import Shapes
 import Graphics.Collage as Collage exposing (..)
-import Animation
-import Easing
-import Time
 import Units exposing (..)
-import Color
+
+import Shapes
+import CellAnimations
+import Time
 
 -- MODEL
 
@@ -34,39 +33,25 @@ init position matrixPosition size number =
   , state = if number == 0 then Stationary else Appearing 0.0
   }
 
-
-appearingAnimation
-   = Animation.animation 0
-  |> Animation.from 0
-  |> Animation.to 1
-  |> Animation.duration (Time.second/10)
-  |> Animation.ease (Easing.easeOutCirc)
-
-moveAnimation
-   = Animation.animation 0
-  |> Animation.from 0
-  |> Animation.to 1
-  |> Animation.duration (Time.second/5)
-  |> Animation.ease (Easing.easeOutCirc)
-
-
 -- UPDATE
 
 moveTick matrixPosition toPosition time dt model =
   let
      time' = time + dt
   in
-     if Animation.isDone time' moveAnimation
+     if CellAnimations.moveFinished time'
         then { model | state <- WaitingForMerge matrixPosition }
         else { model | state <- Moving matrixPosition toPosition time' }
+
 
 appeatTick time dt model =
   let
      time' = time + dt
   in
-     if Animation.isDone time' appearingAnimation
+     if CellAnimations.appearFinished time'
         then { model | state <- Stationary }
         else { model | state <- Appearing time' }
+
 
 tick dt model = case model.state of
   Appearing time ->
@@ -109,7 +94,7 @@ view model =
   let
       cell = if model.number /= 0
                 then Shapes.cell model.size model.number |> Collage.move model.position
-                else rect 100 100 |> filled (Color.rgba 0 0 0 0)
+                else Shapes.emptyCell
   in
      case model.state of
        Stationary ->
@@ -120,7 +105,7 @@ view model =
 
        Moving matrixPosition toPosition time ->
          let
-           progress = Animation.animate time moveAnimation
+           progress = CellAnimations.moveValue time
 
            diffX = ((fst toPosition) - (fst model.position)) * progress
            diffY = ((snd toPosition) - (snd model.position)) * progress
@@ -129,4 +114,4 @@ view model =
            cell |> Collage.move (diffX, diffY)
 
        Appearing time ->
-         scale (Animation.animate time appearingAnimation) cell
+         scale (CellAnimations.appearValue time) cell

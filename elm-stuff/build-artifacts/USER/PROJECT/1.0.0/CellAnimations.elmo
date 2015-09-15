@@ -1,0 +1,50 @@
+Elm.CellAnimations = Elm.CellAnimations || {};
+Elm.CellAnimations.make = function (_elm) {
+   "use strict";
+   _elm.CellAnimations = _elm.CellAnimations || {};
+   if (_elm.CellAnimations.values)
+   return _elm.CellAnimations.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "CellAnimations",
+   $Animation = Elm.Animation.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Easing = Elm.Easing.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var move = $Animation.ease($Easing.easeOutCirc)($Animation.duration($Time.second / 5)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
+   var moveFinished = function (time) {
+      return A2($Animation.isDone,
+      time,
+      move);
+   };
+   var appear = $Animation.ease($Easing.easeOutCirc)($Animation.duration($Time.second / 10)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
+   var appearFinished = function (time) {
+      return A2($Animation.isDone,
+      time,
+      appear);
+   };
+   var appearValue = function (time) {
+      return A2($Animation.animate,
+      time,
+      appear);
+   };
+   var moveValue = function (time) {
+      return A2($Animation.animate,
+      time,
+      appear);
+   };
+   _elm.CellAnimations.values = {_op: _op
+                                ,appear: appear
+                                ,move: move
+                                ,appearFinished: appearFinished
+                                ,moveFinished: moveFinished
+                                ,appearValue: appearValue
+                                ,moveValue: moveValue};
+   return _elm.CellAnimations.values;
+};

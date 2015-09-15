@@ -1219,10 +1219,8 @@ Elm.Cell.make = function (_elm) {
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
    $moduleName = "Cell",
-   $Animation = Elm.Animation.make(_elm),
    $Basics = Elm.Basics.make(_elm),
-   $Color = Elm.Color.make(_elm),
-   $Easing = Elm.Easing.make(_elm),
+   $CellAnimations = Elm.CellAnimations.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
@@ -1231,6 +1229,36 @@ Elm.Cell.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $Time = Elm.Time.make(_elm),
    $Units = Elm.Units.make(_elm);
+   var view = function (model) {
+      return function () {
+         var cell = !_U.eq(model.number,
+         0) ? $Graphics$Collage.move(model.position)(A2($Shapes.cell,
+         model.size,
+         model.number)) : $Shapes.emptyCell;
+         return function () {
+            var _v0 = model.state;
+            switch (_v0.ctor)
+            {case "Appearing":
+               return A2($Graphics$Collage.scale,
+                 $CellAnimations.appearValue(_v0._0),
+                 cell);
+               case "Moving":
+               return function () {
+                    var progress = $CellAnimations.moveValue(_v0._2);
+                    var diffX = ($Basics.fst(_v0._1) - $Basics.fst(model.position)) * progress;
+                    var diffY = ($Basics.snd(_v0._1) - $Basics.snd(model.position)) * progress;
+                    return $Graphics$Collage.move({ctor: "_Tuple2"
+                                                  ,_0: diffX
+                                                  ,_1: diffY})(cell);
+                 }();
+               case "Stationary": return cell;
+               case "WaitingForMerge":
+               return cell;}
+            _U.badCase($moduleName,
+            "between lines 99 and 117");
+         }();
+      }();
+   };
    var Substract = function (a) {
       return {ctor: "Substract"
              ,_0: a};
@@ -1247,48 +1275,6 @@ Elm.Cell.make = function (_elm) {
              ,_0: a
              ,_1: b};
    });
-   var moveAnimation = $Animation.ease($Easing.easeOutCirc)($Animation.duration($Time.second / 5)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
-   var appearingAnimation = $Animation.ease($Easing.easeOutCirc)($Animation.duration($Time.second / 10)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
-   var view = function (model) {
-      return function () {
-         var cell = !_U.eq(model.number,
-         0) ? $Graphics$Collage.move(model.position)(A2($Shapes.cell,
-         model.size,
-         model.number)) : $Graphics$Collage.filled(A4($Color.rgba,
-         0,
-         0,
-         0,
-         0))(A2($Graphics$Collage.rect,
-         100,
-         100));
-         return function () {
-            var _v0 = model.state;
-            switch (_v0.ctor)
-            {case "Appearing":
-               return A2($Graphics$Collage.scale,
-                 A2($Animation.animate,
-                 _v0._0,
-                 appearingAnimation),
-                 cell);
-               case "Moving":
-               return function () {
-                    var progress = A2($Animation.animate,
-                    _v0._2,
-                    moveAnimation);
-                    var diffX = ($Basics.fst(_v0._1) - $Basics.fst(model.position)) * progress;
-                    var diffY = ($Basics.snd(_v0._1) - $Basics.snd(model.position)) * progress;
-                    return $Graphics$Collage.move({ctor: "_Tuple2"
-                                                  ,_0: diffX
-                                                  ,_1: diffY})(cell);
-                 }();
-               case "Stationary": return cell;
-               case "WaitingForMerge":
-               return cell;}
-            _U.badCase($moduleName,
-            "between lines 114 and 132");
-         }();
-      }();
-   };
    var Model = F5(function (a,
    b,
    c,
@@ -1327,10 +1313,8 @@ Elm.Cell.make = function (_elm) {
    model) {
       return function () {
          var time$ = time + dt;
-         return A2($Animation.isDone,
-         time$,
-         appearingAnimation) ? _U.replace([["state"
-                                           ,Stationary]],
+         return $CellAnimations.appearFinished(time$) ? _U.replace([["state"
+                                                                    ,Stationary]],
          model) : _U.replace([["state"
                               ,Appearing(time$)]],
          model);
@@ -1351,10 +1335,8 @@ Elm.Cell.make = function (_elm) {
    model) {
       return function () {
          var time$ = time + dt;
-         return A2($Animation.isDone,
-         time$,
-         moveAnimation) ? _U.replace([["state"
-                                      ,WaitingForMerge(matrixPosition)]],
+         return $CellAnimations.moveFinished(time$) ? _U.replace([["state"
+                                                                  ,WaitingForMerge(matrixPosition)]],
          model) : _U.replace([["state"
                               ,A3(Moving,
                               matrixPosition,
@@ -1424,7 +1406,7 @@ Elm.Cell.make = function (_elm) {
               action._0,
               model);}
          _U.badCase($moduleName,
-         "between lines 84 and 101");
+         "between lines 69 and 86");
       }();
    });
    _elm.Cell.values = {_op: _op
@@ -1434,8 +1416,6 @@ Elm.Cell.make = function (_elm) {
                       ,WaitingForMerge: WaitingForMerge
                       ,Model: Model
                       ,init: init
-                      ,appearingAnimation: appearingAnimation
-                      ,moveAnimation: moveAnimation
                       ,moveTick: moveTick
                       ,appeatTick: appeatTick
                       ,tick: tick
@@ -1447,6 +1427,56 @@ Elm.Cell.make = function (_elm) {
                       ,update: update
                       ,view: view};
    return _elm.Cell.values;
+};
+Elm.CellAnimations = Elm.CellAnimations || {};
+Elm.CellAnimations.make = function (_elm) {
+   "use strict";
+   _elm.CellAnimations = _elm.CellAnimations || {};
+   if (_elm.CellAnimations.values)
+   return _elm.CellAnimations.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "CellAnimations",
+   $Animation = Elm.Animation.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Easing = Elm.Easing.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var move = $Animation.ease($Easing.easeOutCirc)($Animation.duration($Time.second / 5)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
+   var moveFinished = function (time) {
+      return A2($Animation.isDone,
+      time,
+      move);
+   };
+   var appear = $Animation.ease($Easing.easeOutCirc)($Animation.duration($Time.second / 10)($Animation.to(1)($Animation.from(0)($Animation.animation(0)))));
+   var appearFinished = function (time) {
+      return A2($Animation.isDone,
+      time,
+      appear);
+   };
+   var appearValue = function (time) {
+      return A2($Animation.animate,
+      time,
+      appear);
+   };
+   var moveValue = function (time) {
+      return A2($Animation.animate,
+      time,
+      appear);
+   };
+   _elm.CellAnimations.values = {_op: _op
+                                ,appear: appear
+                                ,move: move
+                                ,appearFinished: appearFinished
+                                ,moveFinished: moveFinished
+                                ,appearValue: appearValue
+                                ,moveValue: moveValue};
+   return _elm.CellAnimations.values;
 };
 Elm.Char = Elm.Char || {};
 Elm.Char.make = function (_elm) {
@@ -16595,7 +16625,7 @@ Elm.Shapes.make = function (_elm) {
                                            ,borders]))));
               }();}
          _U.badCase($moduleName,
-         "between lines 79 and 111");
+         "between lines 81 and 113");
       }();
    });
    var roundedSquare = F3(function (size,
@@ -16615,7 +16645,7 @@ Elm.Shapes.make = function (_elm) {
       100) > 0 && _U.cmp(number,
       1000) < 0 ? cellSize / 2.5 : _U.cmp(number,
       1000) > 0 ? cellSize / 3 : _U.badIf($moduleName,
-      "between lines 68 and 70");
+      "between lines 70 and 72");
    });
    var textColor = function (number) {
       return function () {
@@ -16690,9 +16720,16 @@ Elm.Shapes.make = function (_elm) {
               195,
               3);}
          _U.badCase($moduleName,
-         "between lines 32 and 44");
+         "between lines 34 and 46");
       }();
    };
+   var emptyCell = $Graphics$Collage.filled(A4($Color.rgba,
+   0,
+   0,
+   0,
+   0))(A2($Graphics$Collage.rect,
+   100,
+   100));
    var cell = F2(function (size,
    number) {
       return function () {
@@ -16723,6 +16760,7 @@ Elm.Shapes.make = function (_elm) {
                         ,gridBackground: gridBackground
                         ,cellBase: cellBase
                         ,cell: cell
+                        ,emptyCell: emptyCell
                         ,backgroungColor: backgroungColor
                         ,textColor: textColor
                         ,label: label
