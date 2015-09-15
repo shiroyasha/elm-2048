@@ -1,6 +1,7 @@
 module MatrixLayout where
 
 import Units exposing (..)
+import Matrix
 
 type alias Model =
   { cellSize : Float
@@ -35,6 +36,14 @@ cellPosition model (x, y) =
       y'' = model.cellPadding + (cellSizeWithPadding model) * (y' + 1/2) - model.height/2
   in
      (x'', y'')
+
+
+cellPositions : Model -> List Position
+cellPositions model =
+  let
+      matrixPositions = Matrix.matrix model.rows model.cols (\x y -> (x, y)) |> Matrix.flatten
+  in
+    List.map (cellPosition model) matrixPositions
 
 
 gridSize : Model -> Size

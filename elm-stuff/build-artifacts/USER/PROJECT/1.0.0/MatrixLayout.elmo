@@ -11,6 +11,7 @@ Elm.MatrixLayout.make = function (_elm) {
    $moduleName = "MatrixLayout",
    $Basics = Elm.Basics.make(_elm),
    $List = Elm.List.make(_elm),
+   $Matrix = Elm.Matrix.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
@@ -38,9 +39,24 @@ Elm.MatrixLayout.make = function (_elm) {
                         ,_1: y$$};
               }();}
          _U.badCase($moduleName,
-         "between lines 30 and 37");
+         "between lines 31 and 38");
       }();
    });
+   var cellPositions = function (model) {
+      return function () {
+         var matrixPositions = $Matrix.flatten(A3($Matrix.matrix,
+         model.rows,
+         model.cols,
+         F2(function (x,y) {
+            return {ctor: "_Tuple2"
+                   ,_0: x
+                   ,_1: y};
+         })));
+         return A2($List.map,
+         cellPosition(model),
+         matrixPositions);
+      }();
+   };
    var cellPaddingRatio = 10;
    var cellPadding = F2(function (_v4,
    _v5) {
@@ -52,10 +68,10 @@ Elm.MatrixLayout.make = function (_elm) {
                  {case "_Tuple2":
                     return _v4._0 / (2 * ($Basics.toFloat(_v5._1) * (cellPaddingRatio + 1) + 1));}
                  _U.badCase($moduleName,
-                 "on line 18, column 3 to 61");
+                 "on line 19, column 3 to 61");
               }();}
          _U.badCase($moduleName,
-         "on line 18, column 3 to 61");
+         "on line 19, column 3 to 61");
       }();
    });
    var cellSize = function (padding) {
@@ -87,10 +103,10 @@ Elm.MatrixLayout.make = function (_elm) {
                                 ,width: _v12._0};
                       }();}
                  _U.badCase($moduleName,
-                 "between lines 46 and 56");
+                 "between lines 55 and 65");
               }();}
          _U.badCase($moduleName,
-         "between lines 46 and 56");
+         "between lines 55 and 65");
       }();
    });
    var Model = F6(function (a,
@@ -114,6 +130,7 @@ Elm.MatrixLayout.make = function (_elm) {
                               ,cellSize: cellSize
                               ,cellSizeWithPadding: cellSizeWithPadding
                               ,cellPosition: cellPosition
+                              ,cellPositions: cellPositions
                               ,gridSize: gridSize
                               ,init: init};
    return _elm.MatrixLayout.values;

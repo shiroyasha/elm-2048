@@ -213,12 +213,28 @@ update action model =
 
 -- VIEW
 
+viewCellBases : Model -> Form
+viewCellBases model =
+  let
+    positions = model.layout |> MatrixLayout.cellPositions
+
+    base position =
+      Shapes.roundedSquare model.layout.cellSize 3 (Color.rgb 204 192 179)
+      |> Graphics.Collage.move position
+  in
+    group (List.map base positions)
+
+
+viewBg : Model -> Form
+viewBg model =
+  Shapes.roundedRect (MatrixLayout.gridSize model.layout) 3 (Color.rgb 187 173 160)
+
+
+viewCells : Model -> Form
+viewCells model =
+  model.cells |> Matrix.flatten |> List.map Cell.view |> group
+
+
 view : Model -> Form
 view model =
-  let
-      bg = Shapes.roundedRect (MatrixLayout.gridSize model.layout) 3 (Color.rgb 187 173 160)
-
-      bases = model.cells |> Matrix.flatten |> List.map Cell.viewBase |> group
-      cells = model.cells |> Matrix.flatten |> List.map Cell.view |> group
-  in
-     group [bg, bases, cells]
+  group [viewBg model, viewCellBases model, viewCells model]

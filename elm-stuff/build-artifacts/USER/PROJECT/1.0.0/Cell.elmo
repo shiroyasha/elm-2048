@@ -107,12 +107,6 @@ Elm.Cell.make = function (_elm) {
          "between lines 109 and 121");
       }();
    };
-   var viewBase = function (model) {
-      return $Graphics$Collage.move(model.position)(A3($Shapes.roundedSquare,
-      model.size,
-      3,
-      backgroungColor(0)));
-   };
    var Substract = function (a) {
       return {ctor: "Substract"
              ,_0: a};
@@ -178,7 +172,7 @@ Elm.Cell.make = function (_elm) {
                case "WaitingForMerge":
                return cell;}
             _U.badCase($moduleName,
-            "between lines 168 and 186");
+            "between lines 164 and 182");
          }();
       }();
    };
@@ -342,7 +336,6 @@ Elm.Cell.make = function (_elm) {
                       ,textColor: textColor
                       ,label: label
                       ,labelSize: labelSize
-                      ,viewBase: viewBase
                       ,view: view};
    return _elm.Cell.values;
 };

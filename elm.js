@@ -1317,12 +1317,6 @@ Elm.Cell.make = function (_elm) {
          "between lines 109 and 121");
       }();
    };
-   var viewBase = function (model) {
-      return $Graphics$Collage.move(model.position)(A3($Shapes.roundedSquare,
-      model.size,
-      3,
-      backgroungColor(0)));
-   };
    var Substract = function (a) {
       return {ctor: "Substract"
              ,_0: a};
@@ -1388,7 +1382,7 @@ Elm.Cell.make = function (_elm) {
                case "WaitingForMerge":
                return cell;}
             _U.badCase($moduleName,
-            "between lines 168 and 186");
+            "between lines 164 and 182");
          }();
       }();
    };
@@ -1552,7 +1546,6 @@ Elm.Cell.make = function (_elm) {
                       ,textColor: textColor
                       ,label: label
                       ,labelSize: labelSize
-                      ,viewBase: viewBase
                       ,view: view};
    return _elm.Cell.values;
 };
@@ -4347,18 +4340,33 @@ Elm.Grid.make = function (_elm) {
    $Shapes = Elm.Shapes.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Units = Elm.Units.make(_elm);
-   var view = function (model) {
+   var viewCells = function (model) {
+      return $Graphics$Collage.group($List.map($Cell.view)($Matrix.flatten(model.cells)));
+   };
+   var viewBg = function (model) {
+      return A3($Shapes.roundedRect,
+      $MatrixLayout.gridSize(model.layout),
+      3,
+      A3($Color.rgb,187,173,160));
+   };
+   var viewCellBases = function (model) {
       return function () {
-         var cells = $Graphics$Collage.group($List.map($Cell.view)($Matrix.flatten(model.cells)));
-         var bases = $Graphics$Collage.group($List.map($Cell.viewBase)($Matrix.flatten(model.cells)));
-         var bg = A3($Shapes.roundedRect,
-         $MatrixLayout.gridSize(model.layout),
-         3,
-         A3($Color.rgb,187,173,160));
-         return $Graphics$Collage.group(_L.fromArray([bg
-                                                     ,bases
-                                                     ,cells]));
+         var base = function (position) {
+            return $Graphics$Collage.move(position)(A3($Shapes.roundedSquare,
+            model.layout.cellSize,
+            3,
+            A3($Color.rgb,204,192,179)));
+         };
+         var positions = $MatrixLayout.cellPositions(model.layout);
+         return $Graphics$Collage.group(A2($List.map,
+         base,
+         positions));
       }();
+   };
+   var view = function (model) {
+      return $Graphics$Collage.group(_L.fromArray([viewBg(model)
+                                                  ,viewCellBases(model)
+                                                  ,viewCells(model)]));
    };
    var scheduleCell = function (model) {
       return _U.replace([["cellsToAdd"
@@ -4711,6 +4719,9 @@ Elm.Grid.make = function (_elm) {
                       ,isNotStationaty: isNotStationaty
                       ,scheduleCell: scheduleCell
                       ,update: update
+                      ,viewCellBases: viewCellBases
+                      ,viewBg: viewBg
+                      ,viewCells: viewCells
                       ,view: view};
    return _elm.Grid.values;
 };
@@ -7257,6 +7268,7 @@ Elm.MatrixLayout.make = function (_elm) {
    $moduleName = "MatrixLayout",
    $Basics = Elm.Basics.make(_elm),
    $List = Elm.List.make(_elm),
+   $Matrix = Elm.Matrix.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
@@ -7284,9 +7296,24 @@ Elm.MatrixLayout.make = function (_elm) {
                         ,_1: y$$};
               }();}
          _U.badCase($moduleName,
-         "between lines 30 and 37");
+         "between lines 31 and 38");
       }();
    });
+   var cellPositions = function (model) {
+      return function () {
+         var matrixPositions = $Matrix.flatten(A3($Matrix.matrix,
+         model.rows,
+         model.cols,
+         F2(function (x,y) {
+            return {ctor: "_Tuple2"
+                   ,_0: x
+                   ,_1: y};
+         })));
+         return A2($List.map,
+         cellPosition(model),
+         matrixPositions);
+      }();
+   };
    var cellPaddingRatio = 10;
    var cellPadding = F2(function (_v4,
    _v5) {
@@ -7298,10 +7325,10 @@ Elm.MatrixLayout.make = function (_elm) {
                  {case "_Tuple2":
                     return _v4._0 / (2 * ($Basics.toFloat(_v5._1) * (cellPaddingRatio + 1) + 1));}
                  _U.badCase($moduleName,
-                 "on line 18, column 3 to 61");
+                 "on line 19, column 3 to 61");
               }();}
          _U.badCase($moduleName,
-         "on line 18, column 3 to 61");
+         "on line 19, column 3 to 61");
       }();
    });
    var cellSize = function (padding) {
@@ -7333,10 +7360,10 @@ Elm.MatrixLayout.make = function (_elm) {
                                 ,width: _v12._0};
                       }();}
                  _U.badCase($moduleName,
-                 "between lines 46 and 56");
+                 "between lines 55 and 65");
               }();}
          _U.badCase($moduleName,
-         "between lines 46 and 56");
+         "between lines 55 and 65");
       }();
    });
    var Model = F6(function (a,
@@ -7360,6 +7387,7 @@ Elm.MatrixLayout.make = function (_elm) {
                               ,cellSize: cellSize
                               ,cellSizeWithPadding: cellSizeWithPadding
                               ,cellPosition: cellPosition
+                              ,cellPositions: cellPositions
                               ,gridSize: gridSize
                               ,init: init};
    return _elm.MatrixLayout.values;

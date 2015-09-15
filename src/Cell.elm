@@ -146,10 +146,6 @@ labelSize cellSize number =
      | number > 100 && number < 1000 -> cellSize / 2.5
      | number > 1000  -> cellSize / 3
 
-viewBase : Model -> Form
-viewBase model =
-  Shapes.roundedSquare model.size 3 (backgroungColor 0) |> Collage.move model.position
-
 view : Model -> Form
 view model =
   let
