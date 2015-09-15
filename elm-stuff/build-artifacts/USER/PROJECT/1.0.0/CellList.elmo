@@ -1,0 +1,105 @@
+Elm.CellList = Elm.CellList || {};
+Elm.CellList.make = function (_elm) {
+   "use strict";
+   _elm.CellList = _elm.CellList || {};
+   if (_elm.CellList.values)
+   return _elm.CellList.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "CellList",
+   $Basics = Elm.Basics.make(_elm),
+   $Cell = Elm.Cell.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var dropWithZeroes = function (list) {
+      return function () {
+         switch (list.ctor)
+         {case "::":
+            return _U.eq(list._0.number,
+              0) ? dropWithZeroes(list._1) : list._1;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 47 and 51");
+      }();
+   };
+   var takeWithZeroes = function (list) {
+      return function () {
+         switch (list.ctor)
+         {case "::":
+            return _U.eq(list._0.number,
+              0) ? A2($List._op["::"],
+              list._0,
+              takeWithZeroes(list._1)) : _L.fromArray([list._0]);
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 39 and 43");
+      }();
+   };
+   var groupWithZeroes = function (list) {
+      return function () {
+         switch (list.ctor)
+         {case "[]":
+            return _L.fromArray([]);}
+         return A2($List._op["::"],
+         takeWithZeroes(list),
+         groupWithZeroes(dropWithZeroes(list)));
+      }();
+   };
+   var groupPairs = function (list) {
+      return function () {
+         switch (list.ctor)
+         {case "::":
+            switch (list._1.ctor)
+              {case "::":
+                 return _U.eq($List.sum($List.map(function (_) {
+                      return _.number;
+                   })(list._0)),
+                   $List.sum($List.map(function (_) {
+                      return _.number;
+                   })(list._1._0))) ? A2($List._op["::"],
+                   $List.concat(_L.fromArray([list._0
+                                             ,list._1._0])),
+                   groupPairs(list._1._1)) : A2($List._op["::"],
+                   list._0,
+                   groupPairs(A2($List._op["::"],
+                   list._1._0,
+                   list._1._1)));
+                 case "[]":
+                 return _L.fromArray([list._0]);}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 23 and 28");
+      }();
+   };
+   var squash = function (cells) {
+      return function () {
+         var moveCellsToCell = F2(function (cells,
+         cell) {
+            return function () {
+               var movement = A2($Cell.Move,
+               cell.matrixPosition,
+               cell.position);
+               return A2($List.map,
+               $Cell.update(movement),
+               cells);
+            }();
+         });
+         var groupedCells = groupPairs(groupWithZeroes(cells));
+         return $List.concat(A3($List.map2,
+         moveCellsToCell,
+         groupedCells,
+         cells));
+      }();
+   };
+   _elm.CellList.values = {_op: _op
+                          ,squash: squash};
+   return _elm.CellList.values;
+};

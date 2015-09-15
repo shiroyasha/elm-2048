@@ -1477,6 +1477,111 @@ Elm.CellAnimations.make = function (_elm) {
                                 ,moveValue: moveValue};
    return _elm.CellAnimations.values;
 };
+Elm.CellList = Elm.CellList || {};
+Elm.CellList.make = function (_elm) {
+   "use strict";
+   _elm.CellList = _elm.CellList || {};
+   if (_elm.CellList.values)
+   return _elm.CellList.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "CellList",
+   $Basics = Elm.Basics.make(_elm),
+   $Cell = Elm.Cell.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var dropWithZeroes = function (list) {
+      return function () {
+         switch (list.ctor)
+         {case "::":
+            return _U.eq(list._0.number,
+              0) ? dropWithZeroes(list._1) : list._1;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 47 and 51");
+      }();
+   };
+   var takeWithZeroes = function (list) {
+      return function () {
+         switch (list.ctor)
+         {case "::":
+            return _U.eq(list._0.number,
+              0) ? A2($List._op["::"],
+              list._0,
+              takeWithZeroes(list._1)) : _L.fromArray([list._0]);
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 39 and 43");
+      }();
+   };
+   var groupWithZeroes = function (list) {
+      return function () {
+         switch (list.ctor)
+         {case "[]":
+            return _L.fromArray([]);}
+         return A2($List._op["::"],
+         takeWithZeroes(list),
+         groupWithZeroes(dropWithZeroes(list)));
+      }();
+   };
+   var groupPairs = function (list) {
+      return function () {
+         switch (list.ctor)
+         {case "::":
+            switch (list._1.ctor)
+              {case "::":
+                 return _U.eq($List.sum($List.map(function (_) {
+                      return _.number;
+                   })(list._0)),
+                   $List.sum($List.map(function (_) {
+                      return _.number;
+                   })(list._1._0))) ? A2($List._op["::"],
+                   $List.concat(_L.fromArray([list._0
+                                             ,list._1._0])),
+                   groupPairs(list._1._1)) : A2($List._op["::"],
+                   list._0,
+                   groupPairs(A2($List._op["::"],
+                   list._1._0,
+                   list._1._1)));
+                 case "[]":
+                 return _L.fromArray([list._0]);}
+              break;
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 23 and 28");
+      }();
+   };
+   var squash = function (cells) {
+      return function () {
+         var moveCellsToCell = F2(function (cells,
+         cell) {
+            return function () {
+               var movement = A2($Cell.Move,
+               cell.matrixPosition,
+               cell.position);
+               return A2($List.map,
+               $Cell.update(movement),
+               cells);
+            }();
+         });
+         var groupedCells = groupPairs(groupWithZeroes(cells));
+         return $List.concat(A3($List.map2,
+         moveCellsToCell,
+         groupedCells,
+         cells));
+      }();
+   };
+   _elm.CellList.values = {_op: _op
+                          ,squash: squash};
+   return _elm.CellList.values;
+};
 Elm.Char = Elm.Char || {};
 Elm.Char.make = function (_elm) {
    "use strict";
@@ -4257,6 +4362,7 @@ Elm.Grid.make = function (_elm) {
    $moduleName = "Grid",
    $Basics = Elm.Basics.make(_elm),
    $Cell = Elm.Cell.make(_elm),
+   $CellList = Elm.CellList.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $List = Elm.List.make(_elm),
    $Matrix = Elm.Matrix.make(_elm),
@@ -4331,7 +4437,7 @@ Elm.Grid.make = function (_elm) {
               A2(mergeAll,model,cells._1));
             case "[]": return model;}
          _U.badCase($moduleName,
-         "between lines 169 and 171");
+         "between lines 118 and 120");
       }();
    });
    var merge = function (model) {
@@ -4339,106 +4445,25 @@ Elm.Grid.make = function (_elm) {
       model,
       $Matrix.flatten(model.cells));
    };
-   var moveCellsToCell = F2(function (cells,
-   cell) {
-      return function () {
-         var movement = A2($Cell.Move,
-         cell.matrixPosition,
-         cell.position);
-         return A2($List.map,
-         $Cell.update(movement),
-         cells);
-      }();
-   });
-   var groupPairs = function (list) {
-      return function () {
-         switch (list.ctor)
-         {case "::":
-            switch (list._1.ctor)
-              {case "::":
-                 return _U.eq($List.sum($List.map(function (_) {
-                      return _.number;
-                   })(list._0)),
-                   $List.sum($List.map(function (_) {
-                      return _.number;
-                   })(list._1._0))) ? A2($List._op["::"],
-                   $List.concat(_L.fromArray([list._0
-                                             ,list._1._0])),
-                   groupPairs(list._1._1)) : A2($List._op["::"],
-                   list._0,
-                   groupPairs(A2($List._op["::"],
-                   list._1._0,
-                   list._1._1)));
-                 case "[]":
-                 return _L.fromArray([list._0]);}
-              break;
-            case "[]":
-            return _L.fromArray([]);}
-         _U.badCase($moduleName,
-         "between lines 111 and 116");
-      }();
-   };
-   var dropWithZeroes = function (list) {
-      return function () {
-         switch (list.ctor)
-         {case "::":
-            return _U.eq(list._0.number,
-              0) ? dropWithZeroes(list._1) : list._1;
-            case "[]":
-            return _L.fromArray([]);}
-         _U.badCase($moduleName,
-         "between lines 95 and 99");
-      }();
-   };
-   var takeWithZeroes = function (list) {
-      return function () {
-         switch (list.ctor)
-         {case "::":
-            return _U.eq(list._0.number,
-              0) ? A2($List._op["::"],
-              list._0,
-              takeWithZeroes(list._1)) : _L.fromArray([list._0]);
-            case "[]":
-            return _L.fromArray([]);}
-         _U.badCase($moduleName,
-         "between lines 87 and 91");
-      }();
-   };
-   var groupWithZeroes = function (list) {
-      return function () {
-         switch (list.ctor)
-         {case "[]":
-            return _L.fromArray([]);}
-         return A2($List._op["::"],
-         takeWithZeroes(list),
-         groupWithZeroes(dropWithZeroes(list)));
-      }();
-   };
-   var moveList = function (cells) {
-      return $List.concat(A3($List.map2,
-      moveCellsToCell,
-      groupPairs(groupWithZeroes(cells)),
-      cells));
-   };
    var move = F2(function (dir,
    model) {
       return function () {
          switch (dir.ctor)
          {case "Down":
             return _U.replace([["cells"
-                               ,$Matrix.transpose($Matrix.fromList($List.map($List.reverse)($List.map(moveList)($List.map($List.reverse)($Matrix.toList($Matrix.transpose(model.cells)))))))]],
+                               ,$Matrix.transpose($Matrix.fromList($List.map($List.reverse)($List.map($CellList.squash)($List.map($List.reverse)($Matrix.toList($Matrix.transpose(model.cells)))))))]],
               model);
             case "Left":
             return _U.replace([["cells"
-                               ,$Matrix.fromList($List.map(moveList)($Matrix.toList(model.cells)))]],
+                               ,$Matrix.fromList($List.map($CellList.squash)($Matrix.toList(model.cells)))]],
               model);
             case "Right":
             return _U.replace([["cells"
-                               ,$Matrix.fromList($List.map($List.reverse)($List.map(moveList)($List.map($List.reverse)($Matrix.toList(model.cells)))))]],
+                               ,$Matrix.fromList($List.map($List.reverse)($List.map($CellList.squash)($List.map($List.reverse)($Matrix.toList(model.cells)))))]],
               model);
             case "Up":
             return _U.replace([["cells"
-                               ,$Matrix.transpose($Matrix.fromList($List.map(moveList)($Matrix.toList($Matrix.transpose(model.cells)))))]],
+                               ,$Matrix.transpose($Matrix.fromList($List.map($CellList.squash)($Matrix.toList($Matrix.transpose(model.cells)))))]],
               model);}
          return model;
       }();
@@ -4472,31 +4497,31 @@ Elm.Grid.make = function (_elm) {
          return _U.eq(cell.number,0);
       })($Matrix.flatten(model.cells));
    };
-   var addCell = F3(function (_v19,
+   var addCell = F3(function (_v7,
    number,
    model) {
       return function () {
-         switch (_v19.ctor)
+         switch (_v7.ctor)
          {case "_Tuple2":
             return function () {
                  var position = A2($MatrixLayout.cellPosition,
                  model.layout,
-                 _v19);
+                 _v7);
                  var cell = A4($Cell.init,
                  position,
-                 _v19,
+                 _v7,
                  model.layout.cellSize,
                  number);
                  return _U.replace([["cells"
                                     ,A4($Matrix.set,
-                                    _v19._0,
-                                    _v19._1,
+                                    _v7._0,
+                                    _v7._1,
                                     cell,
                                     model.cells)]],
                  model);
               }();}
          _U.badCase($moduleName,
-         "between lines 48 and 52");
+         "between lines 49 and 53");
       }();
    });
    var addCellToRandomPosition = F2(function (number,
@@ -4521,7 +4546,7 @@ Elm.Grid.make = function (_elm) {
                  model);
                case "Nothing": return model$;}
             _U.badCase($moduleName,
-            "between lines 75 and 79");
+            "between lines 76 and 80");
          }();
          return _U.replace([["cellsToAdd"
                             ,model$.cellsToAdd - 1]
@@ -4559,7 +4584,7 @@ Elm.Grid.make = function (_elm) {
                  return model$$$;
               }();}
          _U.badCase($moduleName,
-         "between lines 195 and 213");
+         "between lines 144 and 162");
       }();
    });
    var Move = function (a) {
@@ -4573,15 +4598,15 @@ Elm.Grid.make = function (_elm) {
       return {ctor: "Tick",_0: a};
    };
    var init = F3(function (size,
-   _v31,
+   _v19,
    seed) {
       return function () {
-         switch (_v31.ctor)
+         switch (_v19.ctor)
          {case "_Tuple2":
             return function () {
                  var layout = A2($MatrixLayout.init,
                  size,
-                 _v31);
+                 _v19);
                  var cell = F2(function (x,y) {
                     return function () {
                        var matrixPosition = {ctor: "_Tuple2"
@@ -4599,15 +4624,15 @@ Elm.Grid.make = function (_elm) {
                  });
                  return {_: {}
                         ,cells: A3($Matrix.matrix,
-                        _v31._0,
-                        _v31._1,
+                        _v19._0,
+                        _v19._1,
                         cell)
                         ,cellsToAdd: 0
                         ,layout: layout
                         ,seed: seed};
               }();}
          _U.badCase($moduleName,
-         "between lines 23 and 38");
+         "between lines 24 and 39");
       }();
    });
    var Model = F4(function (a,
@@ -4631,12 +4656,6 @@ Elm.Grid.make = function (_elm) {
                       ,numberedCells: numberedCells
                       ,nth: nth
                       ,addCellToRandomPosition: addCellToRandomPosition
-                      ,takeWithZeroes: takeWithZeroes
-                      ,dropWithZeroes: dropWithZeroes
-                      ,groupWithZeroes: groupWithZeroes
-                      ,groupPairs: groupPairs
-                      ,moveCellsToCell: moveCellsToCell
-                      ,moveList: moveList
                       ,move: move
                       ,mergeOne: mergeOne
                       ,mergeAll: mergeAll

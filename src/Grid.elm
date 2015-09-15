@@ -6,6 +6,7 @@ import Shapes
 import Color
 import MatrixLayout
 import Random
+import CellList
 
 import Graphics.Collage exposing (..)
 import Units exposing (..)
@@ -79,68 +80,16 @@ addCellToRandomPosition number model =
   in
     { model' | cellsToAdd <- model'.cellsToAdd - 1, seed <- seed' }
 
-
--- Grouping
-
-takeWithZeroes: List Cell.Model -> List Cell.Model
-takeWithZeroes list =
-  case list of
-    [] -> []
-    x::xs -> if x.number == 0
-                then x :: (takeWithZeroes xs)
-                else [x]
-
-dropWithZeroes: List Cell.Model -> List Cell.Model
-dropWithZeroes list =
-  case list of
-    [] -> []
-    x::xs -> if x.number == 0
-                then dropWithZeroes xs
-                else xs
-
-
-groupWithZeroes: List Cell.Model -> List (List Cell.Model)
-groupWithZeroes list =
-  case list of
-    [] -> []
-    _ -> (takeWithZeroes list) :: (groupWithZeroes (dropWithZeroes list))
-
-
-groupPairs: List (List Cell.Model) -> List (List Cell.Model)
-groupPairs list =
-  case list of
-    [] -> []
-    [x] -> [x]
-    x::y::xs -> if (x |> List.map .number |> List.sum) == (y |> List.map .number |> List.sum)
-                   then (List.concat [x, y]) :: (groupPairs xs)
-                   else x :: (groupPairs (y::xs))
-
--- Grouping
-
-
-moveCellsToCell : List Cell.Model -> Cell.Model -> List Cell.Model
-moveCellsToCell cells cell =
-  let
-    movement = Cell.Move cell.matrixPosition cell.position
-  in
-    List.map (Cell.update movement) cells
-
-
-moveList : List Cell.Model -> List Cell.Model
-moveList cells =
-  List.map2 moveCellsToCell (cells |> groupWithZeroes |> groupPairs) cells |> List.concat
-
-
 move dir model =
   case dir of
     Left ->
-      { model | cells <- model.cells |> Matrix.toList |> List.map moveList |> Matrix.fromList }
+      { model | cells <- model.cells |> Matrix.toList |> List.map CellList.squash |> Matrix.fromList }
     Right ->
-      { model | cells <- model.cells |> Matrix.toList |> List.map List.reverse |> List.map moveList |> List.map List.reverse |> Matrix.fromList }
+      { model | cells <- model.cells |> Matrix.toList |> List.map List.reverse |> List.map CellList.squash |> List.map List.reverse |> Matrix.fromList }
     Up ->
-      { model | cells <- model.cells |> Matrix.transpose |> Matrix.toList |> List.map moveList |> Matrix.fromList |> Matrix.transpose }
+      { model | cells <- model.cells |> Matrix.transpose |> Matrix.toList |> List.map CellList.squash |> Matrix.fromList |> Matrix.transpose }
     Down ->
-      { model | cells <- model.cells |> Matrix.transpose |> Matrix.toList |> List.map List.reverse |> List.map moveList |> List.map List.reverse |> Matrix.fromList |> Matrix.transpose }
+      { model | cells <- model.cells |> Matrix.transpose |> Matrix.toList |> List.map List.reverse |> List.map CellList.squash |> List.map List.reverse |> Matrix.fromList |> Matrix.transpose }
     _ ->
       model
 
