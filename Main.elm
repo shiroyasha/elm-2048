@@ -1,5 +1,4 @@
 -- import Config
--- import Random exposing (Seed)
 
 -- import Input exposing (keyboard)
 
@@ -8,13 +7,6 @@
 -- import Models.GameState exposing (GameState, update, initial)
 
 
--- -- port startTime : Float
--- startTime = 5
-
-
--- startTimeSeed : Seed
--- startTimeSeed = Random.initialSeed <| round startTime
-
 
 -- gameState : Signal GameState
 -- gameState = Signal.foldp update (initial startTimeSeed) Input.input
@@ -22,6 +14,7 @@
 -- main = Signal.map view gameState
 
 
+import Random exposing (Seed)
 import Graphics.Element exposing (..)
 import Graphics.Collage exposing (..)
 import Units exposing (..)
@@ -34,9 +27,17 @@ import Views.Title
 import Views.Objective
 import Views.NewGame
 
+-- port startTime : Float
+startTime = 5
+
+
+startTimeSeed : Seed
+startTimeSeed = Random.initialSeed <| round startTime
+
+
 initial : Grid.Model
 initial
-  = Grid.init (500, 500) (4, 4)
+  = Grid.init (500, 500) (4, 4) startTimeSeed
   |> Grid.addCell (1, 1) 2
   |> Grid.addCell (2, 2) 2
   |> Grid.addCell (1, 2) 2

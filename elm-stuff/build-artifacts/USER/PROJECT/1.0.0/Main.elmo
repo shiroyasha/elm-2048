@@ -16,6 +16,7 @@ Elm.Main.make = function (_elm) {
    $Input = Elm.Input.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Views$NewGame = Elm.Views.NewGame.make(_elm),
@@ -38,19 +39,20 @@ Elm.Main.make = function (_elm) {
                    500,
                    _L.fromArray([$Grid.view(game)]))]));
    };
+   var startTime = 5;
+   var startTimeSeed = $Random.initialSeed($Basics.round(startTime));
    var initial = A2($Grid.addCell,
    {ctor: "_Tuple2",_0: 1,_1: 2},
    2)(A2($Grid.addCell,
    {ctor: "_Tuple2",_0: 2,_1: 2},
    2)(A2($Grid.addCell,
    {ctor: "_Tuple2",_0: 1,_1: 1},
-   2)(A2($Grid.init,
+   2)(A3($Grid.init,
    {ctor: "_Tuple2"
    ,_0: 500
    ,_1: 500},
-   {ctor: "_Tuple2"
-   ,_0: 4
-   ,_1: 4}))));
+   {ctor: "_Tuple2",_0: 4,_1: 4},
+   startTimeSeed))));
    var update = F2(function (input,
    game) {
       return function () {
@@ -69,7 +71,7 @@ Elm.Main.make = function (_elm) {
               $Grid.Tick(input._0),
               game);}
          _U.badCase($moduleName,
-         "between lines 51 and 57");
+         "between lines 52 and 58");
       }();
    });
    var gameState = A3($Signal.foldp,
@@ -80,6 +82,8 @@ Elm.Main.make = function (_elm) {
    view,
    gameState);
    _elm.Main.values = {_op: _op
+                      ,startTime: startTime
+                      ,startTimeSeed: startTimeSeed
                       ,initial: initial
                       ,gameState: gameState
                       ,update: update

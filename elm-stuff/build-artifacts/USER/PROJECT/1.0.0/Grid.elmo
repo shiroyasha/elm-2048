@@ -17,6 +17,7 @@ Elm.Grid.make = function (_elm) {
    $Matrix = Elm.Matrix.make(_elm),
    $MatrixLayout = Elm.MatrixLayout.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
+   $Random = Elm.Random.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Shapes = Elm.Shapes.make(_elm),
    $Signal = Elm.Signal.make(_elm),
@@ -84,7 +85,7 @@ Elm.Grid.make = function (_elm) {
               A2(mergeAll,model,cells._1));
             case "[]": return model;}
          _U.badCase($moduleName,
-         "between lines 145 and 147");
+         "between lines 167 and 169");
       }();
    });
    var merge = function (model) {
@@ -128,7 +129,7 @@ Elm.Grid.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 87 and 92");
+         "between lines 109 and 114");
       }();
    };
    var dropWithZeroes = function (list) {
@@ -140,7 +141,7 @@ Elm.Grid.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 71 and 75");
+         "between lines 93 and 97");
       }();
    };
    var takeWithZeroes = function (list) {
@@ -154,7 +155,7 @@ Elm.Grid.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 63 and 67");
+         "between lines 85 and 89");
       }();
    };
    var groupWithZeroes = function (list) {
@@ -196,42 +197,76 @@ Elm.Grid.make = function (_elm) {
          return model;
       }();
    });
-   var addCell = F3(function (_v18,
+   var nth = F2(function (index,
+   list) {
+      return function () {
+         switch (index)
+         {case 0:
+            return $List.head(list);}
+         return A2(nth,
+         index - 1,
+         $Maybe.withDefault(_L.fromArray([]))($List.tail(list)));
+      }();
+   });
+   var emptyCells = function (model) {
+      return $List.filter(function (cell) {
+         return _U.eq(cell.number,0);
+      })($Matrix.flatten(model.cells));
+   };
+   var addCell = F3(function (_v19,
    number,
    model) {
       return function () {
-         switch (_v18.ctor)
+         switch (_v19.ctor)
          {case "_Tuple2":
             return function () {
                  var position = A2($MatrixLayout.cellPosition,
                  model.layout,
-                 _v18);
+                 _v19);
                  var cell = A4($Cell.init,
                  position,
-                 _v18,
+                 _v19,
                  model.layout.cellSize,
                  number);
                  return _U.replace([["cells"
                                     ,A4($Matrix.set,
-                                    _v18._0,
-                                    _v18._1,
+                                    _v19._0,
+                                    _v19._1,
                                     cell,
                                     model.cells)]],
                  model);
               }();}
          _U.badCase($moduleName,
-         "between lines 45 and 49");
+         "between lines 48 and 52");
       }();
    });
    var addCellToRandomPosition = F2(function (number,
    model) {
       return function () {
-         var model$ = A3(addCell,
-         {ctor: "_Tuple2",_0: 1,_1: 1},
-         number,
-         model);
+         var $ = A2($Random.generate,
+         A2($Random.$int,0,100),
+         model.seed),
+         randomNumber = $._0,
+         seed$ = $._1;
+         var cells = emptyCells(model);
+         var randomCell = A2(nth,
+         A2($Basics._op["%"],
+         randomNumber,
+         $List.length(cells)),
+         cells);
+         var model$ = function () {
+            switch (randomCell.ctor)
+            {case "Just": return A3(addCell,
+                 randomCell._0.matrixPosition,
+                 number,
+                 model);
+               case "Nothing": return model$;}
+            _U.badCase($moduleName,
+            "between lines 73 and 77");
+         }();
          return _U.replace([["cellsToAdd"
-                            ,model$.cellsToAdd - 1]],
+                            ,model$.cellsToAdd - 1]
+                           ,["seed",seed$]],
          model$);
       }();
    });
@@ -265,7 +300,7 @@ Elm.Grid.make = function (_elm) {
                  return model$$$;
               }();}
          _U.badCase($moduleName,
-         "between lines 171 and 189");
+         "between lines 193 and 211");
       }();
    });
    var Move = function (a) {
@@ -278,15 +313,16 @@ Elm.Grid.make = function (_elm) {
    var Tick = function (a) {
       return {ctor: "Tick",_0: a};
    };
-   var init = F2(function (size,
-   _v28) {
+   var init = F3(function (size,
+   _v31,
+   seed) {
       return function () {
-         switch (_v28.ctor)
+         switch (_v31.ctor)
          {case "_Tuple2":
             return function () {
                  var layout = A2($MatrixLayout.init,
                  size,
-                 _v28);
+                 _v31);
                  var cell = F2(function (x,y) {
                     return function () {
                        var matrixPosition = {ctor: "_Tuple2"
@@ -304,23 +340,26 @@ Elm.Grid.make = function (_elm) {
                  });
                  return {_: {}
                         ,cells: A3($Matrix.matrix,
-                        _v28._0,
-                        _v28._1,
+                        _v31._0,
+                        _v31._1,
                         cell)
                         ,cellsToAdd: 0
-                        ,layout: layout};
+                        ,layout: layout
+                        ,seed: seed};
               }();}
          _U.badCase($moduleName,
-         "between lines 21 and 35");
+         "between lines 23 and 38");
       }();
    });
-   var Model = F3(function (a,
+   var Model = F4(function (a,
    b,
-   c) {
+   c,
+   d) {
       return {_: {}
              ,cells: a
              ,cellsToAdd: c
-             ,layout: b};
+             ,layout: b
+             ,seed: d};
    });
    _elm.Grid.values = {_op: _op
                       ,Model: Model
@@ -329,6 +368,8 @@ Elm.Grid.make = function (_elm) {
                       ,NewCell: NewCell
                       ,Move: Move
                       ,addCell: addCell
+                      ,emptyCells: emptyCells
+                      ,nth: nth
                       ,addCellToRandomPosition: addCellToRandomPosition
                       ,takeWithZeroes: takeWithZeroes
                       ,dropWithZeroes: dropWithZeroes

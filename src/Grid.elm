@@ -5,6 +5,7 @@ import Matrix
 import Shapes
 import Color
 import MatrixLayout
+import Random
 
 import Graphics.Collage exposing (..)
 import Units exposing (..)
@@ -13,11 +14,12 @@ type alias Model =
   { cells: Matrix.Matrix Cell.Model
   , layout : MatrixLayout.Model
   , cellsToAdd: Int
+  , seed: Random.Seed
   }
 
 
-init : Size -> MatrixSize -> Model
-init size ((rows, cols) as matrixSize) =
+init : Size -> MatrixSize -> Random.Seed -> Model
+init size ((rows, cols) as matrixSize) seed =
   let
     layout = MatrixLayout.init size matrixSize
 
@@ -32,6 +34,7 @@ init size ((rows, cols) as matrixSize) =
     { cells = Matrix.matrix rows cols cell
     , layout = layout
     , cellsToAdd = 0
+    , seed = seed
     }
 
 
@@ -48,13 +51,32 @@ addCell ((x, y) as matrixPosition) number model =
   in
     { model | cells <- Matrix.set x y cell model.cells }
 
+emptyCells model = model.cells |> Matrix.flatten |> List.filter (\cell -> cell.number == 0)
+
+
+nth: Int -> List a -> Maybe a
+nth index list =
+  case index of
+    0 -> List.head list
+    _ -> nth (index - 1) (Maybe.withDefault [] <| List.tail list)
+
 
 addCellToRandomPosition: Int -> Model -> Model
 addCellToRandomPosition number model =
   let
-      model' = addCell (1, 1) number model
+      cells = emptyCells model
+
+      (randomNumber, seed') = Random.generate (Random.int 0 100) model.seed
+
+      randomCell = nth (randomNumber % (List.length cells)) cells
+
+      model' = case randomCell of
+        Just c -> addCell (c.matrixPosition) number model
+        Nothing -> model'
+
   in
-    { model' | cellsToAdd <- model'.cellsToAdd - 1 }
+    { model' | cellsToAdd <- model'.cellsToAdd - 1, seed <- seed' }
+
 
 -- Grouping
 
