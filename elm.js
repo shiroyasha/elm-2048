@@ -1231,10 +1231,9 @@ Elm.Cell.make = function (_elm) {
    $Units = Elm.Units.make(_elm);
    var view = function (model) {
       return function () {
-         var cell = !_U.eq(model.number,
-         0) ? $Graphics$Collage.move(model.position)(A2($Shapes.cell,
+         var cell = $Graphics$Collage.move(model.position)(A2($Shapes.cell,
          model.size,
-         model.number)) : $Shapes.emptyCell;
+         model.number));
          return function () {
             var _v0 = model.state;
             switch (_v0.ctor)
@@ -1255,7 +1254,7 @@ Elm.Cell.make = function (_elm) {
                case "WaitingForMerge":
                return cell;}
             _U.badCase($moduleName,
-            "between lines 99 and 117");
+            "between lines 97 and 115");
          }();
       }();
    };
@@ -4268,9 +4267,6 @@ Elm.Grid.make = function (_elm) {
    $Shapes = Elm.Shapes.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Units = Elm.Units.make(_elm);
-   var viewCells = function (model) {
-      return $Graphics$Collage.group($List.map($Cell.view)($Matrix.flatten(model.cells)));
-   };
    var viewBg = function (model) {
       return $Shapes.gridBackground($MatrixLayout.gridSize(model.layout));
    };
@@ -4284,11 +4280,6 @@ Elm.Grid.make = function (_elm) {
          base,
          positions));
       }();
-   };
-   var view = function (model) {
-      return $Graphics$Collage.group(_L.fromArray([viewBg(model)
-                                                  ,viewCellBases(model)
-                                                  ,viewCells(model)]));
    };
    var scheduleCell = function (model) {
       return _U.replace([["cellsToAdd"
@@ -4340,7 +4331,7 @@ Elm.Grid.make = function (_elm) {
               A2(mergeAll,model,cells._1));
             case "[]": return model;}
          _U.badCase($moduleName,
-         "between lines 167 and 169");
+         "between lines 169 and 171");
       }();
    });
    var merge = function (model) {
@@ -4384,7 +4375,7 @@ Elm.Grid.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 109 and 114");
+         "between lines 111 and 116");
       }();
    };
    var dropWithZeroes = function (list) {
@@ -4396,7 +4387,7 @@ Elm.Grid.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 93 and 97");
+         "between lines 95 and 99");
       }();
    };
    var takeWithZeroes = function (list) {
@@ -4410,7 +4401,7 @@ Elm.Grid.make = function (_elm) {
             case "[]":
             return _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 85 and 89");
+         "between lines 87 and 91");
       }();
    };
    var groupWithZeroes = function (list) {
@@ -4463,6 +4454,19 @@ Elm.Grid.make = function (_elm) {
          $Maybe.withDefault(_L.fromArray([]))($List.tail(list)));
       }();
    });
+   var numberedCells = function (model) {
+      return $List.filter(function (cell) {
+         return !_U.eq(cell.number,0);
+      })($Matrix.flatten(model.cells));
+   };
+   var viewCells = function (model) {
+      return $Graphics$Collage.group($List.map($Cell.view)(numberedCells(model)));
+   };
+   var view = function (model) {
+      return $Graphics$Collage.group(_L.fromArray([viewBg(model)
+                                                  ,viewCellBases(model)
+                                                  ,viewCells(model)]));
+   };
    var emptyCells = function (model) {
       return $List.filter(function (cell) {
          return _U.eq(cell.number,0);
@@ -4517,7 +4521,7 @@ Elm.Grid.make = function (_elm) {
                  model);
                case "Nothing": return model$;}
             _U.badCase($moduleName,
-            "between lines 73 and 77");
+            "between lines 75 and 79");
          }();
          return _U.replace([["cellsToAdd"
                             ,model$.cellsToAdd - 1]
@@ -4555,7 +4559,7 @@ Elm.Grid.make = function (_elm) {
                  return model$$$;
               }();}
          _U.badCase($moduleName,
-         "between lines 193 and 211");
+         "between lines 195 and 213");
       }();
    });
    var Move = function (a) {
@@ -4624,6 +4628,7 @@ Elm.Grid.make = function (_elm) {
                       ,Move: Move
                       ,addCell: addCell
                       ,emptyCells: emptyCells
+                      ,numberedCells: numberedCells
                       ,nth: nth
                       ,addCellToRandomPosition: addCellToRandomPosition
                       ,takeWithZeroes: takeWithZeroes

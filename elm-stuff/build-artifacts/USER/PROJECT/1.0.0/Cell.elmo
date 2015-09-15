@@ -21,10 +21,9 @@ Elm.Cell.make = function (_elm) {
    $Units = Elm.Units.make(_elm);
    var view = function (model) {
       return function () {
-         var cell = !_U.eq(model.number,
-         0) ? $Graphics$Collage.move(model.position)(A2($Shapes.cell,
+         var cell = $Graphics$Collage.move(model.position)(A2($Shapes.cell,
          model.size,
-         model.number)) : $Shapes.emptyCell;
+         model.number));
          return function () {
             var _v0 = model.state;
             switch (_v0.ctor)
@@ -45,7 +44,7 @@ Elm.Cell.make = function (_elm) {
                case "WaitingForMerge":
                return cell;}
             _U.badCase($moduleName,
-            "between lines 99 and 117");
+            "between lines 97 and 115");
          }();
       }();
    };

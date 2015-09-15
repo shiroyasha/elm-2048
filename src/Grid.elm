@@ -51,7 +51,9 @@ addCell ((x, y) as matrixPosition) number model =
   in
     { model | cells <- Matrix.set x y cell model.cells }
 
+
 emptyCells model = model.cells |> Matrix.flatten |> List.filter (\cell -> cell.number == 0)
+numberedCells model = model.cells |> Matrix.flatten |> List.filter (\cell -> cell.number /= 0)
 
 
 nth: Int -> List a -> Maybe a
@@ -229,7 +231,7 @@ viewBg model = Shapes.gridBackground (MatrixLayout.gridSize model.layout)
 
 viewCells : Model -> Form
 viewCells model =
-  model.cells |> Matrix.flatten |> List.map Cell.view |> group
+  model |> numberedCells |> List.map Cell.view |> group
 
 
 view : Model -> Form

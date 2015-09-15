@@ -92,9 +92,7 @@ update action model = case action of
 view : Model -> Form
 view model =
   let
-      cell = if model.number /= 0
-                then Shapes.cell model.size model.number |> Collage.move model.position
-                else Shapes.emptyCell
+    cell = Shapes.cell model.size model.number |> Collage.move model.position
   in
      case model.state of
        Stationary ->
