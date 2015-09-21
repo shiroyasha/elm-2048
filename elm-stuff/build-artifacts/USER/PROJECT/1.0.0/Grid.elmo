@@ -86,7 +86,7 @@ Elm.Grid.make = function (_elm) {
               A2(mergeAll,model,cells._1));
             case "[]": return model;}
          _U.badCase($moduleName,
-         "between lines 118 and 120");
+         "between lines 106 and 108");
       }();
    });
    var merge = function (model) {
@@ -134,7 +134,7 @@ Elm.Grid.make = function (_elm) {
       })($Matrix.flatten(model.cells));
    };
    var viewCells = function (model) {
-      return $Graphics$Collage.group($List.map($Cell.view)(numberedCells(model)));
+      return $Graphics$Collage.group($List.map($Cell.view(model.layout))(numberedCells(model)));
    };
    var view = function (model) {
       return $Graphics$Collage.group(_L.fromArray([viewBg(model)
@@ -153,14 +153,9 @@ Elm.Grid.make = function (_elm) {
          switch (_v7.ctor)
          {case "_Tuple2":
             return function () {
-                 var position = A2($MatrixLayout.cellPosition,
-                 model.layout,
+                 var cell = A2($Cell.init,
+                 number,
                  _v7);
-                 var cell = A4($Cell.init,
-                 position,
-                 _v7,
-                 model.layout.cellSize,
-                 number);
                  return _U.replace([["cells"
                                     ,A4($Matrix.set,
                                     _v7._0,
@@ -170,7 +165,7 @@ Elm.Grid.make = function (_elm) {
                  model);
               }();}
          _U.badCase($moduleName,
-         "between lines 49 and 53");
+         "between lines 38 and 41");
       }();
    });
    var addCellToRandomPosition = F2(function (number,
@@ -195,7 +190,7 @@ Elm.Grid.make = function (_elm) {
                  model);
                case "Nothing": return model$;}
             _U.badCase($moduleName,
-            "between lines 76 and 80");
+            "between lines 64 and 68");
          }();
          return _U.replace([["cellsToAdd"
                             ,model$.cellsToAdd - 1]
@@ -233,7 +228,7 @@ Elm.Grid.make = function (_elm) {
                  return model$$$;
               }();}
          _U.badCase($moduleName,
-         "between lines 144 and 162");
+         "between lines 132 and 150");
       }();
    });
    var Move = function (a) {
@@ -251,37 +246,22 @@ Elm.Grid.make = function (_elm) {
    seed) {
       return function () {
          switch (_v19.ctor)
-         {case "_Tuple2":
-            return function () {
-                 var layout = A2($MatrixLayout.init,
-                 size,
-                 _v19);
-                 var cell = F2(function (x,y) {
-                    return function () {
-                       var matrixPosition = {ctor: "_Tuple2"
-                                            ,_0: x
-                                            ,_1: y};
-                       var position = A2($MatrixLayout.cellPosition,
-                       layout,
-                       matrixPosition);
-                       return A4($Cell.init,
-                       position,
-                       matrixPosition,
-                       layout.cellSize,
-                       0);
-                    }();
-                 });
-                 return {_: {}
-                        ,cells: A3($Matrix.matrix,
-                        _v19._0,
-                        _v19._1,
-                        cell)
-                        ,cellsToAdd: 0
-                        ,layout: layout
-                        ,seed: seed};
-              }();}
+         {case "_Tuple2": return {_: {}
+                                 ,cells: A3($Matrix.matrix,
+                                 _v19._0,
+                                 _v19._1,
+                                 F2(function (x,y) {
+                                    return A2($Cell.init,
+                                    0,
+                                    {ctor: "_Tuple2",_0: x,_1: y});
+                                 }))
+                                 ,cellsToAdd: 0
+                                 ,layout: A2($MatrixLayout.init,
+                                 size,
+                                 _v19)
+                                 ,seed: seed};}
          _U.badCase($moduleName,
-         "between lines 24 and 39");
+         "between lines 24 and 28");
       }();
    });
    var Model = F4(function (a,

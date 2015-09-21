@@ -9,7 +9,7 @@ squash cells =
 
     moveCellsToCell cells cell =
       let
-        movement = Cell.Move cell.matrixPosition cell.position
+        movement = Cell.Move cell.matrixPosition
       in
         List.map (Cell.update movement) cells
   in

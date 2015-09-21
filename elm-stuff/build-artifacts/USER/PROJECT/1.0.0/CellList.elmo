@@ -84,9 +84,7 @@ Elm.CellList.make = function (_elm) {
          var moveCellsToCell = F2(function (cells,
          cell) {
             return function () {
-               var movement = A2($Cell.Move,
-               cell.matrixPosition,
-               cell.position);
+               var movement = $Cell.Move(cell.matrixPosition);
                return A2($List.map,
                $Cell.update(movement),
                cells);

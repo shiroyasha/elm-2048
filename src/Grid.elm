@@ -21,22 +21,11 @@ type alias Model =
 
 init : Size -> MatrixSize -> Random.Seed -> Model
 init size ((rows, cols) as matrixSize) seed =
-  let
-    layout = MatrixLayout.init size matrixSize
-
-    cell x y =
-      let
-          matrixPosition = (x, y)
-          position = MatrixLayout.cellPosition layout matrixPosition
-      in
-          Cell.init position matrixPosition layout.cellSize 0
-
-  in
-    { cells = Matrix.matrix rows cols cell
-    , layout = layout
-    , cellsToAdd = 0
-    , seed = seed
-    }
+  { cells = Matrix.matrix rows cols (\x y -> Cell.init 0 (x, y))
+  , layout = MatrixLayout.init size matrixSize
+  , cellsToAdd = 0
+  , seed = seed
+  }
 
 
 -- UPDATE
@@ -47,8 +36,7 @@ type Action = Tick Float | NewCell (MatrixPosition, Int) | Move Direction
 addCell : MatrixPosition -> Int -> Model -> Model
 addCell ((x, y) as matrixPosition) number model =
   let
-    position = MatrixLayout.cellPosition model.layout matrixPosition
-    cell = Cell.init position matrixPosition model.layout.cellSize number
+    cell = Cell.init number matrixPosition
   in
     { model | cells <- Matrix.set x y cell model.cells }
 
@@ -180,7 +168,7 @@ viewBg model = Shapes.gridBackground (MatrixLayout.gridSize model.layout)
 
 viewCells : Model -> Form
 viewCells model =
-  model |> numberedCells |> List.map Cell.view |> group
+  model |> numberedCells |> List.map (Cell.view model.layout) |> group
 
 
 view : Model -> Form

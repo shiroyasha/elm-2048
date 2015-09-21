@@ -6,42 +6,39 @@ import Units exposing (..)
 import Shapes
 import CellAnimations
 import Time
+import MatrixLayout
 
 -- MODEL
 
 type State
-  = Moving MatrixPosition Position Time.Time
+  = Moving MatrixPosition Time.Time
   | Appearing Time.Time
   | Stationary
   | WaitingForMerge MatrixPosition
 
 type alias Model =
   { number : Int
-  , position : Position
   , matrixPosition : MatrixPosition
-  , size: Float
   , state: State
   }
 
 
-init : Position -> MatrixPosition -> Float -> Int -> Model
-init position matrixPosition size number =
+init : Int -> MatrixPosition -> Model
+init number matrixPosition =
   { number = number
-  , position = position
   , matrixPosition = matrixPosition
-  , size = size
   , state = if number == 0 then Stationary else Appearing 0.0
   }
 
 -- UPDATE
 
-moveTick matrixPosition toPosition time dt model =
+moveTick matrixPosition time dt model =
   let
      time' = time + dt
   in
      if CellAnimations.moveFinished time'
         then { model | state <- WaitingForMerge matrixPosition }
-        else { model | state <- Moving matrixPosition toPosition time' }
+        else { model | state <- Moving matrixPosition time' }
 
 
 appeatTick time dt model =
@@ -57,20 +54,20 @@ tick dt model = case model.state of
   Appearing time ->
     appeatTick time dt model
 
-  Moving matrixPosition toPosition time ->
-    moveTick matrixPosition toPosition time dt model
+  Moving matrixPosition time ->
+    moveTick matrixPosition time dt model
 
   _ ->
     model
 
-type Action = Move MatrixPosition Position | Tick Float | Empty | Add Int | Substract Int
+type Action = Move MatrixPosition | Tick Float | Empty | Add Int | Substract Int
 
 update : Action -> Model -> Model
 update action model = case action of
-  Move matrixPosition position ->
+  Move matrixPosition ->
     if model.number == 0 || matrixPosition == model.matrixPosition
       then model
-      else { model | state <- Moving matrixPosition position 0.0 }
+      else { model | state <- Moving matrixPosition 0.0 }
 
   Substract number ->
     case model.state of
@@ -89,10 +86,13 @@ update action model = case action of
 -- VIEW
 
 
-view : Model -> Form
-view model =
+view : MatrixLayout.Model -> Model -> Form
+view layout model =
   let
-    cell = Shapes.cell model.size model.number |> Collage.move model.position
+    position = MatrixLayout.cellPosition layout model.matrixPosition
+    size = layout.cellSize
+
+    cell = Shapes.cell size model.number |> Collage.move position
   in
      case model.state of
        Stationary ->
@@ -101,12 +101,13 @@ view model =
        WaitingForMerge matrixPosition ->
          cell
 
-       Moving matrixPosition toPosition time ->
+       Moving matrixPosition time ->
          let
            progress = CellAnimations.moveValue time
+           toPosition = MatrixLayout.cellPosition layout matrixPosition
 
-           diffX = ((fst toPosition) - (fst model.position)) * progress
-           diffY = ((snd toPosition) - (snd model.position)) * progress
+           diffX = ((fst toPosition) - (fst position)) * progress
+           diffY = ((snd toPosition) - (snd position)) * progress
 
          in
            cell |> Collage.move (diffX, diffY)
